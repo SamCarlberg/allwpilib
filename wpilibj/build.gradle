@@ -55,6 +55,7 @@ compileJava {
 }
 
 dependencies {
+    compile project(':wpilibjAnnotations')
     compile project(':hal')
     compile project(':wpiutil')
     compile project(':ntcore')

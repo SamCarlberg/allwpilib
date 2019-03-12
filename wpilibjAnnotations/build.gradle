@@ -1,0 +1,10 @@
+ext {
+    useJava = true
+    useCpp = false
+    skipDev = true
+    baseId = 'wpilibjAnnotations'
+    groupId = 'edu.wpi.first.wpilibj'
+    devMain = 'edu.wpi.first.wpilibj.DevMain'
+}
+
+apply from: "${rootDir}/shared/java/javacommon.gradle"
