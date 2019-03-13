@@ -8,21 +8,29 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
 @Incubating(since = "2020")
 public abstract class ImmediateCommand extends CommandBase {
 
-  @Override
-  public abstract void initialize();
+  /**
+   * Performs the action of this command. This is run exactly once in the lifecycle of the command,
+   * in the {@link #initialize()} method.
+   */
+  protected abstract void perform();
 
   @Override
-  public void execute() {
+  public final void initialize() {
+    perform();
+  }
+
+  @Override
+  public final void execute() {
     // NOP
   }
 
   @Override
   public void end() {
-    // NOP
+    // NOP, but available for subclasses to override
   }
 
   @Override
-  public boolean isFinished() {
+  public final boolean isFinished() {
     return true;
   }
 }
