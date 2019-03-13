@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,8 +74,8 @@ public class Scheduler {
     private final Trigger m_trigger;
     private final TriggerBindingType m_type;
     private final Command m_command;
-    private boolean m_wasActive = false;
-    private boolean m_isActive = false;
+    private boolean m_wasActive = false; // NOPMD redundant field initializer
+    private boolean m_isActive = false; // NOPMD redundant field initializer
 
     TriggerBinding(Trigger trigger, TriggerBindingType type, Command command) {
       m_trigger = trigger;
@@ -100,14 +99,13 @@ public class Scheduler {
      * Checks if the bound command should be cancelled by the scheduler.
      */
     public boolean shouldCancel() {
-      switch (m_type) {
-        case kActive:
-          // Cancel the command if the trigger is no longer active
-          return !m_isActive;
-        default:
-          // Rising and falling edge triggers let the command run to completion,
-          // so the command should never be cancelled
-          return false;
+      if (m_type == TriggerBindingType.kActive) {
+        // Cancel the command if the trigger is no longer active
+        return !m_isActive;
+      } else {
+        // Rising and falling edge triggers let the command run to completion,
+        // so the command should never be cancelled
+        return false;
       }
     }
 
@@ -197,12 +195,12 @@ public class Scheduler {
   /**
    * Checks if two commands require the same subsystem.
    *
-   * @param a the first command
-   * @param b the second command
+   * @param first  the first command
+   * @param second the second command
    * @return true if at least one subsystem is required by both commands, false otherwise
    */
-  private static boolean overlaps(Command a, Command b) {
-    return !Collections.disjoint(a.getRequiredSubsystems(), b.getRequiredSubsystems());
+  private static boolean overlaps(Command first, Command second) {
+    return !Collections.disjoint(first.getRequiredSubsystems(), second.getRequiredSubsystems());
   }
 
   /**

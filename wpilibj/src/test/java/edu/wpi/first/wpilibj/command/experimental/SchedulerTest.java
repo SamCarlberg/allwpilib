@@ -120,23 +120,23 @@ class SchedulerTest {
   @Test
   void testSubsystemInterrupts() {
     Subsystem subsystem = new MockSubsystem();
-    CountingCommand a = new CountingCommand(5);
-    CountingCommand b = new CountingCommand(5);
-    a.requires(subsystem);
-    b.requires(subsystem);
+    CountingCommand first = new CountingCommand(5);
+    CountingCommand second = new CountingCommand(5);
+    first.requires(subsystem);
+    second.requires(subsystem);
 
-    m_scheduler.add(a);
-    assertTrue(m_scheduler.isScheduled(a), "Adding a command should schedule it");
+    m_scheduler.add(first);
+    assertTrue(m_scheduler.isScheduled(first), "Adding a command should schedule it");
 
-    m_scheduler.add(b);
-    assertFalse(m_scheduler.isScheduled(a),
+    m_scheduler.add(second);
+    assertFalse(m_scheduler.isScheduled(first),
         "Adding a command with the same requirements should remove previous command");
-    assertTrue(m_scheduler.isScheduled(b), "The new command should have been scheduled");
-    assertEquals(0, a.getEndCount(), "Uninitialized command should not have end() called");
+    assertTrue(m_scheduler.isScheduled(second), "The new command should have been scheduled");
+    assertEquals(0, first.getEndCount(), "Uninitialized command should not have end() called");
 
     m_scheduler.run();
-    assertTrue(m_scheduler.isRunning(b), "New command should be running");
-    assertEquals(1, b.getExecCount(), "New command should have executed once");
+    assertTrue(m_scheduler.isRunning(second), "New command should be running");
+    assertEquals(1, second.getExecCount(), "New command should have executed once");
   }
 
   @Test
@@ -193,18 +193,18 @@ class SchedulerTest {
 
   @Test
   void testRemoveAll() {
-    Command a = new CountingCommand(5);
-    Command b = new CountingCommand(5);
-    m_scheduler.add(a);
-    m_scheduler.add(b);
+    Command first = new CountingCommand(5);
+    Command second = new CountingCommand(5);
+    m_scheduler.add(first);
+    m_scheduler.add(second);
 
     m_scheduler.run();
     assertTrue(m_scheduler.hasRunningCommands(), "Commands should be running");
 
     m_scheduler.removeAll();
     assertFalse(m_scheduler.hasRunningCommands(), "No commands should be running");
-    assertFalse(m_scheduler.isScheduled(a), "First command was not removed");
-    assertFalse(m_scheduler.isScheduled(b), "Second command was not removed");
+    assertFalse(m_scheduler.isScheduled(first), "First command was not removed");
+    assertFalse(m_scheduler.isScheduled(second), "Second command was not removed");
   }
 
 }

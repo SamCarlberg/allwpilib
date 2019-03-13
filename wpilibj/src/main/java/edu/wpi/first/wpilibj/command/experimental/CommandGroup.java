@@ -42,15 +42,22 @@ public class CommandGroup extends CommandBase {
   private static final class CommandBlock {
     private final List<Command> m_commands;
 
-    public CommandBlock(Command first, Command... next) {
+    CommandBlock(Command first, Command... next) {
       m_commands = new ArrayList<>();
       m_commands.add(first);
       Collections.addAll(m_commands, next);
     }
 
-    public List<Command> getCommands() {
+    List<Command> getCommands() {
       return m_commands;
     }
+  }
+
+  private void addBlock(CommandBlock block) {
+    for (Command command : block.getCommands()) {
+      command.getRequiredSubsystems().forEach(this::requires);
+    }
+    m_blocks.add(block);
   }
 
   /**
@@ -87,13 +94,6 @@ public class CommandGroup extends CommandBase {
    */
   protected void addTimedBlock(double timeout, TimeUnit unit, Command... commands) {
     addBlock(new WaitCommand(timeout, unit), commands);
-  }
-
-  private void addBlock(CommandBlock block) {
-    for (Command command : block.getCommands()) {
-      command.getRequiredSubsystems().forEach(this::requires);
-    }
-    m_blocks.add(block);
   }
 
   /**

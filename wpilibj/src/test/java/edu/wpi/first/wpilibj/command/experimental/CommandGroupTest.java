@@ -2,13 +2,13 @@ package edu.wpi.first.wpilibj.command.experimental;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommandGroupTest {
 
   @Test
   void testMultipleBlocks() {
-    final int numBlocks = 2;
     final int maxCountBlock1 = 6;
     final int maxCountBlock2 = 4;
 

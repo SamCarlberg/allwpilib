@@ -16,27 +16,27 @@ class TriggerTest {
 
   @ParameterizedTest
   @CsvSource({"false,false,false", "true,false,false", "false,true,false", "true,true,true"})
-  void testAnd(boolean a, boolean b, boolean expected) {
-    Trigger first = () -> a;
-    Trigger second = () -> b;
+  void testAnd(boolean in1, boolean in2, boolean expected) {
+    Trigger first = () -> in1;
+    Trigger second = () -> in2;
     Trigger and = first.and(second);
     assertEquals(expected, and.get());
   }
 
   @ParameterizedTest
   @CsvSource({"false,false,false", "true,false,true", "false,true,true", "true,true,true"})
-  void testOr(boolean a, boolean b, boolean expected) {
-    Trigger first = () -> a;
-    Trigger second = () -> b;
+  void testOr(boolean in1, boolean in2, boolean expected) {
+    Trigger first = () -> in1;
+    Trigger second = () -> in2;
     Trigger or = first.or(second);
     assertEquals(expected, or.get());
   }
 
   @ParameterizedTest
   @CsvSource({"false,false,false", "true,false,true", "false,true,true", "true,true,false"})
-  void testXor(boolean a, boolean b, boolean expected) {
-    Trigger first = () -> a;
-    Trigger second = () -> b;
+  void testXor(boolean in1, boolean in2, boolean expected) {
+    Trigger first = () -> in1;
+    Trigger second = () -> in2;
     Trigger xor = first.xor(second);
     assertEquals(expected, xor.get());
   }

@@ -65,7 +65,8 @@ public interface Trigger {
    * trigger is deactivated. If the command completes naturally before then, it will be restarted.
    */
   default void whileActive(Command command) {
-    Scheduler.getGlobalScheduler().addTrigger(this, Scheduler.TriggerBindingType.kActive, command);
+    Scheduler.getGlobalScheduler()
+             .addTrigger(this, Scheduler.TriggerBindingType.kActive, command);
   }
 
   /**
@@ -74,7 +75,8 @@ public interface Trigger {
    * meanwhile.
    */
   default void whenActivated(Command command) {
-    Scheduler.getGlobalScheduler().addTrigger(this, Scheduler.TriggerBindingType.kRisingEdge, command);
+    Scheduler.getGlobalScheduler()
+             .addTrigger(this, Scheduler.TriggerBindingType.kRisingEdge, command);
   }
 
   /**
@@ -82,7 +84,8 @@ public interface Trigger {
    * run to its natural completion.
    */
   default void whenDeactivated(Command command) {
-    Scheduler.getGlobalScheduler().addTrigger(this, Scheduler.TriggerBindingType.kFallingEdge, command);
+    Scheduler.getGlobalScheduler()
+             .addTrigger(this, Scheduler.TriggerBindingType.kFallingEdge, command);
   }
 
 }

@@ -13,7 +13,7 @@ public abstract class Subsystem {
   }
 
   /**
-   * Creates a command that should be used to control this subsystem
+   * Creates a command that should be used to control this subsystem.
    *
    * @return a default command object, or {@code null} if this subsystem does not require a default
    *         command to be constantly running
