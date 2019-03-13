@@ -2,10 +2,13 @@ package edu.wpi.first.wpilibj.command.experimental;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,11 @@ public class Scheduler {
    * The currently scheduled commands. These may or may not be initialized.
    */
   private final Set<Command> m_commands = new LinkedHashSet<>();
+
+  /**
+   * Map each subsystem to its default command.
+   */
+  private final Map<Subsystem, Command> m_defaultCommands = new HashMap<>();
 
   /**
    * The currently scheduled commands that have been initialized and are currently running.
@@ -139,6 +147,29 @@ public class Scheduler {
     Objects.requireNonNull(type, "Binding type cannot be null");
     Objects.requireNonNull(command, "Command cannot be null");
     m_triggers.add(new TriggerBinding(trigger, type, command));
+  }
+
+  /**
+   * Adds a subsystem to this scheduler. If the subsystem has a default command provided by its
+   * {@link Subsystem#createDefaultCommand() createDefaultCommand()} method, that default command
+   * will run as long as no other command requiring it is scheduled
+   *
+   * @param subsystem the subsystem to add
+   */
+  public void add(Subsystem subsystem) {
+    if (m_defaultCommands.containsKey(subsystem)) {
+      // Already added
+      return;
+    }
+    Command defaultCommand = subsystem.createDefaultCommand();
+    if (defaultCommand != null && !defaultCommand.getRequiredSubsystems().contains(subsystem)) {
+      throw new IllegalStateException(
+          String.format(
+              "Command %s does not require the subsystem %s",
+              defaultCommand.getName(),
+              subsystem.getName()));
+    }
+    m_defaultCommands.put(subsystem, defaultCommand);
   }
 
   /**
@@ -250,6 +281,17 @@ public class Scheduler {
               .filter(TriggerBinding::shouldStart)
               .map(TriggerBinding::getCommand)
               .forEach(this::add);
+
+    // Add the default command if the subsystem is not required by any currently scheduled commands
+    m_defaultCommands.forEach((subsystem, defaultCommand) -> {
+      boolean isUnused = m_commands.stream()
+                                   .filter(c -> c != defaultCommand)
+                                   .map(Command::getRequiredSubsystems)
+                                   .noneMatch(c -> c.contains(subsystem));
+      if (isUnused) {
+        add(defaultCommand);
+      }
+    });
 
     // Initialize commands
     m_commands.stream()

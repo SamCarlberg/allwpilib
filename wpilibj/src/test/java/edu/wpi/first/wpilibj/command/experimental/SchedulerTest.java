@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SchedulerTest {
@@ -136,6 +137,73 @@ class SchedulerTest {
     m_scheduler.run();
     assertTrue(m_scheduler.isRunning(b), "New command should be running");
     assertEquals(1, b.getExecCount(), "New command should have executed once");
+  }
+
+  @Test
+  void testDefaultCommands() {
+    CountingCommand defaultCommand = new CountingCommand(2);
+    Subsystem subsystem = new Subsystem() {
+      @Override
+      protected Command createDefaultCommand() {
+        defaultCommand.requires(this);
+        return defaultCommand;
+      }
+    };
+    CountingCommand newCommand = new CountingCommand(10);
+    newCommand.requires(subsystem);
+
+    // Run with just the default command
+    m_scheduler.add(subsystem);
+    m_scheduler.run();
+    assertEquals(1, defaultCommand.getExecCount(), "Default command should have run");
+
+    // Add a new command that overrides the default command
+    m_scheduler.add(newCommand);
+    m_scheduler.run();
+    assertEquals(1, defaultCommand.getEndCount(), "Default command should not have run");
+    assertEquals(1, newCommand.getExecCount(), "New command should have run");
+
+    // Remove the new command. The default command should be reinitialized and run again
+    m_scheduler.remove(newCommand);
+    m_scheduler.run();
+    assertEquals(2, defaultCommand.getInitCount(), "Default command should have been restarted");
+    assertEquals(1, defaultCommand.getExecCount(), "Default command should have run");
+
+    // Run the default command to its completion
+    m_scheduler.run();
+    assertEquals(2, defaultCommand.getExecCount(), "Default command should have run");
+    assertEquals(2, defaultCommand.getEndCount(), "Default command should have run to completion");
+
+    // Run again - this should restart the default command from the beginning
+    m_scheduler.run();
+    assertEquals(3, defaultCommand.getInitCount(), "Default command should have been restarted");
+    assertEquals(1, defaultCommand.getExecCount(), "Default command should have run");
+  }
+
+  @Test
+  void testAddSubsystemWithDefaultCommandNotRequiringIt() {
+    assertThrows(IllegalStateException.class, () -> new Subsystem() {
+      @Override
+      protected Command createDefaultCommand() {
+        return new CountingCommand(0);
+      }
+    });
+  }
+
+  @Test
+  void testRemoveAll() {
+    Command a = new CountingCommand(5);
+    Command b = new CountingCommand(5);
+    m_scheduler.add(a);
+    m_scheduler.add(b);
+
+    m_scheduler.run();
+    assertTrue(m_scheduler.hasRunningCommands(), "Commands should be running");
+
+    m_scheduler.removeAll();
+    assertFalse(m_scheduler.hasRunningCommands(), "No commands should be running");
+    assertFalse(m_scheduler.isScheduled(a), "First command was not removed");
+    assertFalse(m_scheduler.isScheduled(b), "Second command was not removed");
   }
 
 }
