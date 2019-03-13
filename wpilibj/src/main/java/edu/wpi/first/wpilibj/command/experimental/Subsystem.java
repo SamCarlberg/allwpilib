@@ -2,8 +2,14 @@ package edu.wpi.first.wpilibj.command.experimental;
 
 public abstract class Subsystem {
 
+  protected Subsystem(boolean register) {
+    if (register) {
+      Scheduler.getGlobalScheduler().add(this);
+    }
+  }
+
   public Subsystem() {
-    Scheduler.getGlobalScheduler().add(this);
+    this(true);
   }
 
   /**

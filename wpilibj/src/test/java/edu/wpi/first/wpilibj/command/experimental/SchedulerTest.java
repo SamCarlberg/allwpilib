@@ -142,7 +142,7 @@ class SchedulerTest {
   @Test
   void testDefaultCommands() {
     CountingCommand defaultCommand = new CountingCommand(2);
-    Subsystem subsystem = new Subsystem() {
+    Subsystem subsystem = new Subsystem(false) {
       @Override
       protected Command createDefaultCommand() {
         defaultCommand.requires(this);
@@ -182,12 +182,13 @@ class SchedulerTest {
 
   @Test
   void testAddSubsystemWithDefaultCommandNotRequiringIt() {
-    assertThrows(IllegalStateException.class, () -> new Subsystem() {
+    Subsystem subsystem = new Subsystem(false) {
       @Override
       protected Command createDefaultCommand() {
         return new CountingCommand(0);
       }
-    });
+    };
+    assertThrows(IllegalStateException.class, () -> m_scheduler.add(subsystem));
   }
 
   @Test
