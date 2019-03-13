@@ -44,10 +44,12 @@ class SchedulerTest {
     CountingCommand rising = new CountingCommand(3);
     CountingCommand active = new CountingCommand(1000);
     CountingCommand falling = new CountingCommand(3);
+    CountingCommand inactive = new CountingCommand(5);
 
     trigger.whenActivated(rising);
     trigger.whileActive(active);
     trigger.whenDeactivated(falling);
+    trigger.whileInactive(inactive);
 
     trigger.set(true);
 
@@ -79,6 +81,7 @@ class SchedulerTest {
       assertFalse(m_scheduler.isScheduled(rising));
       assertFalse(m_scheduler.isScheduled(active));
       assertEquals(i, falling.getExecCount());
+      assertEquals(i, inactive.getExecCount());
     }
 
     // Final run should complete the falling edge command and remove it from the scheduler
@@ -86,6 +89,14 @@ class SchedulerTest {
     assertFalse(m_scheduler.isScheduled(rising));
     assertFalse(m_scheduler.isScheduled(active));
     assertFalse(m_scheduler.isScheduled(falling));
+    assertTrue(m_scheduler.isScheduled(inactive));
+
+    // Run once more to run the inactive command to completion
+    m_scheduler.run();
+    assertEquals(5, inactive.getExecCount());
+    assertEquals(1, inactive.getEndCount());
+    assertFalse(m_scheduler.isScheduled(inactive));
+    assertFalse(m_scheduler.hasRunningCommands());
   }
 
   @Test

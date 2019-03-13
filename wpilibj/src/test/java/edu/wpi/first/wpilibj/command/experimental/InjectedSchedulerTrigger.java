@@ -31,4 +31,9 @@ public class InjectedSchedulerTrigger implements Trigger {
   public void whenDeactivated(Command command) {
     m_scheduler.addTrigger(this, Scheduler.TriggerBindingType.kFallingEdge, command);
   }
+
+  @Override
+  public void whileInactive(Command command) {
+    m_scheduler.addTrigger(this, Scheduler.TriggerBindingType.kInactive, command);
+  }
 }

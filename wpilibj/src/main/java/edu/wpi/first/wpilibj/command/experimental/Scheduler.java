@@ -17,7 +17,24 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  * Handles the lifecycle of commands. A scheduler's {@link #run()} method must be called
  * periodically to update the scheduled commands.
  *
- * <p>Commands added to a scheduler are executed in the order in which they are added.
+ * <p>Commands can be scheduled with {@link #add(Command)}, and can be cancelled with
+ * {@link #remove(Command)}. All commands can be cancelled at once with {@link #removeAll()}.
+ * Commands can also be bound to run when {@link Trigger Triggers} change state; this is useful
+ * for binding a command to run when a button is pressed or released, or run as long as the button
+ * is held down. The {@link Trigger} class exists to make these bindings easy to create. Users
+ * generally should use the binding methods on {@code Trigger} objects instead of manually adding
+ * bindings.
+ *
+ * <p>Each {@link Subsystem} registered with a scheduler may only be used by a single command at a
+ * time. If a command is scheduled that requires a subsystem in use by another command, that
+ * command will be cancelled immediately and the new command will be scheduled. If there comes a
+ * time where no commands requiring a registered subsystem are scheduled, that subsystem's
+ * {@link Subsystem#createDefaultCommand() default command} will be scheduled to run. A default
+ * command will always run if no other command requires the subsystem. If a default command reaches
+ * its natural completion (ie {@link Command#isFinished() isFinished()} returns {@code true}), it
+ * will be rescheduled and restarted.
+ *
+ * <p>Commands will run in the order in which they are scheduled.
  *
  * <p>The scheduler is not thread-safe.
  */
@@ -57,7 +74,7 @@ public class Scheduler {
 
   public enum TriggerBindingType {
     /**
-     * Binds a command to run as long as a trigger is active.
+     * Binds a command to continuously run as long as a trigger is active.
      */
     kActive,
     /**
@@ -68,6 +85,10 @@ public class Scheduler {
      * Binds a command to be started when a trigger becomes inactive.
      */
     kFallingEdge,
+    /**
+     * Binds a command to continuously run as long as a trigger is inactive.
+     */
+    kInactive,
   }
 
   private static final class TriggerBinding {
@@ -102,6 +123,9 @@ public class Scheduler {
       if (m_type == TriggerBindingType.kActive) {
         // Cancel the command if the trigger is no longer active
         return !m_isActive;
+      } else if (m_type == TriggerBindingType.kInactive) {
+        // Cancel if the trigger is active again
+        return m_isActive;
       } else {
         // Rising and falling edge triggers let the command run to completion,
         // so the command should never be cancelled
@@ -124,6 +148,11 @@ public class Scheduler {
           return !m_wasActive && m_isActive;
         case kFallingEdge:
           return m_wasActive && !m_isActive;
+        case kInactive:
+          // Technically, this should be
+          // return !m_isActive && !scheduler.isRunning(m_command);
+          // See the kActive case for why this is not the case
+          return !m_isActive;
         default:
           return false;
       }

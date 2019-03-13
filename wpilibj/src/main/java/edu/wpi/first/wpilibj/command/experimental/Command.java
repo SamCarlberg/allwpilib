@@ -13,9 +13,8 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  * its {@link #isFinished()} method is called to see if the command should be executed - if not,
  * its {@link #end()} method is called and it will be removed from the scheduler. Otherwise, its
  * {@link #execute()} method is called. The condition of the command will be checked again by the
- * scheduler in its next update.
- *
- * <p>Command objects can be reused
+ * scheduler in its next update. A command that has completed execution may be rescheduled and
+ * reused.
  */
 @Incubating(since = "2020")
 public interface Command {
@@ -53,7 +52,8 @@ public interface Command {
   boolean isFinished();
 
   /**
-   * Gets the subsystems that this command uses.
+   * Gets the subsystems that this command uses. Each subsystem may only be used by one
+   * command at a time.
    *
    * @return a set of the subsystems used by this command
    */
