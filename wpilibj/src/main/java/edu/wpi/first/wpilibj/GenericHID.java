@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.annotation.Incubating;
+import edu.wpi.first.wpilibj.command.experimental.JoystickButton;
 
 /**
  * GenericHID Interface.
@@ -282,5 +284,30 @@ public abstract class GenericHID {
       m_rightRumble = (short) (value * 65535);
     }
     HAL.setJoystickOutputs((byte) m_port, m_outputs, m_leftRumble, m_rightRumble);
+  }
+
+  @Incubating(since = "2020")
+  private final Map<Integer, JoystickButton> m_buttons = new HashMap<>();
+
+  /**
+   * Get a button object on the controller.
+   *
+   * <p>Example code</p>
+   * <pre>{@code
+   * Joystick driverStick = ...;
+   * JoystickButton driverTrigger = driverStick.getButton(1);
+   * driverTrigger.whenPressed(new ExampleCommand());
+   * }</pre>
+   *
+   * <p>This method caches button objects; each identical call will return the same button object.
+   * This method is therefore safe to call arbitrarily many times without needing to worry about
+   * memory usage.
+   *
+   * @param buttonIndex the index of the button to get. Note that button indexes start at 1
+   * @return a button object corresponding to the given controller button
+   */
+  @Incubating(since = "2020")
+  public JoystickButton getButton(int buttonIndex) {
+    return m_buttons.computeIfAbsent(buttonIndex, b -> new JoystickButton(this, b));
   }
 }

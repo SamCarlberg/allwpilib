@@ -45,7 +45,6 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  * Joystick myJoystick = new Joystick(0);
  * Trigger trigger = () -> myJoystick.getRawAxis(0) > 0.5;
  * }</pre>
- *
  */
 @Incubating(since = "2020")
 @FunctionalInterface

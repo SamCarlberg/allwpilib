@@ -9,6 +9,8 @@ package edu.wpi.first.wpilibj;
 
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.annotation.Incubating;
+import edu.wpi.first.wpilibj.command.experimental.JoystickButton;
 
 /**
  * Handle input from Xbox 360 or Xbox One controllers connected to the Driver Station.
@@ -21,7 +23,7 @@ public class XboxController extends GenericHID {
   /**
    * Represents a digital button on an XboxController.
    */
-  private enum Button {
+  public enum Button {
     kBumperLeft(5),
     kBumperRight(6),
     kStickLeft(9),
@@ -81,6 +83,17 @@ public class XboxController extends GenericHID {
     } else {
       return getRawAxis(5);
     }
+  }
+
+  /**
+   * Get a button object on the controller.
+   *
+   * @param button the button to get
+   * @return a button object corresponding to the given controller button
+   */
+  @Incubating(since = "2020")
+  public JoystickButton getButton(Button button) {
+    return super.getButton(button.value);
   }
 
   /**
