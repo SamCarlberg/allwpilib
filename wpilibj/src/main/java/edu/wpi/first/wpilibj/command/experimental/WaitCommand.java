@@ -12,8 +12,8 @@ public class WaitCommand extends CommandBase {
   private final Timer m_timer = new Timer();
   private final double m_period; // seconds
 
-  public WaitCommand(double timeout, TimeUnit unit) {
-    m_period = unit.toMicros((long) timeout) / 1e6;
+  public WaitCommand(long timeout, TimeUnit unit) {
+    m_period = unit.toMicros(timeout) / 1e6;
   }
 
   @Override
