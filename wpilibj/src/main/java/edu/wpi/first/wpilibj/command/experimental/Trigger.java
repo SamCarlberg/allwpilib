@@ -112,7 +112,7 @@ public interface Trigger {
    */
   default void whileActive(Command command) {
     Scheduler.getGlobalScheduler()
-             .addTrigger(this, Scheduler.TriggerBindingType.kActive, command);
+             .addTrigger(new TriggerBinding.WhileActive(this, command));
   }
 
   /**
@@ -124,7 +124,7 @@ public interface Trigger {
    */
   default void whenActivated(Command command) {
     Scheduler.getGlobalScheduler()
-             .addTrigger(this, Scheduler.TriggerBindingType.kRisingEdge, command);
+             .addTrigger(new TriggerBinding.RisingEdge(this, command));
   }
 
   /**
@@ -135,7 +135,7 @@ public interface Trigger {
    */
   default void whenDeactivated(Command command) {
     Scheduler.getGlobalScheduler()
-             .addTrigger(this, Scheduler.TriggerBindingType.kFallingEdge, command);
+             .addTrigger(new TriggerBinding.FallingEdge(this, command));
   }
 
   /**
@@ -146,7 +146,7 @@ public interface Trigger {
    */
   default void whileInactive(Command command) {
     Scheduler.getGlobalScheduler()
-             .addTrigger(this, Scheduler.TriggerBindingType.kInactive, command);
+             .addTrigger(new TriggerBinding.WhileInactive(this, command));
   }
 
 }

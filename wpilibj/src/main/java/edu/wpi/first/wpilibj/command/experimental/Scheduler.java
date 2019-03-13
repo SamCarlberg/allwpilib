@@ -91,89 +91,17 @@ public class Scheduler {
     kInactive,
   }
 
-  private static final class TriggerBinding {
-    private final Trigger m_trigger;
-    private final TriggerBindingType m_type;
-    private final Command m_command;
-    private boolean m_wasActive = false; // NOPMD redundant field initializer
-    private boolean m_isActive = false; // NOPMD redundant field initializer
-
-    TriggerBinding(Trigger trigger, TriggerBindingType type, Command command) {
-      m_trigger = trigger;
-      m_type = type;
-      m_command = command;
-    }
-
-    public Command getCommand() {
-      return m_command;
-    }
-
-    /**
-     * Updates the state of the binding.
-     */
-    public void update() {
-      m_wasActive = m_isActive;
-      m_isActive = m_trigger.get();
-    }
-
-    /**
-     * Checks if the bound command should be cancelled by the scheduler.
-     */
-    public boolean shouldCancel() {
-      if (m_type == TriggerBindingType.kActive) {
-        // Cancel the command if the trigger is no longer active
-        return !m_isActive;
-      } else if (m_type == TriggerBindingType.kInactive) {
-        // Cancel if the trigger is active again
-        return m_isActive;
-      } else {
-        // Rising and falling edge triggers let the command run to completion,
-        // so the command should never be cancelled
-        return false;
-      }
-    }
-
-    /**
-     * Checks if the command bound to the trigger should be started by the scheduler.
-     */
-    public boolean shouldStart() {
-      switch (m_type) {
-        case kActive:
-          // Technically, this should be
-          // return m_isActive && !scheduler.isRunning(m_command)
-          // But since starting a command that is already running has no effect, this is logically
-          // equivalent and removes the need to keep a reference to the scheduler object
-          return m_isActive;
-        case kRisingEdge:
-          return !m_wasActive && m_isActive;
-        case kFallingEdge:
-          return m_wasActive && !m_isActive;
-        case kInactive:
-          // Technically, this should be
-          // return !m_isActive && !scheduler.isRunning(m_command);
-          // See the kActive case for why this is not the case
-          return !m_isActive;
-        default:
-          return false;
-      }
-    }
-  }
-
   /**
    * Adds a trigger to this scheduler. The scheduler's {@link #run()} method will start or stop
    * the bound command as determined by the binding type and the state of the trigger.
    *
    * <p>Multiple commands can be bound to the same trigger.
    *
-   * @param trigger the trigger to bind a command to
-   * @param type    the type of binding
-   * @param command the command to be bound to the trigger
+   * @param binding the binding to add
    */
-  public void addTrigger(Trigger trigger, TriggerBindingType type, Command command) {
-    Objects.requireNonNull(trigger, "Trigger cannot be null");
-    Objects.requireNonNull(type, "Binding type cannot be null");
-    Objects.requireNonNull(command, "Command cannot be null");
-    m_triggers.add(new TriggerBinding(trigger, type, command));
+  public void addTrigger(TriggerBinding binding) {
+    Objects.requireNonNull(binding, "Binding cannot be null");
+    m_triggers.add(binding);
   }
 
   /**

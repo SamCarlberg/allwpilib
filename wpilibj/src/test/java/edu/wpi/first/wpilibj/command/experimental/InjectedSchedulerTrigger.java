@@ -19,21 +19,21 @@ public class InjectedSchedulerTrigger implements Trigger {
 
   @Override
   public void whileActive(Command command) {
-    m_scheduler.addTrigger(this, Scheduler.TriggerBindingType.kActive, command);
+    m_scheduler.addTrigger(new TriggerBinding.WhileActive(this, command));
   }
 
   @Override
   public void whenActivated(Command command) {
-    m_scheduler.addTrigger(this, Scheduler.TriggerBindingType.kRisingEdge, command);
+    m_scheduler.addTrigger(new TriggerBinding.RisingEdge(this, command));
   }
 
   @Override
   public void whenDeactivated(Command command) {
-    m_scheduler.addTrigger(this, Scheduler.TriggerBindingType.kFallingEdge, command);
+    m_scheduler.addTrigger(new TriggerBinding.FallingEdge(this, command));
   }
 
   @Override
   public void whileInactive(Command command) {
-    m_scheduler.addTrigger(this, Scheduler.TriggerBindingType.kInactive, command);
+    m_scheduler.addTrigger(new TriggerBinding.WhileInactive(this, command));
   }
 }
