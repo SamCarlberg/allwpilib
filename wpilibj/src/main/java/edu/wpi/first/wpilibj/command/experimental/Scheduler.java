@@ -214,6 +214,15 @@ public class Scheduler {
     return m_commands.contains(command);
   }
 
+  /**
+   * Enables or disabled safety checks. If safety checks are enabled, no commands that require an
+   * unsafe subsystem are permitted to run. Any running unsafe commands will be cancelled in the
+   * next scheduler update. This behavior is intended to prevent mechanisms from suddenly starting
+   * to move when a robot becomes enabled from commands scheduled when the robot was disabled.
+   *
+   * @param safetyEnabled whether or not safety should be enabled
+   * @see Subsystem#isUnsafe()
+   */
   public void setSafetyEnabled(boolean safetyEnabled) {
     m_safetyEnabled = safetyEnabled;
   }
