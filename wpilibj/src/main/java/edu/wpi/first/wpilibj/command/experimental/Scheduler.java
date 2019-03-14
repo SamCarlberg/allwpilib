@@ -63,6 +63,11 @@ public class Scheduler {
   private final Map<Subsystem, Command> m_defaultCommands = new HashMap<>();
 
   /**
+   * Map each subsystem to the currently running command that requires it.
+   */
+  private final Map<Subsystem, Command> m_currentCommands = new HashMap<>();
+
+  /**
    * The currently scheduled commands that have been initialized and are currently running.
    */
   private final Set<Command> m_initializedCommands = new HashSet<>();
@@ -114,6 +119,9 @@ public class Scheduler {
    * Schedules a command to run. Has no effect if the same command is added while it is already
    * scheduled; however, a command may be added again if it has already completed execution.
    *
+   * <p>If the command requires an unsafe subsystem and safety is enabled, the command will not
+   * be scheduled.
+   *
    * @param command the command to schedule
    */
   public void add(Command command) {
@@ -124,8 +132,7 @@ public class Scheduler {
     }
 
     // Bail if the command uses an unsafe subsystem
-    if (useSubsystemSafety() && isUnsafe(command)) {
-      remove(command);
+    if (isSafetyEnabled() && isUnsafe(command)) {
       return;
     }
 
@@ -136,6 +143,9 @@ public class Scheduler {
               .forEach(this::remove);
 
     m_commands.add(command);
+    for (Subsystem subsystem : command.getRequiredSubsystems()) {
+      m_currentCommands.put(subsystem, command);
+    }
   }
 
   /**
@@ -165,6 +175,9 @@ public class Scheduler {
         m_initializedCommands.remove(command);
       }
       m_commands.remove(command);
+    }
+    for (Subsystem subsystem : command.getRequiredSubsystems()) {
+      m_currentCommands.put(subsystem, null);
     }
   }
 
@@ -231,7 +244,7 @@ public class Scheduler {
    * Checks if only safe subsystems should be usable. If this is the case, only commands that
    * require safe subsystems will be allowed to run.
    */
-  private boolean useSubsystemSafety() {
+  public boolean isSafetyEnabled() {
     return m_safetyEnabled;
   }
 
@@ -243,6 +256,14 @@ public class Scheduler {
    * Runs all scheduled commands.
    */
   public void run() {
+    // Terminate unsafe commands if safety is enabled
+    if (isSafetyEnabled()) {
+      m_commands.stream()
+                .filter(Scheduler::isUnsafe)
+                .collect(Collectors.toList())
+                .forEach(this::remove);
+    }
+
     // Update triggers
     m_triggers.forEach(TriggerBinding::update);
 
@@ -259,24 +280,12 @@ public class Scheduler {
               .forEach(this::add);
 
     // Add the default command if the subsystem is not required by any currently scheduled commands
-    m_defaultCommands.forEach((subsystem, defaultCommand) -> {
-      if (defaultCommand == null) {
-        return;
-      }
-      boolean isUnused = m_commands.stream()
-                                   .filter(c -> c != defaultCommand)
-                                   .map(Command::getRequiredSubsystems)
-                                   .noneMatch(c -> c.contains(subsystem));
-      if (isUnused) {
-        add(defaultCommand);
-      }
-    });
-
-    // Terminate commands that use unsafe subsystems.
-    m_commands.stream()
-              .filter(c -> useSubsystemSafety() && isUnsafe(c))
-              .collect(Collectors.toList())
-              .forEach(this::remove);
+    m_defaultCommands.entrySet()
+                     .stream()
+                     .filter(e -> e.getValue() != null)
+                     .filter(e -> m_currentCommands.get(e.getKey()) == null)
+                     .map(Map.Entry::getValue)
+                     .forEach(this::add);
 
     // Initialize commands
     m_commands.stream()
