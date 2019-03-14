@@ -3,7 +3,7 @@ package edu.wpi.first.wpilibj.command.experimental;
 import edu.wpi.first.wpilibj.annotation.Incubating;
 
 /**
- * A command that executes once, using its {@link #initialize()} method.
+ * A command that executes once, using its {@link #initialize() initialize()} method.
  */
 @Incubating(since = "2020")
 public abstract class ImmediateCommand extends CommandBase {
