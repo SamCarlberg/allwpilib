@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  */
 @Incubating(since = "2020")
 public class CommandGroup extends CommandBase {
-  private final Scheduler m_scheduler = new Scheduler();
+  private final CommandScheduler m_scheduler = new CommandScheduler();
   private final List<CommandBlock> m_blocks = new ArrayList<>();
   private int m_currentBlockIndex = -1;
   private CommandBlock m_currentBlock;

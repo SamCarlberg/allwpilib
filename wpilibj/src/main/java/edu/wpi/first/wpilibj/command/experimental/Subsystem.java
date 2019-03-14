@@ -39,7 +39,7 @@ package edu.wpi.first.wpilibj.command.experimental;
  * registered with the global scheduler.
  *
  * @see Command
- * @see Scheduler
+ * @see CommandScheduler
  */
 public abstract class Subsystem {
   private boolean m_isUnsafe = true;
@@ -57,13 +57,13 @@ public abstract class Subsystem {
    */
   protected Subsystem(boolean register) {
     if (register) {
-      Scheduler.getGlobalScheduler().add(this);
+      CommandScheduler.getGlobalCommandScheduler().add(this);
     }
   }
 
   /**
    * Default constructor. A subclass using this constructor will be automatically registered with
-   * the {@link Scheduler#getGlobalScheduler() global Scheduler}.
+   * the {@link CommandScheduler#getGlobalCommandScheduler() global CommandScheduler}.
    *
    * @see #Subsystem(boolean)
    */

@@ -15,11 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ImmediateCommandTest {
-  private Scheduler m_scheduler;
+  private CommandScheduler m_scheduler;
 
   @BeforeEach
   void setup() {
-    m_scheduler = new Scheduler();
+    m_scheduler = new CommandScheduler();
   }
 
   @Test

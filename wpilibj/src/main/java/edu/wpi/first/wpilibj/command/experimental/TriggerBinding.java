@@ -33,6 +33,10 @@ public abstract class TriggerBinding {
     m_command = Objects.requireNonNull(command, "Command cannot be null");
   }
 
+  public final Trigger getTrigger() {
+    return m_trigger;
+  }
+
   /**
    * Gets the bound command.
    */

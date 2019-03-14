@@ -118,7 +118,7 @@ public interface Trigger {
    * @param command the command to bind
    */
   default void whileActive(Command command) {
-    Scheduler.getGlobalScheduler()
+    TriggerScheduler.getGlobalTriggerScheduler()
              .addTrigger(new TriggerBinding.WhileActive(this, command));
   }
 
@@ -130,7 +130,7 @@ public interface Trigger {
    * @param command the command to bind
    */
   default void whenActivated(Command command) {
-    Scheduler.getGlobalScheduler()
+    TriggerScheduler.getGlobalTriggerScheduler()
              .addTrigger(new TriggerBinding.RisingEdge(this, command));
   }
 
@@ -141,7 +141,7 @@ public interface Trigger {
    * @param command the command to bind
    */
   default void whenDeactivated(Command command) {
-    Scheduler.getGlobalScheduler()
+    TriggerScheduler.getGlobalTriggerScheduler()
              .addTrigger(new TriggerBinding.FallingEdge(this, command));
   }
 
@@ -152,7 +152,7 @@ public interface Trigger {
    * @param command the command to bind
    */
   default void whileInactive(Command command) {
-    Scheduler.getGlobalScheduler()
+    TriggerScheduler.getGlobalTriggerScheduler()
              .addTrigger(new TriggerBinding.WhileInactive(this, command));
   }
 

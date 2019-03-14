@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,11 +25,6 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  *
  * <p>Commands can be scheduled with {@link #add(Command)}, and can be cancelled with
  * {@link #remove(Command)}. All commands can be cancelled at once with {@link #removeAll()}.
- * Commands can also be bound to run when {@link Trigger Triggers} change state; this is useful
- * for binding a command to run when a button is pressed or released, or run as long as the button
- * is held down. The {@link Trigger} class exists to make these bindings easy to create. Users
- * generally should use the binding methods on {@code Trigger} objects instead of manually adding
- * bindings.
  *
  * <p>Each {@link Subsystem} registered with a scheduler may only be used by a single command at a
  * time. If a command is scheduled that requires a subsystem in use by another command, that
@@ -44,21 +38,11 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  * <p>Commands will run in the order in which they are scheduled.
  *
  * <p>The scheduler is not thread-safe.
+ *
+ * @see TriggerScheduler
  */
 @Incubating(since = "2020")
-public class Scheduler {
-  /**
-   * Default global instance.
-   */
-  private static final Scheduler kGlobalScheduler = new Scheduler();
-
-  /**
-   * Gets the default global scheduler object.
-   */
-  public static Scheduler getGlobalScheduler() {
-    return kGlobalScheduler;
-  }
-
+public class CommandScheduler {
   /**
    * The currently scheduled commands. These may or may not be initialized.
    */
@@ -79,24 +63,12 @@ public class Scheduler {
    */
   private final Set<Command> m_initializedCommands = new HashSet<>();
 
-  /**
-   * The trigger bindings in this scheduler.
-   */
-  private final List<TriggerBinding> m_triggers = new ArrayList<>();
-
   private boolean m_safetyEnabled = true;
 
-  /**
-   * Adds a trigger to this scheduler. The scheduler's {@link #run()} method will start or stop
-   * the bound command as determined by the binding type and the state of the trigger.
-   *
-   * <p>Multiple commands can be bound to the same trigger.
-   *
-   * @param binding the binding to add
-   */
-  public void addTrigger(TriggerBinding binding) {
-    Objects.requireNonNull(binding, "Binding cannot be null");
-    m_triggers.add(binding);
+  private static final CommandScheduler m_globalScheduler = new CommandScheduler();
+
+  public static CommandScheduler getGlobalCommandScheduler() {
+    return m_globalScheduler;
   }
 
   /**
@@ -124,7 +96,9 @@ public class Scheduler {
 
   /**
    * Schedules a command to run. Has no effect if the same command is added while it is already
-   * scheduled; however, a command may be added again if it has already completed execution.
+   * scheduled; however, a command may be added again if it has already completed execution. Any
+   * running commands that require any of the subsystems required by the given command will
+   * immediately be terminated and removed from the scheduler.
    *
    * <p>If the command requires an unsafe subsystem and safety is enabled, the command will not
    * be scheduled.
@@ -260,32 +234,18 @@ public class Scheduler {
   }
 
   /**
-   * Runs all scheduled commands.
+   * Runs the scheduler. This cancels unsafe commands, initializes newly scheduled commands,
+   * handles default commands for unused subsystems, runs scheduled commands, and cleans up
+   * commands that have finished executing.
    */
   public void run() {
     // Terminate unsafe commands if safety is enabled
     if (isSafetyEnabled()) {
       m_commands.stream()
-                .filter(Scheduler::isUnsafe)
+                .filter(CommandScheduler::isUnsafe)
                 .collect(Collectors.toList())
                 .forEach(this::remove);
     }
-
-    // Update triggers
-    m_triggers.forEach(TriggerBinding::update);
-
-    // Cancel commands from triggers that shouldn't run
-    m_triggers.stream()
-              .filter(TriggerBinding::shouldCancel)
-              .map(TriggerBinding::getCommand)
-              .forEach(this::remove);
-
-    // Add commands that should be started
-    m_triggers.stream()
-              .filter(TriggerBinding::shouldStart)
-              .map(TriggerBinding::getCommand)
-              .forEach(this::add);
-
     // Add the default command if the subsystem is not required by any currently scheduled commands
     m_defaultCommands.entrySet()
                      .stream()
