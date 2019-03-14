@@ -186,6 +186,13 @@ public class Scheduler {
   }
 
   /**
+   * Checks if any commands are currently scheduled to run.
+   */
+  public boolean hasScheduledCommands() {
+    return !m_commands.isEmpty();
+  }
+
+  /**
    * Checks if a command is currently being run by this scheduler.
    *
    * @param command the command to check
