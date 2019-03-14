@@ -11,6 +11,15 @@ package edu.wpi.first.wpilibj.command.experimental;
  * LED light strips that can convey information to drivers - these should be in a subsystem to
  * allow commands to change the colors or patterns of the lights, even though nothing truly moves.
  *
+ * <p>Subsystems with actuators or moving parts are considered <i>unsafe</i>. If a command is
+ * scheduled for a subsystem while the robot is disabled, nothing will move - until the robot is
+ * enabled, causing wheels or other mechanisms to suddenly start moving. This poses a safety risk,
+ * since if a person is standing in the way of a robot that suddenly starts driving at them, or
+ * has fingers in a pinch point, there is a chance of injury. Subsystems that do <i>not</i> have
+ * any actuators or control the motion of a mechanism may disable safety checks with
+ * {@link #disableSafety()}, allowing commands to use the subsystem while the robot is disabled.
+ * The aforementioned LED strip subsystem is an example of a subsystem that may disable safety.
+ *
  * <p>Subsystems are used within the command-based framework as requirements for
  * {@link Command Commands}. Multiple commands that require the same subsystem cannot run at the
  * same time; instead, starting any command that requires a subsystem will interrupt and stop any
@@ -26,6 +35,8 @@ package edu.wpi.first.wpilibj.command.experimental;
  * @see Scheduler
  */
 public abstract class Subsystem {
+
+  private boolean m_isUnsafe = true;
 
   /**
    * Optional constructor that allows subclasses to bypass registration with the global
@@ -62,6 +73,33 @@ public abstract class Subsystem {
    */
   protected abstract Command createDefaultCommand();
 
+  /**
+   * Explicitly disables safety. This should <b>ONLY</b> be used with subsystems that do not
+   * control any actuators; for example, a subsystem for a string of LED lights may have its
+   * safety disabled since it cannot cause any unexpected motion of the robot. A drivebase
+   * subsystem should always have safety enabled, since it would otherwise be able to suddenly
+   * move when enabling the robot if a command was scheduled for it in disabled mode.
+   *
+   * <p><strong>ONLY USE THIS METHOD ON A SUBSYSTEM WITHOUT ACTUATORS</strong>
+   */
+  protected final void disableSafety() {
+    m_isUnsafe = false;
+  }
+
+  /**
+   * Checks if this subsystem is unsafe. An unsafe subsystem is one that contains actuators that
+   * may suddenly move when the robot is enabled if a command was scheduled for the subsystem
+   * when the robot was disabled (since actuators are only controllable when the robot is enabled,
+   * the command would be scheduled but only cause things to move when the robot becomes enabled,
+   * which poses a safety risk if humans are in the way).
+   */
+  public final boolean isUnsafe() {
+    return m_isUnsafe;
+  }
+
+  /**
+   * Gets the name of this subsystem. Defaults to the name of the class.
+   */
   public String getName() {
     return getClass().getSimpleName();
   }

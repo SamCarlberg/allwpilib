@@ -72,6 +72,8 @@ public class Scheduler {
    */
   private final List<TriggerBinding> m_triggers = new ArrayList<>();
 
+  private boolean m_safetyEnabled = true;
+
   /**
    * Adds a trigger to this scheduler. The scheduler's {@link #run()} method will start or stop
    * the bound command as determined by the binding type and the state of the trigger.
@@ -118,6 +120,12 @@ public class Scheduler {
     Objects.requireNonNull(command, "Command cannot be null");
     if (m_commands.contains(command)) {
       // This command is already scheduled, don't add it again
+      return;
+    }
+
+    // Bail if the command uses an unsafe subsystem
+    if (useSubsystemSafety() && isUnsafe(command)) {
+      remove(command);
       return;
     }
 
@@ -199,6 +207,22 @@ public class Scheduler {
     return m_commands.contains(command);
   }
 
+  public void setSafetyEnabled(boolean safetyEnabled) {
+    m_safetyEnabled = safetyEnabled;
+  }
+
+  /**
+   * Checks if only safe subsystems should be usable. If this is the case, only commands that
+   * require safe subsystems will be allowed to run.
+   */
+  private boolean useSubsystemSafety() {
+    return m_safetyEnabled;
+  }
+
+  private static boolean isUnsafe(Command command) {
+    return command.getRequiredSubsystems().stream().anyMatch(Subsystem::isUnsafe);
+  }
+
   /**
    * Runs all scheduled commands.
    */
@@ -228,6 +252,12 @@ public class Scheduler {
         add(defaultCommand);
       }
     });
+
+    // Terminate commands that use unsafe subsystems.
+    m_commands.stream()
+              .filter(c -> useSubsystemSafety() && isUnsafe(c))
+              .collect(Collectors.toList())
+              .forEach(this::remove);
 
     // Initialize commands
     m_commands.stream()

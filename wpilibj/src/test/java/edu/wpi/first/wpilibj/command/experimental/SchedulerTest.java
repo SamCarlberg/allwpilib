@@ -131,6 +131,7 @@ class SchedulerTest {
   @Test
   void testSubsystemInterrupts() {
     Subsystem subsystem = new MockSubsystem();
+    subsystem.disableSafety();
     CountingCommand first = new CountingCommand(5);
     CountingCommand second = new CountingCommand(5);
     first.requires(subsystem);
@@ -160,6 +161,7 @@ class SchedulerTest {
         return defaultCommand;
       }
     };
+    subsystem.disableSafety();
     CountingCommand newCommand = new CountingCommand(10);
     newCommand.requires(subsystem);
 
@@ -216,6 +218,34 @@ class SchedulerTest {
     assertFalse(m_scheduler.hasRunningCommands(), "No commands should be running");
     assertFalse(m_scheduler.isScheduled(first), "First command was not removed");
     assertFalse(m_scheduler.isScheduled(second), "Second command was not removed");
+  }
+
+  @Test
+  void testUnsafeCommands() {
+    Subsystem subsystem = new MockSubsystem();
+    CountingCommand command = new CountingCommand(10);
+    command.requires(subsystem);
+    m_scheduler.add(subsystem);
+
+    // Unsafe command should not be added
+    m_scheduler.add(command);
+    assertFalse(m_scheduler.isScheduled(command),
+        "Command with unsafe requirements should not be scheduled");
+
+    // Disabling safety should let the command be added and executed
+    m_scheduler.setSafetyEnabled(false);
+    m_scheduler.add(command);
+    m_scheduler.run();
+    assertEquals(1, command.getExecCount(), "Command should have been scheduled and executed");
+
+    // Re-enabling safety should remove the unsafe command when run() is called
+    m_scheduler.setSafetyEnabled(true);
+    assertTrue(m_scheduler.isScheduled(command),
+        "Unsafe command should remain scheduled until run() is called");
+    m_scheduler.run();
+    assertFalse(m_scheduler.isScheduled(command), "Command should not still be scheduled");
+    assertEquals(1, command.getExecCount(), "Command should not have continued to run");
+    assertEquals(1, command.getEndCount(), "Command should have terminated");
   }
 
 }
