@@ -2,10 +2,13 @@ package edu.wpi.first.wpilibj.command.experimental;
 
 import java.util.Objects;
 
+import edu.wpi.first.wpilibj.annotation.Incubating;
+
 /**
  * Binds a {@link Command} to a {@link Trigger}. Subclasses are responsible for determining when
  * the bound command should start and stop based on the state of the trigger.
  */
+@Incubating(since = "2020")
 public abstract class TriggerBinding {
   private final Trigger m_trigger;
   private final Command m_command;

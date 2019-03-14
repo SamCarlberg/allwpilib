@@ -1,10 +1,13 @@
 package edu.wpi.first.wpilibj.command.experimental;
 
+import edu.wpi.first.wpilibj.annotation.Incubating;
+
 /**
  * A type of trigger that is active while a physical button is pressed and inactive when that
  * button is not pressed. This interface provides several functions for binding commands
  * with method names that better convey the physical state of the button for the binding.
  */
+@Incubating(since = "2020")
 @FunctionalInterface
 public interface Button extends Trigger {
 

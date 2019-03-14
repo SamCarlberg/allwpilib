@@ -3,6 +3,9 @@ package edu.wpi.first.wpilibj.command.experimental;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.wpi.first.wpilibj.annotation.Incubating;
+
+@Incubating(since = "2020")
 public abstract class CommandBase implements Command {
 
   private final Set<Subsystem> m_requirements = new HashSet<>();

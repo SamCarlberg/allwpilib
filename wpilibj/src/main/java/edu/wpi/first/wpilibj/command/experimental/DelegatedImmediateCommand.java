@@ -2,9 +2,12 @@ package edu.wpi.first.wpilibj.command.experimental;
 
 import java.util.Objects;
 
+import edu.wpi.first.wpilibj.annotation.Incubating;
+
 /**
  * An {@link ImmediateCommand} that delegates its operation to an external {@link Runnable}.
  */
+@Incubating(since = "2020")
 public class DelegatedImmediateCommand extends ImmediateCommand {
 
   private final String m_name;

@@ -3,10 +3,12 @@ package edu.wpi.first.wpilibj.command.experimental;
 import java.util.concurrent.TimeUnit;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.annotation.Incubating;
 
 /**
  * Waits until a certain time period has elapsed.
  */
+@Incubating(since = "2020")
 public class WaitCommand extends CommandBase {
 
   private final Timer m_timer = new Timer();
