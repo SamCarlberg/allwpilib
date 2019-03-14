@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TriggerTest {
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] NOT {0} => {1}")
   @CsvSource({"true,false", "false,true"})
   void testNot(boolean input, boolean expected) {
     Trigger trigger = () -> input;
@@ -14,7 +14,7 @@ class TriggerTest {
     assertEquals(expected, not.get());
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {0} AND {1} => {2}")
   @CsvSource({"false,false,false", "true,false,false", "false,true,false", "true,true,true"})
   void testAnd(boolean in1, boolean in2, boolean expected) {
     Trigger first = () -> in1;
@@ -23,7 +23,7 @@ class TriggerTest {
     assertEquals(expected, and.get());
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {0} OR {1} => {2}")
   @CsvSource({"false,false,false", "true,false,true", "false,true,true", "true,true,true"})
   void testOr(boolean in1, boolean in2, boolean expected) {
     Trigger first = () -> in1;
@@ -32,7 +32,7 @@ class TriggerTest {
     assertEquals(expected, or.get());
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {0} XOR {1} => {2}")
   @CsvSource({"false,false,false", "true,false,true", "false,true,true", "true,true,false"})
   void testXor(boolean in1, boolean in2, boolean expected) {
     Trigger first = () -> in1;
