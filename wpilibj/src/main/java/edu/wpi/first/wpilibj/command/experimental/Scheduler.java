@@ -72,25 +72,6 @@ public class Scheduler {
    */
   private final List<TriggerBinding> m_triggers = new ArrayList<>();
 
-  public enum TriggerBindingType {
-    /**
-     * Binds a command to continuously run as long as a trigger is active.
-     */
-    kActive,
-    /**
-     * Binds a command to be started when a trigger becomes active.
-     */
-    kRisingEdge,
-    /**
-     * Binds a command to be started when a trigger becomes inactive.
-     */
-    kFallingEdge,
-    /**
-     * Binds a command to continuously run as long as a trigger is inactive.
-     */
-    kInactive,
-  }
-
   /**
    * Adds a trigger to this scheduler. The scheduler's {@link #run()} method will start or stop
    * the bound command as determined by the binding type and the state of the trigger.
