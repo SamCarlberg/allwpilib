@@ -3,7 +3,6 @@ package edu.wpi.first.wpilibj.command.experimental;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import edu.wpi.first.wpilibj.annotation.Incubating;
 
@@ -68,7 +67,7 @@ public class CommandGroup extends CommandBase {
    * <p>If a single block should take at least some minimum amount of time, add a
    * {@link WaitCommand} to the block for the desired duration. The WaitCommand will prevent the
    * block from completing until that duration has elapsed. A helper function
-   * {@link #addTimedBlock(long, TimeUnit, Command...)} exists for this reason.
+   * {@link #addTimedBlock(double, Command...)} exists for this reason.
    *
    * <p>If multiple commands in a single block require the same subsystem, the last such command
    * will win out - all prior commands will not be run. This restriction does not exist for
