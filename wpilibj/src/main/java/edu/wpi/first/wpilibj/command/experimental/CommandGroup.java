@@ -87,13 +87,12 @@ public class CommandGroup extends CommandBase {
   /**
    * Adds a block that lasts at least the given amount of time before completion.
    *
-   * @param timeout  how long to wait
-   * @param unit     the unit of the timeout period
+   * @param time     the minimum length of time the block should take to execute, in seconds
    * @param commands the commands in the block
    * @see #addBlock(Command, Command...)
    */
-  protected void addTimedBlock(long timeout, TimeUnit unit, Command... commands) {
-    addBlock(new WaitCommand(timeout, unit), commands);
+  protected void addTimedBlock(double time, Command... commands) {
+    addBlock(new WaitCommand(time), commands);
   }
 
   /**
