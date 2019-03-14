@@ -244,6 +244,9 @@ public class Scheduler {
 
     // Add the default command if the subsystem is not required by any currently scheduled commands
     m_defaultCommands.forEach((subsystem, defaultCommand) -> {
+      if (defaultCommand == null) {
+        return;
+      }
       boolean isUnused = m_commands.stream()
                                    .filter(c -> c != defaultCommand)
                                    .map(Command::getRequiredSubsystems)
