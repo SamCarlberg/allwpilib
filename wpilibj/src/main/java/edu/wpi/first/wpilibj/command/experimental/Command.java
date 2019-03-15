@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
 /**
  * Performs some task using one or more subsystems.
  *
+ * <p>Most usecases are better served by subclassing {@link CommandBase} than implementing
+ * {@code Command} directly.
+ *
+ * @see CommandBase
  * @see CommandScheduler
  * @see Subsystem
  */
@@ -42,7 +46,10 @@ public interface Command extends Sendable {
   /**
    * Ends this command and resets the systems it uses. This method is only called once during the
    * lifecycle of a command. This resets the state of the command such that it can be reinitialized
-   * and reused later in the program.
+   * and reused later in the program. The scheduler calls {@code end()} when the command completes
+   * naturally (when {@link #isFinished()} returns {@code true}), when the command is cancelled by
+   * another command requiring the same subsystems, or when the command is terminated when the
+   * robot is disabled and the command requires an unsafe subsystem
    */
   void end();
 
@@ -66,6 +73,7 @@ public interface Command extends Sendable {
    * A command that has been started with this method can be cancelled with {@link #cancel()}.
    * Calling {@code start()} on a command that is already running will have no effect.
    *
+   * @see #cancel()
    * @see CommandScheduler#getGlobalCommandScheduler()
    */
   default void start() {
@@ -75,6 +83,8 @@ public interface Command extends Sendable {
   /**
    * Cancels this command after it has been started. Cancelling a command that is not running will
    * have no effect.
+   *
+   * @see #start()
    */
   default void cancel() {
     CommandScheduler.getGlobalCommandScheduler().remove(this);

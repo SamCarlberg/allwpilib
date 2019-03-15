@@ -49,7 +49,13 @@ public class CommandScheduler extends SendableBase {
   /**
    * The currently scheduled commands. These may or may not be initialized.
    */
-  private final Set<Command> m_commands = new LinkedHashSet<>();
+  private final Set<Command> m_scheduledCommands = new LinkedHashSet<>();
+
+  /**
+   * Flag for keeping track of whether or not the scheduled commands have changed since the last
+   * run. Used by the sendable implementation to keep the tables up to date.
+   */
+  private boolean m_scheduledCommandsChanged = false; // NOPMD redundant field initializer
 
   /**
    * Map each subsystem to its default command.
@@ -64,17 +70,14 @@ public class CommandScheduler extends SendableBase {
   /**
    * The currently scheduled commands that have been initialized and are currently running.
    */
-  private final Set<Command> m_initializedCommands = new HashSet<>();
+  private final Set<Command> m_runningCommands = new HashSet<>();
 
-  private boolean m_scheduledCommandsChanged = false; // NOPMD redundant field initializer
-
+  /**
+   * Flag for making sure unsafe commands do not run when they're not supposed to.
+   */
   private boolean m_safetyEnabled = true;
 
   private static final CommandScheduler m_globalScheduler = new CommandScheduler();
-
-  public CommandScheduler() {
-    super(false);
-  }
 
   /**
    * The global command scheduler used for robot operation and command scheduling.
@@ -119,7 +122,7 @@ public class CommandScheduler extends SendableBase {
    */
   public void add(Command command) {
     Objects.requireNonNull(command, "Command cannot be null");
-    if (m_commands.contains(command)) {
+    if (m_scheduledCommands.contains(command)) {
       // This command is already scheduled, don't add it again
       return;
     }
@@ -130,12 +133,12 @@ public class CommandScheduler extends SendableBase {
     }
 
     // Terminate running commands that require the same subsystem(s) as the new command
-    m_commands.stream()
-              .filter(c -> overlaps(command, c))
-              .collect(Collectors.toList()) // Avoid concurrent modification exceptions
-              .forEach(this::remove);
+    m_scheduledCommands.stream()
+                       .filter(c -> overlaps(command, c))
+                       .collect(Collectors.toList()) // Avoid concurrent modification exceptions
+                       .forEach(this::remove);
 
-    m_commands.add(command);
+    m_scheduledCommands.add(command);
     for (Subsystem subsystem : command.getRequiredSubsystems()) {
       m_currentCommands.put(subsystem, command);
     }
@@ -161,14 +164,14 @@ public class CommandScheduler extends SendableBase {
    * @param command the command to remove
    */
   public void remove(Command command) {
-    if (m_commands.contains(command)) {
-      if (m_initializedCommands.contains(command)) {
+    if (m_scheduledCommands.contains(command)) {
+      if (m_runningCommands.contains(command)) {
         // End the command if it has been initialized
         // Otherwise, it may cause some state to change unexpectedly
         command.end();
-        m_initializedCommands.remove(command);
+        m_runningCommands.remove(command);
       }
-      m_commands.remove(command);
+      m_scheduledCommands.remove(command);
       m_scheduledCommandsChanged = true;
     }
     for (Subsystem subsystem : command.getRequiredSubsystems()) {
@@ -181,7 +184,7 @@ public class CommandScheduler extends SendableBase {
    */
   public void removeAll() {
     // Copy to a new list to avoid concurrent modification exceptions
-    for (Command command : new ArrayList<>(m_commands)) {
+    for (Command command : new ArrayList<>(m_scheduledCommands)) {
       remove(command);
     }
   }
@@ -190,14 +193,14 @@ public class CommandScheduler extends SendableBase {
    * Checks if this scheduler is currently running any commands.
    */
   public boolean hasRunningCommands() {
-    return !m_initializedCommands.isEmpty();
+    return !m_runningCommands.isEmpty();
   }
 
   /**
    * Checks if any commands are currently scheduled to run.
    */
   public boolean hasScheduledCommands() {
-    return !m_commands.isEmpty();
+    return !m_scheduledCommands.isEmpty();
   }
 
   /**
@@ -207,7 +210,7 @@ public class CommandScheduler extends SendableBase {
    * @return true if the command is currently running, false otherwise
    */
   public boolean isRunning(Command command) {
-    return m_initializedCommands.contains(command);
+    return m_runningCommands.contains(command);
   }
 
   /**
@@ -219,7 +222,7 @@ public class CommandScheduler extends SendableBase {
    * @return true if the command is scheduled to be run or is currently running, false otherwise
    */
   public boolean isScheduled(Command command) {
-    return m_commands.contains(command);
+    return m_scheduledCommands.contains(command);
   }
 
   /**
@@ -255,10 +258,10 @@ public class CommandScheduler extends SendableBase {
   public void run() {
     // Terminate unsafe commands if safety is enabled
     if (isSafetyEnabled()) {
-      m_commands.stream()
-                .filter(CommandScheduler::isUnsafe)
-                .collect(Collectors.toList())
-                .forEach(this::remove);
+      m_scheduledCommands.stream()
+                         .filter(CommandScheduler::isUnsafe)
+                         .collect(Collectors.toList())
+                         .forEach(this::remove);
     }
     // Add the default command if the subsystem is not required by any currently scheduled commands
     m_defaultCommands.entrySet()
@@ -271,21 +274,21 @@ public class CommandScheduler extends SendableBase {
     m_scheduledCommandsChanged = false;
 
     // Initialize commands
-    m_commands.stream()
-              .filter(command -> !m_initializedCommands.contains(command))
-              .peek(Command::initialize)
-              .forEach(m_initializedCommands::add);
+    m_scheduledCommands.stream()
+                       .filter(command -> !m_runningCommands.contains(command))
+                       .peek(Command::initialize)
+                       .forEach(m_runningCommands::add);
 
     // Execute each unfinished command
-    m_commands.stream()
-              .filter(command -> !command.isFinished())
-              .forEach(Command::execute);
+    m_scheduledCommands.stream()
+                       .filter(command -> !command.isFinished())
+                       .forEach(Command::execute);
 
     // Remove finished commands
-    m_commands.stream()
-              .filter(Command::isFinished)
-              .collect(Collectors.toList()) // Avoid concurrent modification exceptions
-              .forEach(this::remove);
+    m_scheduledCommands.stream()
+                       .filter(Command::isFinished)
+                       .collect(Collectors.toList()) // Avoid concurrent modification exceptions
+                       .forEach(this::remove);
   }
 
   @Override
@@ -300,10 +303,10 @@ public class CommandScheduler extends SendableBase {
       double[] toCancel = cancel.getDoubleArray(new double[0]);
       if (toCancel.length > 0) {
         for (double id : toCancel) {
-          m_commands.stream()
-                    .filter(c -> c.hashCode() == id)
-                    .findFirst()
-                    .ifPresent(this::remove);
+          m_scheduledCommands.stream()
+                             .filter(c -> c.hashCode() == id)
+                             .findFirst()
+                             .ifPresent(this::remove);
         }
         cancel.setDoubleArray(new double[0]);
       }
@@ -311,12 +314,12 @@ public class CommandScheduler extends SendableBase {
       // If the scheduled commands changed since the last update, refresh their values now
       // This is done to avoid unnecessary generation of these arrays when no changes have been made
       if (m_scheduledCommandsChanged) {
-        String[] commandNames = m_commands.stream()
-                                          .map(Command::getName)
-                                          .toArray(String[]::new);
-        double[] commandIds = m_commands.stream()
-                                        .mapToDouble(Object::hashCode)
-                                        .toArray();
+        String[] commandNames = m_scheduledCommands.stream()
+                                                   .map(Command::getName)
+                                                   .toArray(String[]::new);
+        double[] commandIds = m_scheduledCommands.stream()
+                                                 .mapToDouble(Object::hashCode)
+                                                 .toArray();
 
         names.setStringArray(commandNames);
         ids.setDoubleArray(commandIds);
