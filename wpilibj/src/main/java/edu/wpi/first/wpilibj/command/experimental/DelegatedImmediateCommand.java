@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  */
 @Incubating(since = "2020")
 public class DelegatedImmediateCommand extends ImmediateCommand {
-  private final String m_name;
   private final Runnable m_func;
 
   /**
@@ -26,7 +25,7 @@ public class DelegatedImmediateCommand extends ImmediateCommand {
    * @param func the function to delegate to
    */
   public DelegatedImmediateCommand(String name, Runnable func) {
-    m_name = Objects.requireNonNull(name, "Name cannot be null");
+    super(name);
     m_func = Objects.requireNonNull(func, "Delegate function cannot be null");
   }
 
@@ -42,10 +41,5 @@ public class DelegatedImmediateCommand extends ImmediateCommand {
   @Override
   protected void perform() {
     m_func.run();
-  }
-
-  @Override
-  public String getName() {
-    return m_name;
   }
 }

@@ -9,26 +9,21 @@ package edu.wpi.first.wpilibj.command.experimental;
 
 import java.util.Set;
 
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.annotation.Incubating;
 
 /**
  * Performs some task using one or more subsystems.
  *
- * <h3>Lifecycle of a Command</h3>
- * Commands are initialized, run, and terminated by the {@link Scheduler}. After adding a command
- * to the scheduler, its {@link #initialize()} method will be run in the next update cycle. Then,
- * its {@link #isFinished()} method is called to see if the command should be executed - if not,
- * its {@link #end()} method is called and it will be removed from the scheduler. Otherwise, its
- * {@link #execute()} method is called. The condition of the command will be checked again by the
- * scheduler in its next update. A command that has completed execution may be rescheduled and
- * reused.
+ * @see CommandScheduler
+ * @see Subsystem
  */
 @Incubating(since = "2020")
-public interface Command {
-
+public interface Command extends Sendable {
   /**
    * Gets the name of this command. Defaults to the name of the implementing class.
    */
+  @Override
   default String getName() {
     return getClass().getSimpleName();
   }
@@ -65,5 +60,24 @@ public interface Command {
    * @return a set of the subsystems used by this command
    */
   Set<Subsystem> getRequiredSubsystems();
+
+  /**
+   * Starts this command. By default, the command will be run using the global command scheduler.
+   * A command that has been started with this method can be cancelled with {@link #cancel()}.
+   * Calling {@code start()} on a command that is already running will have no effect.
+   *
+   * @see CommandScheduler#getGlobalCommandScheduler()
+   */
+  default void start() {
+    CommandScheduler.getGlobalCommandScheduler().add(this);
+  }
+
+  /**
+   * Cancels this command after it has been started. Cancelling a command that is not running will
+   * have no effect.
+   */
+  default void cancel() {
+    CommandScheduler.getGlobalCommandScheduler().remove(this);
+  }
 
 }

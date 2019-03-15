@@ -17,7 +17,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.SendableBase;
 import edu.wpi.first.wpilibj.annotation.Incubating;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
  * Handles the lifecycle of commands. A scheduler's {@link #run()} method must be called
@@ -42,7 +45,7 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
  * @see TriggerScheduler
  */
 @Incubating(since = "2020")
-public class CommandScheduler {
+public class CommandScheduler extends SendableBase {
   /**
    * The currently scheduled commands. These may or may not be initialized.
    */
@@ -63,10 +66,19 @@ public class CommandScheduler {
    */
   private final Set<Command> m_initializedCommands = new HashSet<>();
 
+  private boolean m_scheduledCommandsChanged = false; // NOPMD redundant field initializer
+
   private boolean m_safetyEnabled = true;
 
   private static final CommandScheduler m_globalScheduler = new CommandScheduler();
 
+  public CommandScheduler() {
+    super(false);
+  }
+
+  /**
+   * The global command scheduler used for robot operation and command scheduling.
+   */
   public static CommandScheduler getGlobalCommandScheduler() {
     return m_globalScheduler;
   }
@@ -127,6 +139,7 @@ public class CommandScheduler {
     for (Subsystem subsystem : command.getRequiredSubsystems()) {
       m_currentCommands.put(subsystem, command);
     }
+    m_scheduledCommandsChanged = true;
   }
 
   /**
@@ -156,6 +169,7 @@ public class CommandScheduler {
         m_initializedCommands.remove(command);
       }
       m_commands.remove(command);
+      m_scheduledCommandsChanged = true;
     }
     for (Subsystem subsystem : command.getRequiredSubsystems()) {
       m_currentCommands.put(subsystem, null);
@@ -254,6 +268,8 @@ public class CommandScheduler {
                      .map(Map.Entry::getValue)
                      .forEach(this::add);
 
+    m_scheduledCommandsChanged = false;
+
     // Initialize commands
     m_commands.stream()
               .filter(command -> !m_initializedCommands.contains(command))
@@ -270,5 +286,41 @@ public class CommandScheduler {
               .filter(Command::isFinished)
               .collect(Collectors.toList()) // Avoid concurrent modification exceptions
               .forEach(this::remove);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("Scheduler");
+    NetworkTableEntry names = builder.getEntry("Names");
+    NetworkTableEntry ids = builder.getEntry("Ids");
+    NetworkTableEntry cancel = builder.getEntry("Cancel");
+
+    builder.setUpdateTable(() -> {
+      // Cancel commands if specified by the dashboard
+      double[] toCancel = cancel.getDoubleArray(new double[0]);
+      if (toCancel.length > 0) {
+        for (double id : toCancel) {
+          m_commands.stream()
+                    .filter(c -> c.hashCode() == id)
+                    .findFirst()
+                    .ifPresent(this::remove);
+        }
+        cancel.setDoubleArray(new double[0]);
+      }
+
+      // If the scheduled commands changed since the last update, refresh their values now
+      // This is done to avoid unnecessary generation of these arrays when no changes have been made
+      if (m_scheduledCommandsChanged) {
+        String[] commandNames = m_commands.stream()
+                                          .map(Command::getName)
+                                          .toArray(String[]::new);
+        double[] commandIds = m_commands.stream()
+                                        .mapToDouble(Object::hashCode)
+                                        .toArray();
+
+        names.setStringArray(commandNames);
+        ids.setDoubleArray(commandIds);
+      }
+    });
   }
 }

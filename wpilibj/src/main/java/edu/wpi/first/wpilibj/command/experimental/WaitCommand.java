@@ -17,10 +17,22 @@ public class WaitCommand extends TimedCommand {
   /**
    * Creates a new wait command.
    *
-   * @param timeout how long the command should wait for, in seconds
+   * @param timeout how long the command should wait for
+   * @param unit    the time unit for the timeout
    */
-  public WaitCommand(double timeout) {
-    super(timeout);
+  public WaitCommand(double timeout, TimeUnit unit) {
+    super(timeout, unit);
+  }
+
+  /**
+   * Creates a new wait command.
+   *
+   * @param name    the name of the command
+   * @param timeout how long the command should wait for
+   * @param unit    the time unit for the timeout
+   */
+  public WaitCommand(String name, double timeout, TimeUnit unit) {
+    super(name, timeout, unit);
   }
 
   @Override

@@ -15,6 +15,22 @@ import edu.wpi.first.wpilibj.annotation.Incubating;
 @Incubating(since = "2020")
 public abstract class ImmediateCommand extends CommandBase {
   /**
+   * Creates a new immediate command.
+   */
+  public ImmediateCommand() {
+    super();
+  }
+
+  /**
+   * Creates a new immediate command.
+   *
+   * @param name the name of the command
+   */
+  public ImmediateCommand(String name) {
+    super(name);
+  }
+
+  /**
    * Performs the action of this command. This is run exactly once in the lifecycle of the command,
    * in the {@link #initialize()} method.
    */

@@ -74,7 +74,7 @@ public class CommandGroup extends CommandBase {
    * <p>If a single block should take at least some minimum amount of time, add a
    * {@link WaitCommand} to the block for the desired duration. The WaitCommand will prevent the
    * block from completing until that duration has elapsed. A helper function
-   * {@link #addTimedBlock(double, Command...)} exists for this reason.
+   * {@link #addTimedBlock(double, TimeUnit, Command...)} exists for this reason.
    *
    * <p>If multiple commands in a single block require the same subsystem, the last such command
    * will win out - all prior commands will not be run. This restriction does not exist for
@@ -93,12 +93,13 @@ public class CommandGroup extends CommandBase {
   /**
    * Adds a block that lasts at least the given amount of time before completion.
    *
-   * @param time     the minimum length of time the block should take to execute, in seconds
+   * @param time     the minimum length of time the block should take to execute
+   * @param unit     the time unit for the wait
    * @param commands the commands in the block
    * @see #addBlock(Command, Command...)
    */
-  protected void addTimedBlock(double time, Command... commands) {
-    addBlock(new WaitCommand(time), commands);
+  protected void addTimedBlock(double time, TimeUnit unit, Command... commands) {
+    addBlock(new WaitCommand(time, unit), commands);
   }
 
   /**
