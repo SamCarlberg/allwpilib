@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandTest {
-
   @BeforeEach
   @AfterEach
   void resetScheduler() {
