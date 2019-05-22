@@ -19,6 +19,7 @@ public class JavaFileWriter implements FileWriter {
     if (!Files.isDirectory(targetDirectory) || !Files.exists(targetDirectory)) {
       Files.createDirectories(targetDirectory);
     }
+    Files.deleteIfExists(targetFile);
     Files.writeString(
         targetFile,
         contents,
