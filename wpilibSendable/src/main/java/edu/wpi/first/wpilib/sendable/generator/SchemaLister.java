@@ -24,6 +24,7 @@ public class SchemaLister {
     return getFilenamesForDirname("/schema")
         .stream()
         .sorted()
+        .filter(resourceName -> resourceName.endsWith(".sendable.json"))
         .map(SchemaLister.class::getResourceAsStream)
         .collect(Collectors.toList());
   }
