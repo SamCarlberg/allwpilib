@@ -11,7 +11,13 @@ import edu.wpi.first.wpilib.sendable.schema.SendableSchema;
 public class JavaGenerator implements Generator {
 
   private static final String kTemplate =
-      "package edu.wpi.first.wpilibj.sendable;\n\n"
+      "/*----------------------------------------------------------------------------*/\n"
+          + "/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */\n"
+          + "/* Open Source Software - may be modified and shared by FRC teams. The code   */\n"
+          + "/* must be accompanied by the FIRST BSD license file in the root directory of */\n"
+          + "/* the project.                                                               */\n"
+          + "/*----------------------------------------------------------------------------*/\n\n"
+          + "package edu.wpi.first.wpilibj.sendable;\n\n"
           + "import java.util.Objects;\n"
           + "import java.util.function.*;\n\n"
           + "import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;\n"
