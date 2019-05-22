@@ -1,3 +1,10 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
 package edu.wpi.first.wpilib.sendable.generator.java;
 
 import java.util.List;
@@ -9,7 +16,6 @@ import edu.wpi.first.wpilib.sendable.schema.SendableSchema;
 
 @SuppressWarnings({"PMD.GodClass", "PMD.InsufficientStringBufferDeclaration"})
 public class JavaGenerator implements Generator {
-
   private static final String kTemplate =
       "/*----------------------------------------------------------------------------*/\n"
           + "/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */\n"
