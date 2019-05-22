@@ -111,7 +111,7 @@ public class PropertyGenerator {
     if (property.isMetadata()) {
       builder.append('.');
     }
-    builder.append(propertyName(property))
+    builder.append(property.getName())
         .append("\", ")
         .append(getterFieldName(property))
         .append(", ");
