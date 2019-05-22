@@ -1,0 +1,13 @@
+{
+  "type": "NoSetters",
+  "properties": {
+    "Number": {
+      "type": "Number",
+      "set": false
+    },
+    "Text": {
+      "type": "Text",
+      "set": false
+    }
+  }
+}

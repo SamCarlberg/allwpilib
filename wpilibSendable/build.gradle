@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+ext {
+    baseId = 'wpilib-sendable'
+    groupId = 'edu.wpi.first.wpilib'
+    devMain = 'edu.wpi.first.wpilib.DevMain'
+}
+
+apply from: "${rootDir}/shared/java/javacommon.gradle"
+
+dependencies {
+    compile('com.google.code.gson:gson:2.8.5')
+}
+
+@CacheableTask
+class GenerateJava extends JavaExec {
+    @OutputDirectory
+    def outputDir = newOutputDirectory()
+}
+
+tasks.register("generateJava", GenerateJava) {
+    description = "Generates Java implementations of the Sendable schemas."
+    group = "WPILib"
+
+    classpath = sourceSets['main'].runtimeClasspath
+    main = 'edu.wpi.first.wpilib.sendable.generator.Main'
+    def root = project(':wpilibj').buildDir
+    outputDir = new File(root, 'generated/java/edu/wpi/first/wpilibj/sendable')
+    println outputDir.absolutePath
+    args = ['java', outputDir.absolutePath]
+}

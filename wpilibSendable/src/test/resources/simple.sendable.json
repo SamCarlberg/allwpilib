@@ -1,0 +1,8 @@
+{
+  "type": "Example",
+  "properties": {
+    "Value": {
+      "type": "Text"
+    }
+  }
+}

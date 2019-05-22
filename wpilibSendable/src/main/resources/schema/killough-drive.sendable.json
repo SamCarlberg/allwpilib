@@ -1,0 +1,16 @@
+{
+  "type": "KilloughDrive",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Left Motor Speed": {
+      "type": "Number"
+    },
+    "Right Motor Speed": {
+      "type": "Number"
+    },
+    "Back Motor Speed": {
+      "type": "Number"
+    }
+  }
+}

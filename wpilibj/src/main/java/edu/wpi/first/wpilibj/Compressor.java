@@ -10,6 +10,7 @@ package edu.wpi.first.wpilibj;
 import edu.wpi.first.hal.CompressorJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.sendable.SendableCompressor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -192,14 +193,15 @@ public class Compressor extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Compressor");
-    builder.addBooleanProperty("Enabled", this::enabled, value -> {
-      if (value) {
-        start();
-      } else {
-        stop();
-      }
-    });
-    builder.addBooleanProperty("Pressure switch", this::getPressureSwitchValue, null);
+    new SendableCompressor(
+        this::enabled,
+        value -> {
+          if (value) {
+            start();
+          } else {
+            stop();
+          }
+        }, this::getPressureSwitchValue)
+        .initSendable(builder);
   }
 }

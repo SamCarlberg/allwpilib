@@ -10,6 +10,7 @@ package edu.wpi.first.wpilibj;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.PDPJNI;
+import edu.wpi.first.wpilibj.sendable.SendablePowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -113,12 +114,25 @@ public class PowerDistributionPanel extends SendableBase  {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("PowerDistributionPanel");
-    for (int i = 0; i < SensorUtil.kPDPChannels; ++i) {
-      final int chan = i;
-      builder.addDoubleProperty("Chan" + i, () -> getCurrent(chan), null);
-    }
-    builder.addDoubleProperty("Voltage", this::getVoltage, null);
-    builder.addDoubleProperty("TotalCurrent", this::getTotalCurrent, null);
+    new SendablePowerDistributionPanel(
+        () -> getCurrent(0),
+        () -> getCurrent(1),
+        () -> getCurrent(2),
+        () -> getCurrent(3),
+        () -> getCurrent(4),
+        () -> getCurrent(5),
+        () -> getCurrent(6),
+        () -> getCurrent(7),
+        () -> getCurrent(8),
+        () -> getCurrent(9),
+        () -> getCurrent(10),
+        () -> getCurrent(11),
+        () -> getCurrent(12),
+        () -> getCurrent(13),
+        () -> getCurrent(14),
+        () -> getCurrent(15),
+        this::getVoltage,
+        this::getTotalCurrent
+    ).initSendable(builder);
   }
 }

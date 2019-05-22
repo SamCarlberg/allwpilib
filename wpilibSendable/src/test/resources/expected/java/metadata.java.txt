@@ -1,0 +1,22 @@
+package edu.wpi.first.wpilibj.sendable;
+
+import java.util.Objects;
+import java.util.function.*;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder.BooleanConsumer;
+
+public class SendableMetadata {
+  private final Supplier<String> m_getMeta;
+  private final Consumer<String> m_setMeta;
+
+  public SendableMetadata(Supplier<String> getMeta, Consumer<String> setMeta) {
+    m_getMeta = Objects.requireNonNull(getMeta, "getMeta");
+    m_setMeta = Objects.requireNonNull(setMeta, "setMeta");
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("Metadata");
+    builder.addStringProperty(".Meta", m_getMeta, m_setMeta);
+  }
+}

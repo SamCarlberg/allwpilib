@@ -1,0 +1,8 @@
+{
+  "type": "DigitalOutput",
+  "properties": {
+    "Value": {
+      "type": "Boolean"
+    }
+  }
+}

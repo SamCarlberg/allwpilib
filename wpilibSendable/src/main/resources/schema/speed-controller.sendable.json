@@ -1,0 +1,10 @@
+{
+  "type": "SpeedController",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Value": {
+      "type": "Number"
+    }
+  }
+}

@@ -11,6 +11,7 @@ import edu.wpi.first.hal.AnalogJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.sim.AnalogOutSim;
+import edu.wpi.first.wpilibj.sendable.SendableAnalogOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -61,8 +62,8 @@ public class AnalogOutput extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Analog Output");
-    builder.addDoubleProperty("Value", this::getVoltage, this::setVoltage);
+    new SendableAnalogOutput(this::getVoltage, this::setVoltage)
+        .initSendable(builder);
   }
 
   public AnalogOutSim getSimObject() {

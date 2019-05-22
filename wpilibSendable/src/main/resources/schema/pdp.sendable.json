@@ -1,0 +1,77 @@
+{
+  "type": "PowerDistributionPanel",
+  "properties": {
+    "Chan0": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan1": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan2": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan3": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan4": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan5": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan6": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan7": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan8": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan9": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan10": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan11": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan12": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan13": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan14": {
+      "type": "Number",
+      "set": false
+    },
+    "Chan15": {
+      "type": "Number",
+      "set": false
+    },
+    "Voltage": {
+      "type": "Number",
+      "set": false
+    },
+    "TotalCurrent": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

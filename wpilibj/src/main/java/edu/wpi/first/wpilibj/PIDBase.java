@@ -13,6 +13,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.util.BoundaryException;
 import edu.wpi.first.wpilibj.filters.LinearDigitalFilter;
+import edu.wpi.first.wpilibj.sendable.SendablePIDBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import static java.util.Objects.requireNonNull;
@@ -791,13 +792,14 @@ public class PIDBase extends SendableBase implements PIDInterface, PIDOutput {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("PIDController");
-    builder.setSafeState(this::reset);
-    builder.addDoubleProperty("p", this::getP, this::setP);
-    builder.addDoubleProperty("i", this::getI, this::setI);
-    builder.addDoubleProperty("d", this::getD, this::setD);
-    builder.addDoubleProperty("f", this::getF, this::setF);
-    builder.addDoubleProperty("setpoint", this::getSetpoint, this::setSetpoint);
+    new SendablePIDBase(
+        this::reset,
+        this::getP, this::setP,
+        this::getI, this::setI,
+        this::getD, this::setD,
+        this::getF, this::setF,
+        this::getSetpoint, this::setSetpoint
+    ).initSendable(builder);
   }
 
   /**

@@ -10,6 +10,7 @@ package edu.wpi.first.wpilibj;
 import edu.wpi.first.hal.DIOJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.sendable.SendableDigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -99,7 +100,7 @@ public class DigitalInput extends DigitalSource {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Digital Input");
-    builder.addBooleanProperty("Value", this::get, null);
+    new SendableDigitalInput(this::get)
+        .initSendable(builder);
   }
 }

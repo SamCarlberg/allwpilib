@@ -1,0 +1,7 @@
+{
+  "type": "AllSpecial",
+  "actuator": true,
+  "hasSafeState": true,
+  "hasUpdateTable": true,
+  "properties": {}
+}

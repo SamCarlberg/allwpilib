@@ -2,6 +2,7 @@ evaluationDependsOn(':hal')
 evaluationDependsOn(':ntcore')
 evaluationDependsOn(':cscore')
 evaluationDependsOn(':cameraserver')
+evaluationDependsOn(':wpilibSendable')
 
 ext {
     baseId = 'wpilibj'
@@ -52,6 +53,7 @@ sourceSets.main.java.srcDir "${buildDir}/generated/java/"
 
 compileJava {
     dependsOn generateJavaVersion
+    dependsOn ':wpilibSendable:generateJava'
 }
 
 dependencies {

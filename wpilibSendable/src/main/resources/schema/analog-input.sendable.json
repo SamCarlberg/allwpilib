@@ -1,0 +1,9 @@
+{
+  "type": "AnalogInput",
+  "properties": {
+    "Value": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

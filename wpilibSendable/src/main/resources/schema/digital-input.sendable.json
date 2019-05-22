@@ -1,0 +1,9 @@
+{
+  "type": "Digital Input",
+  "properties": {
+    "Value": {
+      "type": "Boolean",
+      "set": false
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "type": "AllPropertyTypes",
+  "properties": {
+    "Number": {
+      "type": "Number"
+    },
+    "Text": {
+      "type": "Text"
+    },
+    "Boolean": {
+      "type": "Boolean"
+    },
+    "NumberArray": {
+      "type": "Number Array"
+    },
+    "TextArray": {
+      "type": "Text Array"
+    },
+    "BooleanArray": {
+      "type": "Boolean Array"
+    },
+    "Raw": {
+      "type": "Raw"
+    },
+    "Value": {
+      "type": "Value"
+    }
+  }
+}

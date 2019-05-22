@@ -12,6 +12,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.sim.AccelerometerSim;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
+import edu.wpi.first.wpilibj.sendable.SendableThreeAxisAccelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -93,10 +94,8 @@ public class BuiltInAccelerometer extends SendableBase implements Accelerometer 
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("3AxisAccelerometer");
-    builder.addDoubleProperty("X", this::getX, null);
-    builder.addDoubleProperty("Y", this::getY, null);
-    builder.addDoubleProperty("Z", this::getZ, null);
+    new SendableThreeAxisAccelerometer(this::getX, this::getY, this::getZ)
+        .initSendable(builder);
   }
 
   public AccelerometerSim getSimObject() {

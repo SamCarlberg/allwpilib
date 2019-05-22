@@ -1,0 +1,19 @@
+{
+  "type": "MecanumDrive",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Front Left Motor Speed": {
+      "type": "Number"
+    },
+    "Front Right Motor Speed": {
+      "type": "Number"
+    },
+    "Rear Left Motor Speed": {
+      "type": "Number"
+    },
+    "Rear Right Motor Speed": {
+      "type": "Number"
+    }
+  }
+}

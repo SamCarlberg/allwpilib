@@ -9,6 +9,7 @@ package edu.wpi.first.wpilibj;
 
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.sendable.SendableNidecBrushless;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -202,9 +203,7 @@ public class NidecBrushless extends MotorSafety implements SpeedController, Send
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Nidec Brushless");
-    builder.setActuator(true);
-    builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Value", this::get, this::set);
+    new SendableNidecBrushless(this::stopMotor, this::get, this::set)
+        .initSendable(builder);
   }
 }

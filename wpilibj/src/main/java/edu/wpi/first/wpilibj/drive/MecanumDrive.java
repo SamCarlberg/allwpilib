@@ -13,6 +13,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.sendable.SendableMecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -240,20 +241,16 @@ public class MecanumDrive extends RobotDriveBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("MecanumDrive");
-    builder.setActuator(true);
-    builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Front Left Motor Speed",
+    new SendableMecanumDrive(
+        this::stopMotor,
         m_frontLeftMotor::get,
-        m_frontLeftMotor::set);
-    builder.addDoubleProperty("Front Right Motor Speed",
+        m_frontLeftMotor::set,
         () -> m_frontRightMotor.get() * m_rightSideInvertMultiplier,
-        value -> m_frontRightMotor.set(value * m_rightSideInvertMultiplier));
-    builder.addDoubleProperty("Rear Left Motor Speed",
+        value -> m_frontRightMotor.set(value * m_rightSideInvertMultiplier),
         m_rearLeftMotor::get,
-        m_rearLeftMotor::set);
-    builder.addDoubleProperty("Rear Right Motor Speed",
+        m_rearLeftMotor::set,
         () -> m_rearRightMotor.get() * m_rightSideInvertMultiplier,
-        value -> m_rearRightMotor.set(value * m_rightSideInvertMultiplier));
+        value -> m_rearRightMotor.set(value * m_rightSideInvertMultiplier)
+    ).initSendable(builder);
   }
 }

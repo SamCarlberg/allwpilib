@@ -1,0 +1,9 @@
+{
+  "type": "Gyro",
+  "properties": {
+    "Value": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

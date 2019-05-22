@@ -1,0 +1,25 @@
+{
+  "type": "Subsystem",
+  "properties": {
+    "hasDefault": {
+      "type": "Boolean",
+      "set": false,
+      "metadata": true
+    },
+    "default": {
+      "type": "Text",
+      "set": false,
+      "metadata": true
+    },
+    "hasCommand": {
+      "type": "Boolean",
+      "set": false,
+      "metadata": true
+    },
+    "command": {
+      "type": "Text",
+      "set": false,
+      "metadata": true
+    }
+  }
+}

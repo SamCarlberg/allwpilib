@@ -1,0 +1,8 @@
+{
+  "type": "AnalogOutput",
+  "properties": {
+    "Value": {
+      "type": "Number"
+    }
+  }
+}

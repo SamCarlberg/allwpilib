@@ -1,0 +1,12 @@
+{
+  "type": "Compressor",
+  "properties": {
+    "Enabled": {
+      "type": "Boolean"
+    },
+    "Pressure switch": {
+      "type": "Boolean",
+      "set": false
+    }
+  }
+}

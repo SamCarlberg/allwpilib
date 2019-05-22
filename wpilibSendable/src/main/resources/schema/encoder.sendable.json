@@ -1,0 +1,17 @@
+{
+  "type": "Encoder",
+  "properties": {
+    "Speed": {
+      "type": "Number",
+      "set": false
+    },
+    "Distance": {
+      "type": "Number",
+      "set": false
+    },
+    "Distance per Tick": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

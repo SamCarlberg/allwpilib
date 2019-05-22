@@ -1,0 +1,9 @@
+{
+  "type": "Button",
+  "hasSafeState": true,
+  "properties": {
+    "pressed": {
+      "type": "Boolean"
+    }
+  }
+}

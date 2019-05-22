@@ -1,0 +1,8 @@
+{
+  "type": "Servo",
+  "properties": {
+    "Value": {
+      "type": "Number"
+    }
+  }
+}

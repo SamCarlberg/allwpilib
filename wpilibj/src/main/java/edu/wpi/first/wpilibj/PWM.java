@@ -11,6 +11,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.PWMConfigDataResult;
 import edu.wpi.first.hal.PWMJNI;
+import edu.wpi.first.wpilibj.sendable.SendablePWM;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -309,9 +310,7 @@ public class PWM extends MotorSafety implements Sendable, AutoCloseable {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("PWM");
-    builder.setActuator(true);
-    builder.setSafeState(this::setDisabled);
-    builder.addDoubleProperty("Value", this::getRaw, value -> setRaw((int) value));
+    new SendablePWM(this::setDisabled, this::getRaw, value -> setRaw((int) value))
+        .initSendable(builder);
   }
 }

@@ -1,0 +1,20 @@
+{
+  "type": "String Chooser",
+  "properties": {
+    "default": {
+      "type": "Text",
+      "set": false
+    },
+    "options": {
+      "type": "Text Array",
+      "set": false
+    },
+    "active": {
+      "type": "Text",
+      "set": false
+    },
+    "selected": {
+      "type": "Text"
+    }
+  }
+}

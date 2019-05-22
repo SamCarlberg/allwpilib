@@ -1,0 +1,13 @@
+{
+  "type": "DifferentialDrive",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Left Motor Speed": {
+      "type": "Number"
+    },
+    "Right Motor Speed": {
+      "type": "Number"
+    }
+  }
+}

@@ -11,6 +11,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.SolenoidJNI;
 import edu.wpi.first.hal.util.UncleanStatusException;
+import edu.wpi.first.wpilibj.sendable.SendableDoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -165,17 +166,18 @@ public class DoubleSolenoid extends SolenoidBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Double Solenoid");
-    builder.setActuator(true);
-    builder.setSafeState(() -> set(Value.kOff));
-    builder.addStringProperty("Value", () -> get().name().substring(1), value -> {
-      if ("Forward".equals(value)) {
-        set(Value.kForward);
-      } else if ("Reverse".equals(value)) {
-        set(Value.kReverse);
-      } else {
-        set(Value.kOff);
-      }
-    });
+    new SendableDoubleSolenoid(
+        () -> set(Value.kOff),
+        () -> get().name().substring(1),
+        value -> {
+          if ("Forward".equals(value)) {
+            set(Value.kForward);
+          } else if ("Reverse".equals(value)) {
+            set(Value.kReverse);
+          } else {
+            set(Value.kOff);
+          }
+        })
+        .initSendable(builder);
   }
 }

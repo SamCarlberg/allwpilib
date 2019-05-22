@@ -12,6 +12,7 @@ import java.util.List;
 
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.sendable.SendableUltrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import static java.util.Objects.requireNonNull;
@@ -380,7 +381,7 @@ public class Ultrasonic extends SendableBase implements PIDSource {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Ultrasonic");
-    builder.addDoubleProperty("Value", this::getRangeInches, null);
+    new SendableUltrasonic(this::getRangeInches)
+        .initSendable(builder);
   }
 }

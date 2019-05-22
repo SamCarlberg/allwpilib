@@ -1,0 +1,18 @@
+{
+  "type": "Command",
+  "properties": {
+    "name": {
+      "type": "Text",
+      "set": false,
+      "metadata": true
+    },
+    "running": {
+      "type": "Boolean"
+    },
+    "isParented": {
+      "type": "Boolean",
+      "set": false,
+      "metadata": true
+    }
+  }
+}

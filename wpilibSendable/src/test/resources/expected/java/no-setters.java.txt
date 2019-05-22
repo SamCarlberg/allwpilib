@@ -1,0 +1,23 @@
+package edu.wpi.first.wpilibj.sendable;
+
+import java.util.Objects;
+import java.util.function.*;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder.BooleanConsumer;
+
+public class SendableNoSetters {
+  private final DoubleSupplier m_getNumber;
+  private final Supplier<String> m_getText;
+
+  public SendableNoSetters(DoubleSupplier getNumber, Supplier<String> getText) {
+    m_getNumber = Objects.requireNonNull(getNumber, "getNumber");
+    m_getText = Objects.requireNonNull(getText, "getText");
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("NoSetters");
+    builder.addDoubleProperty("Number", m_getNumber, null);
+    builder.addStringProperty("Text", m_getText, null);
+  }
+}

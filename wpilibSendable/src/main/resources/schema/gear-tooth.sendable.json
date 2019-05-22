@@ -1,0 +1,9 @@
+{
+  "type": "Gear Tooth",
+  "properties": {
+    "Value": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

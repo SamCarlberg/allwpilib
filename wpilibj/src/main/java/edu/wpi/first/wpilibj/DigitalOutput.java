@@ -10,6 +10,7 @@ package edu.wpi.first.wpilibj;
 import edu.wpi.first.hal.DIOJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.sendable.SendableDigitalOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -163,7 +164,7 @@ public class DigitalOutput extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Digital Output");
-    builder.addBooleanProperty("Value", this::get, this::set);
+    new SendableDigitalOutput(this::get, this::set)
+        .initSendable(builder);
   }
 }

@@ -9,4 +9,6 @@ suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN"
             checks="JavadocMethod" />
   <suppress files=".*JNI.*"
             checks="(LineLength|EmptyLineSeparator|ParameterName)" />
+  <!-- Suppress all checks for generated source files -->
+  <suppress files="[\\/]generated[\\/]" checks="[a-zA-Z0-9]*"/>
 </suppressions>

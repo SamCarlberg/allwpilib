@@ -1,0 +1,10 @@
+{
+  "type": "PWM",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Value": {
+      "type": "Number"
+    }
+  }
+}

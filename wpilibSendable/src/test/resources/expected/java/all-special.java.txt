@@ -1,0 +1,24 @@
+package edu.wpi.first.wpilibj.sendable;
+
+import java.util.Objects;
+import java.util.function.*;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder.BooleanConsumer;
+
+public class SendableAllSpecial {
+  private final Runnable m_safeState;
+  private final Runnable m_updateTable;
+
+  public SendableAllSpecial(Runnable safeState, Runnable updateTable) {
+    m_safeState = Objects.requireNonNull(safeState, "safeState");
+    m_updateTable = Objects.requireNonNull(updateTable, "updateTable");
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("AllSpecial");
+    builder.setActuator(true);
+    builder.setSafeState(m_safeState);
+    builder.setUpdateTable(m_updateTable);
+  }
+}

@@ -7,6 +7,7 @@
 
 package edu.wpi.first.wpilibj;
 
+import edu.wpi.first.wpilibj.sendable.SendableSpeedController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -82,9 +83,7 @@ public class SpeedControllerGroup extends SendableBase implements SpeedControlle
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Speed Controller");
-    builder.setActuator(true);
-    builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Value", this::get, this::set);
+    new SendableSpeedController(this::stopMotor, this::get, this::set)
+        .initSendable(builder);
   }
 }

@@ -1,0 +1,17 @@
+{
+  "type": "ThreeAxisAccelerometer",
+  "properties": {
+    "X": {
+      "type": "Number",
+      "set": false
+    },
+    "Y": {
+      "type": "Number",
+      "set": false
+    },
+    "Z": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

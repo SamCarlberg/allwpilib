@@ -1,0 +1,9 @@
+{
+  "type": "Counter",
+  "properties": {
+    "Value": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

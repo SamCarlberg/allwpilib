@@ -1,0 +1,11 @@
+{
+  "type": "DuplicateProperties",
+  "properties": {
+    "Duplicate": {
+      "type": "Text"
+    },
+    "Duplicate": {
+      "type": "Number"
+    }
+  }
+}

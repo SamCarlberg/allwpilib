@@ -1,0 +1,57 @@
+package edu.wpi.first.wpilibj.sendable;
+
+import java.util.Objects;
+import java.util.function.*;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder.BooleanConsumer;
+
+public class SendableAllPropertyTypes {
+  private final DoubleSupplier m_getNumber;
+  private final DoubleConsumer m_setNumber;
+  private final Supplier<String> m_getText;
+  private final Consumer<String> m_setText;
+  private final BooleanSupplier m_getBoolean;
+  private final BooleanConsumer m_setBoolean;
+  private final Supplier<double[]> m_getNumberArray;
+  private final Consumer<double[]> m_setNumberArray;
+  private final Supplier<String[]> m_getTextArray;
+  private final Consumer<String[]> m_setTextArray;
+  private final Supplier<boolean[]> m_getBooleanArray;
+  private final Consumer<boolean[]> m_setBooleanArray;
+  private final Supplier<byte[]> m_getRaw;
+  private final Consumer<byte[]> m_setRaw;
+  private final Supplier<NetworkTableValue> m_getValue;
+  private final Consumer<NetworkTableValue> m_setValue;
+
+  public SendableAllPropertyTypes(DoubleSupplier getNumber, DoubleConsumer setNumber, Supplier<String> getText, Consumer<String> setText, BooleanSupplier getBoolean, BooleanConsumer setBoolean, Supplier<double[]> getNumberArray, Consumer<double[]> setNumberArray, Supplier<String[]> getTextArray, Consumer<String[]> setTextArray, Supplier<boolean[]> getBooleanArray, Consumer<boolean[]> setBooleanArray, Supplier<byte[]> getRaw, Consumer<byte[]> setRaw, Supplier<NetworkTableValue> getValue, Consumer<NetworkTableValue> setValue) {
+    m_getNumber = Objects.requireNonNull(getNumber, "getNumber");
+    m_setNumber = Objects.requireNonNull(setNumber, "setNumber");
+    m_getText = Objects.requireNonNull(getText, "getText");
+    m_setText = Objects.requireNonNull(setText, "setText");
+    m_getBoolean = Objects.requireNonNull(getBoolean, "getBoolean");
+    m_setBoolean = Objects.requireNonNull(setBoolean, "setBoolean");
+    m_getNumberArray = Objects.requireNonNull(getNumberArray, "getNumberArray");
+    m_setNumberArray = Objects.requireNonNull(setNumberArray, "setNumberArray");
+    m_getTextArray = Objects.requireNonNull(getTextArray, "getTextArray");
+    m_setTextArray = Objects.requireNonNull(setTextArray, "setTextArray");
+    m_getBooleanArray = Objects.requireNonNull(getBooleanArray, "getBooleanArray");
+    m_setBooleanArray = Objects.requireNonNull(setBooleanArray, "setBooleanArray");
+    m_getRaw = Objects.requireNonNull(getRaw, "getRaw");
+    m_setRaw = Objects.requireNonNull(setRaw, "setRaw");
+    m_getValue = Objects.requireNonNull(getValue, "getValue");
+    m_setValue = Objects.requireNonNull(setValue, "setValue");
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("AllPropertyTypes");
+    builder.addDoubleProperty("Number", m_getNumber, m_setNumber);
+    builder.addStringProperty("Text", m_getText, m_setText);
+    builder.addBooleanProperty("Boolean", m_getBoolean, m_setBoolean);
+    builder.addDoubleArrayProperty("NumberArray", m_getNumberArray, m_setNumberArray);
+    builder.addStringArrayProperty("TextArray", m_getTextArray, m_setTextArray);
+    builder.addBooleanArrayProperty("BooleanArray", m_getBooleanArray, m_setBooleanArray);
+    builder.addRawProperty("Raw", m_getRaw, m_setRaw);
+    builder.addValueProperty("Value", m_getValue, m_setValue);
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "Ultrasonic",
+  "properties": {
+    "Value": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

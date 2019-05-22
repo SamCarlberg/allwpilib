@@ -1,0 +1,10 @@
+{
+  "type": "Solenoid",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Value": {
+      "type": "Boolean"
+    }
+  }
+}

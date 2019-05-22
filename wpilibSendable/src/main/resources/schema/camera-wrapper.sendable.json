@@ -1,0 +1,10 @@
+{
+  "type": "CameraWrapper",
+  "properties": {
+    "ShuffleboardURI": {
+      "type": "Text",
+      "set": false,
+      "metadata": true
+    }
+  }
+}

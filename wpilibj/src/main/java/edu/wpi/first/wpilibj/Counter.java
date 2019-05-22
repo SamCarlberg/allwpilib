@@ -14,6 +14,7 @@ import edu.wpi.first.hal.CounterJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.AnalogTriggerOutput.AnalogTriggerType;
+import edu.wpi.first.wpilibj.sendable.SendableCounter;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import static java.util.Objects.requireNonNull;
@@ -557,7 +558,7 @@ public class Counter extends SendableBase implements CounterBase, PIDSource {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Counter");
-    builder.addDoubleProperty("Value", this::get, null);
+    new SendableCounter(this::get)
+        .initSendable(builder);
   }
 }

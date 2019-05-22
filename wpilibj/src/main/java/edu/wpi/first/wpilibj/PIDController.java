@@ -7,6 +7,7 @@
 
 package edu.wpi.first.wpilibj;
 
+import edu.wpi.first.wpilibj.sendable.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -176,6 +177,7 @@ public class PIDController extends PIDBase implements Controller {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    builder.addBooleanProperty("enabled", this::isEnabled, this::setEnabled);
+    new SendablePIDController(this::isEnabled, this::setEnabled)
+        .initSendable(builder);
   }
 }

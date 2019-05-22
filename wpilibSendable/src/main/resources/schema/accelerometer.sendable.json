@@ -1,0 +1,9 @@
+{
+  "type": "Accelerometer",
+  "properties": {
+    "Value": {
+      "type": "Number",
+      "set": false
+    }
+  }
+}

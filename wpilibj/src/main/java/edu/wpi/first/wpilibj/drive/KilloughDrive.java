@@ -13,6 +13,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.sendable.SendableKilloughDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -233,11 +234,11 @@ public class KilloughDrive extends RobotDriveBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("KilloughDrive");
-    builder.setActuator(true);
-    builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Left Motor Speed", m_leftMotor::get, m_leftMotor::set);
-    builder.addDoubleProperty("Right Motor Speed", m_rightMotor::get, m_rightMotor::set);
-    builder.addDoubleProperty("Back Motor Speed", m_backMotor::get, m_backMotor::set);
+    new SendableKilloughDrive(
+        this::stopMotor,
+        m_leftMotor::get, m_leftMotor::set,
+        m_rightMotor::get, m_rightMotor::set,
+        m_backMotor::get, m_backMotor::set
+    ).initSendable(builder);
   }
 }

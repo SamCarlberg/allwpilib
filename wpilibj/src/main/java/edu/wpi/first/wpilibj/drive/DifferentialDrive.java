@@ -14,6 +14,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.sendable.SendableDifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -415,13 +416,12 @@ public class DifferentialDrive extends RobotDriveBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("DifferentialDrive");
-    builder.setActuator(true);
-    builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Left Motor Speed", m_leftMotor::get, m_leftMotor::set);
-    builder.addDoubleProperty(
-        "Right Motor Speed",
+    new SendableDifferentialDrive(
+        this::stopMotor,
+        m_leftMotor::get,
+        m_leftMotor::set,
         () -> m_rightMotor.get() * m_rightSideInvertMultiplier,
-        x -> m_rightMotor.set(x * m_rightSideInvertMultiplier));
+        x -> m_rightMotor.set(x * m_rightSideInvertMultiplier)
+    ).initSendable(builder);
   }
 }

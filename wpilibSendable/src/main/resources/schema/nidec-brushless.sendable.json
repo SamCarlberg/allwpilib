@@ -1,0 +1,10 @@
+{
+  "type": "Nidec Brushless",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Value": {
+      "type": "Number"
+    }
+  }
+}

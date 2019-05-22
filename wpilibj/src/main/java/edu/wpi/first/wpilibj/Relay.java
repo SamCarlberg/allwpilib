@@ -14,6 +14,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.RelayJNI;
 import edu.wpi.first.hal.util.UncleanStatusException;
+import edu.wpi.first.wpilibj.sendable.SendableRelay;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import static java.util.Objects.requireNonNull;
@@ -359,10 +360,10 @@ public class Relay extends MotorSafety implements Sendable, AutoCloseable {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Relay");
-    builder.setActuator(true);
-    builder.setSafeState(() -> set(Value.kOff));
-    builder.addStringProperty("Value", () -> get().getPrettyValue(),
-        value -> set(Value.getValueOf(value).orElse(Value.kOff)));
+    new SendableRelay(
+        () -> set(Value.kOff),
+        () -> get().getPrettyValue(),
+        value -> set(Value.getValueOf(value).orElse(Value.kOff))
+    ).initSendable(builder);
   }
 }

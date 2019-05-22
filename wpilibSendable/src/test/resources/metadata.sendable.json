@@ -1,0 +1,9 @@
+{
+  "type": "Metadata",
+  "properties": {
+    "meta": {
+      "type": "Text",
+      "metadata": true
+    }
+  }
+}

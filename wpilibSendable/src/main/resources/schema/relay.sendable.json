@@ -1,0 +1,10 @@
+{
+  "type": "Relay",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Value": {
+      "type": "Text"
+    }
+  }
+}

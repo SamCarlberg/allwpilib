@@ -52,6 +52,7 @@ public final class SendableCameraWrapper extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty(".ShuffleboardURI", () -> m_uri, null);
+    new edu.wpi.first.wpilibj.sendable.SendableCameraWrapper(() -> m_uri)
+        .initSendable(builder);
   }
 }

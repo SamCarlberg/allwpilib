@@ -8,6 +8,7 @@
 
   <exclude-pattern>.*/*JNI.*</exclude-pattern>
   <exclude-pattern>.*/*IntegrationTests.*</exclude-pattern>
+  <exclude-pattern>.*/generated/.*</exclude-pattern> <!-- Exclude generated source files -->
 
   <rule ref="category/java/bestpractices.xml">
     <exclude name="AccessorClassGeneration" />

@@ -13,6 +13,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.sim.AnalogInSim;
 import edu.wpi.first.hal.util.AllocationException;
+import edu.wpi.first.wpilibj.sendable.SendableAnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -346,8 +347,8 @@ public class AnalogInput extends SendableBase implements PIDSource {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Analog Input");
-    builder.addDoubleProperty("Value", this::getAverageVoltage, null);
+    new SendableAnalogInput(this::getAverageVoltage)
+        .initSendable(builder);
   }
 
   public AnalogInSim getSimObject() {

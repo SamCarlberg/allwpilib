@@ -1,0 +1,21 @@
+{
+  "type": "PIDBase",
+  "hasSafeState": true,
+  "properties": {
+    "p": {
+      "type": "Number"
+    },
+    "i": {
+      "type": "Number"
+    },
+    "d": {
+      "type": "Number"
+    },
+    "f": {
+      "type": "Number"
+    },
+    "setpoint": {
+      "type": "Number"
+    }
+  }
+}

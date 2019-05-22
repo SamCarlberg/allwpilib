@@ -1,0 +1,10 @@
+{
+  "type": "Double Solenoid",
+  "actuator": true,
+  "hasSafeState": true,
+  "properties": {
+    "Value": {
+      "type": "Text"
+    }
+  }
+}
