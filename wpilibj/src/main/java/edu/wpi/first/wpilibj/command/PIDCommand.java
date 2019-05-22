@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.sendable.SendablePIDCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -279,6 +280,7 @@ public abstract class PIDCommand extends Command {
   public void initSendable(SendableBuilder builder) {
     m_controller.initSendable(builder);
     super.initSendable(builder);
-    builder.setSmartDashboardType("PIDCommand");
+    new SendablePIDCommand()
+        .initSendable(builder);
   }
 }

@@ -12,6 +12,7 @@ import java.util.Collections;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SendableBase;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.sendable.SendableSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -200,11 +201,11 @@ public abstract class Subsystem extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Subsystem");
-
-    builder.addBooleanProperty(".hasDefault", () -> m_defaultCommand != null, null);
-    builder.addStringProperty(".default", this::getDefaultCommandName, null);
-    builder.addBooleanProperty(".hasCommand", () -> m_currentCommand != null, null);
-    builder.addStringProperty(".command", this::getCurrentCommandName, null);
+    new SendableSubsystem(
+        () -> m_defaultCommand != null,
+        this::getDefaultCommandName,
+        () -> m_currentCommand != null,
+        this::getCurrentCommandName
+    ).initSendable(builder);
   }
 }

@@ -10,6 +10,7 @@ package edu.wpi.first.wpilibj.buttons;
 import edu.wpi.first.wpilibj.SendableBase;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.sendable.SendableButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -69,7 +70,7 @@ public abstract class Trigger extends SendableBase {
 
   /**
    * Constantly starts the given command while the button is held.
-   *
+   * <p>
    * {@link Command#start()} will be called repeatedly while the trigger is active, and will be
    * canceled when the trigger becomes inactive.
    *
@@ -178,8 +179,10 @@ public abstract class Trigger extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Button");
-    builder.setSafeState(() -> m_sendablePressed = false);
-    builder.addBooleanProperty("pressed", this::grab, value -> m_sendablePressed = value);
+    new SendableButton(
+        () -> m_sendablePressed = false,
+        this::grab,
+        value -> m_sendablePressed = value
+    ).initSendable(builder);
   }
 }

@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SendableBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sendable.SendableCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -608,19 +609,20 @@ public abstract class Command extends SendableBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("Command");
-    builder.addStringProperty(".name", this::getName, null);
-    builder.addBooleanProperty("running", this::isRunning, value -> {
-      if (value) {
-        if (!isRunning()) {
-          start();
-        }
-      } else {
-        if (isRunning()) {
-          cancel();
-        }
-      }
-    });
-    builder.addBooleanProperty(".isParented", this::isParented, null);
+    new SendableCommand(
+        this::getName,
+        this::isRunning,
+        value -> {
+          if (value) {
+            if (!isRunning()) {
+              start();
+            }
+          } else {
+            if (isRunning()) {
+              cancel();
+            }
+          }
+        }, this::isParented)
+        .initSendable(builder);
   }
 }
