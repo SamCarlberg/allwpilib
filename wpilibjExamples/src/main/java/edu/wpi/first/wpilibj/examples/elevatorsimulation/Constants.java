@@ -4,7 +4,19 @@
 
 package edu.wpi.first.wpilibj.examples.elevatorsimulation;
 
-import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Mass;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 
 public class Constants {
   public static final int kMotorPort = 0;
@@ -16,22 +28,24 @@ public class Constants {
   public static final double kElevatorKi = 0;
   public static final double kElevatorKd = 0;
 
-  public static final double kElevatorkS = 0.0; // volts (V)
-  public static final double kElevatorkG = 0.762; // volts (V)
-  public static final double kElevatorkV = 0.762; // volt per velocity (V/(m/s))
-  public static final double kElevatorkA = 0.0; // volt per acceleration (V/(m/s²))
+  public static final Measure<Voltage> kElevatorkS = Volts.zero();
+  public static final Measure<Voltage> kElevatorkG = Volts.of(0.762);
+  public static final Measure<Per<Voltage, Velocity<Distance>>> kElevatorkV =
+      Volts.of(0.762).per(MetersPerSecond);
+  public static final Measure<Per<Voltage, Velocity<Velocity<Distance>>>> kElevatorkA =
+      Volts.per(MetersPerSecondPerSecond).zero();
 
   public static final double kElevatorGearing = 10.0;
-  public static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
-  public static final double kCarriageMass = 4.0; // kg
+  public static final Measure<Distance> kElevatorDrumRadius = Inches.of(2.0);
+  public static final Measure<Mass> kCarriageMass = Kilograms.of(4.0);
 
-  public static final double kSetpointMeters = 0.75;
+  public static final Measure<Distance> kSetpoint = Meters.of(0.75);
   // Encoder is reset to measure 0 at the bottom, so minimum height is 0.
-  public static final double kMinElevatorHeightMeters = 0.0;
-  public static final double kMaxElevatorHeightMeters = 1.25;
+  public static final Measure<Distance> kMinElevatorHeight = Meters.zero();
+  public static final Measure<Distance> kMaxElevatorHeight = Meters.of(1.25);
 
   // distance per pulse = (distance per revolution) / (pulses per revolution)
   //  = (Pi * D) / ppr
-  public static final double kElevatorEncoderDistPerPulse =
-      2.0 * Math.PI * kElevatorDrumRadius / 4096;
+  public static final Measure<Distance> kElevatorEncoderDistPerPulse =
+      kElevatorDrumRadius.times(2.0 * Math.PI).divide(4096);
 }

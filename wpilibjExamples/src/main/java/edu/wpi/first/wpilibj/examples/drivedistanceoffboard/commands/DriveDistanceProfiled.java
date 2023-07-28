@@ -4,7 +4,11 @@
 
 package edu.wpi.first.wpilibj.examples.drivedistanceoffboard.commands;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.examples.drivedistanceoffboard.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.examples.drivedistanceoffboard.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
@@ -14,20 +18,20 @@ public class DriveDistanceProfiled extends TrapezoidProfileCommand {
   /**
    * Creates a new DriveDistanceProfiled command.
    *
-   * @param meters The distance to drive.
+   * @param distance The distance to drive.
    * @param drive The drive subsystem to use.
    */
-  public DriveDistanceProfiled(double meters, DriveSubsystem drive) {
+  public DriveDistanceProfiled(Measure<Distance> distance, DriveSubsystem drive) {
     super(
         new TrapezoidProfile(
             // Limit the max acceleration and velocity
             new TrapezoidProfile.Constraints(
-                DriveConstants.kMaxSpeedMetersPerSecond,
-                DriveConstants.kMaxAccelerationMetersPerSecondSquared)),
+                DriveConstants.kMaxSpeed,
+                DriveConstants.kMaxAcceleration)),
         // Pipe the profile state to the drive
         setpointState -> drive.setDriveStates(setpointState, setpointState),
         // End at desired position in meters; implicitly starts at 0
-        () -> new TrapezoidProfile.State(meters, 0),
+        () -> new TrapezoidProfile.State(distance, MetersPerSecond.zero()),
         // Current position
         () -> new TrapezoidProfile.State(),
         // Require the drive

@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.drivedistanceoffboard.subsystems;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -29,9 +33,9 @@ public class DriveSubsystem extends Subsystem {
   // The feedforward controller.
   private final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(
-          DriveConstants.ksVolts,
-          DriveConstants.kvVoltSecondsPerMeter,
-          DriveConstants.kaVoltSecondsSquaredPerMeter);
+          DriveConstants.kS.in(Volts),
+          DriveConstants.kV.in(Volts.per(MetersPerSecond)),
+          DriveConstants.kA.in(Volts.per(MetersPerSecondPerSecond)));
 
   // The robot's drive
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftLeader, m_rightLeader);

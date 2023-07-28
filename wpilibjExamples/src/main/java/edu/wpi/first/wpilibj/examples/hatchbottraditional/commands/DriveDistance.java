@@ -4,23 +4,27 @@
 
 package edu.wpi.first.wpilibj.examples.hatchbottraditional.commands;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.examples.hatchbottraditional.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class DriveDistance extends Command {
   private final DriveSubsystem m_drive;
-  private final double m_distance;
+  private final Measure<Distance> m_distance;
   private final double m_speed;
 
   /**
    * Creates a new DriveDistance.
    *
-   * @param inches The number of inches the robot will drive
-   * @param speed The speed at which the robot will drive
+   * @param distance The distance the robot will drive
+   * @param speed The speed at which the robot will drive, between -1 and +1
    * @param drive The drive subsystem on which this command will run
    */
-  public DriveDistance(double inches, double speed, DriveSubsystem drive) {
-    m_distance = inches;
+  public DriveDistance(Measure<Distance> distance, double speed, DriveSubsystem drive) {
+    m_distance = distance;
     m_speed = speed;
     m_drive = drive;
     addRequirements(m_drive);
@@ -44,6 +48,6 @@ public class DriveDistance extends Command {
 
   @Override
   public boolean isFinished() {
-    return Math.abs(m_drive.getAverageEncoderDistance()) >= m_distance;
+    return Math.abs(m_drive.getAverageEncoderDistance().in(Inches)) >= m_distance.in(Inches);
   }
 }

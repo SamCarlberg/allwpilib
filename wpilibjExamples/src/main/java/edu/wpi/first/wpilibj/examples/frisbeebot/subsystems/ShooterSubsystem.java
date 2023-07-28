@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.frisbeebot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.Angle;
@@ -20,16 +23,16 @@ public class ShooterSubsystem extends PIDSubsystem {
           ShooterConstants.kEncoderPorts[0],
           ShooterConstants.kEncoderPorts[1],
           ShooterConstants.kEncoderReversed);
-  private final SimpleMotorFeedforward m_shooterFeedforward =
-      new SimpleMotorFeedforward(
-          ShooterConstants.kSVolts, ShooterConstants.kVVoltSecondsPerRotation);
+  private final SimpleMotorFeedforward<Angle> m_shooterFeedforward =
+      new SimpleMotorFeedforward<>(
+          ShooterConstants.kS, ShooterConstants.kV);
 
   /** The shooter subsystem for the robot. */
   public ShooterSubsystem() {
     super(new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD));
-    getController().setTolerance(ShooterConstants.kShooterToleranceRPS);
-    m_shooterEncoder.setDistancePerPulse(ShooterConstants.kEncoderDistancePerPulse);
-    setSetpoint(ShooterConstants.kShooterTargetRPS);
+    getController().setTolerance(ShooterConstants.kShooterSpeedTolerance.in(RotationsPerSecond));
+    m_shooterEncoder.setDistancePerPulse(ShooterConstants.kEncoderDistancePerPulse.in(Rotations));
+    setSetpoint(ShooterConstants.kShooterTargetSpeed.in(RotationsPerSecond));
   }
 
   @Override

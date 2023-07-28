@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.gettingstarted;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,6 +26,7 @@ public class Robot extends TimedRobot {
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
   private final XboxController m_controller = new XboxController(0);
   private final Timer m_timer = new Timer();
+  private static final Measure<Time> kAutoDriveTime = Seconds.of(2);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -45,7 +50,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     // Drive for 2 seconds
-    if (m_timer.get() < 2.0) {
+    if (m_timer.get() < kAutoDriveTime.in(Seconds)) {
       // Drive forwards half speed, make sure to turn input squaring off
       m_robotDrive.arcadeDrive(0.5, 0.0, false);
     } else {

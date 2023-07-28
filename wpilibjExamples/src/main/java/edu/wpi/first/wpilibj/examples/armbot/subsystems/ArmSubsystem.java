@@ -4,6 +4,13 @@
 
 package edu.wpi.first.wpilibj.examples.armbot.subsystems;
 
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.VoltsPerRadianPerSecond;
+import static edu.wpi.first.units.Units.VoltsPerRadianPerSecondSquared;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -19,8 +26,10 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
       new Encoder(ArmConstants.kEncoderPorts[0], ArmConstants.kEncoderPorts[1]);
   private final ArmFeedforward m_feedforward =
       new ArmFeedforward(
-          ArmConstants.kSVolts, ArmConstants.kGVolts,
-          ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
+          ArmConstants.kS.in(Volts),
+          ArmConstants.kG.in(Volts),
+          ArmConstants.kV.in(VoltsPerRadianPerSecond),
+          ArmConstants.kA.in(VoltsPerRadianPerSecondSquared));
 
   /** Create a new ArmSubsystem. */
   public ArmSubsystem() {
@@ -30,12 +39,12 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
             0,
             0,
             new TrapezoidProfile.Constraints(
-                ArmConstants.kMaxVelocityRadPerSecond,
-                ArmConstants.kMaxAccelerationRadPerSecSquared)),
+                ArmConstants.kMaxVelocity.in(RadiansPerSecond),
+                ArmConstants.kMaxAcceleration.in(RadiansPerSecond.per(Second)))),
         0);
-    m_encoder.setDistancePerPulse(ArmConstants.kEncoderDistancePerPulse);
+    m_encoder.setDistancePerPulse(ArmConstants.kEncoderDistancePerPulse.in(Radians));
     // Start arm at rest in neutral position
-    setGoal(ArmConstants.kArmOffsetRads);
+    setGoal(ArmConstants.kArmOffset.in(Radians));
   }
 
   @Override
@@ -48,6 +57,6 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
   @Override
   public double getMeasurement() {
-    return m_encoder.getDistance() + ArmConstants.kArmOffsetRads;
+    return m_encoder.getDistance() + ArmConstants.kArmOffset.in(Radians);
   }
 }

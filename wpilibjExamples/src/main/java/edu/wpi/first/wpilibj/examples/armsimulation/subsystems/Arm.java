@@ -4,10 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.armsimulation.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
@@ -27,7 +31,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 public class Arm implements AutoCloseable {
   // The P gain for the PID controller that drives this arm.
   private double m_armKp = Constants.kDefaultArmKp;
-  private double m_armSetpointDegrees = Constants.kDefaultArmSetpointDegrees;
+  private final MutableMeasure<Angle> m_armSetpoint = Constants.kDefaultArmSetpoint.mutableCopy();
 
   // The arm gearbox represents a gearbox containing two Vex 775pro motors.
   private final DCMotor m_armGearbox = DCMotor.getVex775Pro(2);
@@ -47,11 +51,12 @@ public class Arm implements AutoCloseable {
           Constants.kArmReduction,
           SingleJointedArmSim.estimateMOI(Constants.kArmLength, Constants.kArmMass),
           Constants.kArmLength,
-          Constants.kMinAngleRads,
-          Constants.kMaxAngleRads,
+          Constants.kMinAngle,
+          Constants.kMaxAngle,
           true,
-          0,
-          VecBuilder.fill(Constants.kArmEncoderDistPerPulse) // Add noise with a std-dev of 1 tick
+          Radians.zero(),
+          // Add noise with a std-dev of 1 tick
+          VecBuilder.fill(Constants.kArmEncoderDistPerPulse.in(Radians))
           );
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
@@ -65,20 +70,20 @@ public class Arm implements AutoCloseable {
           new MechanismLigament2d(
               "Arm",
               30,
-              Units.radiansToDegrees(m_armSim.getAngleRads()),
+              Degrees.convertFrom(m_armSim.getAngleRads(), Radians),
               6,
               new Color8Bit(Color.kYellow)));
 
   /** Subsystem constructor. */
   public Arm() {
-    m_encoder.setDistancePerPulse(Constants.kArmEncoderDistPerPulse);
+    m_encoder.setDistancePerPulse(Constants.kArmEncoderDistPerPulse.in(Radians));
 
     // Put Mechanism 2d to SmartDashboard
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
 
     // Set the Arm position setpoint and P constant to Preferences if the keys don't already exist
-    Preferences.initDouble(Constants.kArmPositionKey, m_armSetpointDegrees);
+    Preferences.initDouble(Constants.kArmPositionKey, m_armSetpoint.in(Degrees));
     Preferences.initDouble(Constants.kArmPKey, m_armKp);
   }
 
@@ -98,13 +103,14 @@ public class Arm implements AutoCloseable {
         BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
 
     // Update the Mechanism Arm angle based on the simulated arm angle
-    m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
+    m_arm.setAngle(Degrees.convertFrom(m_armSim.getAngleRads(), Radians));
   }
 
   /** Load setpoint and kP from preferences. */
   public void loadPreferences() {
     // Read Preferences for Arm setpoint and kP on entering Teleop
-    m_armSetpointDegrees = Preferences.getDouble(Constants.kArmPositionKey, m_armSetpointDegrees);
+    m_armSetpoint.mut_replace(
+        Preferences.getDouble(Constants.kArmPositionKey, m_armSetpoint.in(Degrees)), Degrees);
     if (m_armKp != Preferences.getDouble(Constants.kArmPKey, m_armKp)) {
       m_armKp = Preferences.getDouble(Constants.kArmPKey, m_armKp);
       m_controller.setP(m_armKp);
@@ -115,7 +121,7 @@ public class Arm implements AutoCloseable {
   public void reachSetpoint() {
     var pidOutput =
         m_controller.calculate(
-            m_encoder.getDistance(), Units.degreesToRadians(m_armSetpointDegrees));
+            m_encoder.getDistance(), m_armSetpoint.in(Radians));
     m_motor.setVoltage(pidOutput);
   }
 

@@ -4,12 +4,22 @@
 
 package edu.wpi.first.wpilibj.examples.differentialdrivebot;
 
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -18,12 +28,18 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 /** Represents a differential drive style drivetrain. */
 public class Drivetrain {
-  public static final double kMaxSpeed = 3.0; // meters per second
-  public static final double kMaxAngularSpeed = 2 * Math.PI; // one rotation per second
+  public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3);
+  public static final Measure<Velocity<Angle>> kMaxAngularSpeed = RotationsPerSecond.one();
 
-  private static final double kTrackWidth = 0.381 * 2; // meters
-  private static final double kWheelRadius = 0.0508; // meters
+  private static final Measure<Distance> kTrackWidth = Feet.one().plus(Inches.of(3));
+  private static final Measure<Distance> kWheelRadius = Inches.of(2);
   private static final int kEncoderResolution = 4096;
+
+  // The distance per pulse for the drive encoders. We can simply use the
+  // distance traveled for one rotation of the wheel divided by the encoder
+  // resolution.
+  private static final Measure<Distance> kEncoderDistancePerPulse =
+      kWheelRadius.times(2 * Math.PI).divide(kEncoderResolution);
 
   private final MotorController m_leftLeader = new PWMSparkMax(1);
   private final MotorController m_leftFollower = new PWMSparkMax(2);
@@ -63,11 +79,10 @@ public class Drivetrain {
     // gearbox is constructed, you might have to invert the left side instead.
     m_rightGroup.setInverted(true);
 
-    // Set the distance per pulse for the drive encoders. We can simply use the
-    // distance traveled for one rotation of the wheel divided by the encoder
-    // resolution.
-    m_leftEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
-    m_rightEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
+    // Set the distance per pulse for the drive encoders. Using meters lets us
+    // use the encoder outputs directly with WPILib controls without mixing units.
+    m_leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
 
     m_leftEncoder.reset();
     m_rightEncoder.reset();
@@ -100,8 +115,9 @@ public class Drivetrain {
    * @param xSpeed Linear velocity in m/s.
    * @param rot Angular velocity in rad/s.
    */
-  public void drive(double xSpeed, double rot) {
-    var wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
+  public void drive(Measure<Velocity<Distance>> xSpeed, Measure<Velocity<Angle>> rot) {
+    var wheelSpeeds =
+        m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, MetersPerSecond.zero(), rot));
     setSpeeds(wheelSpeeds);
   }
 

@@ -4,6 +4,15 @@
 
 package edu.wpi.first.wpilibj.examples.gyro;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Millivolts;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -17,11 +26,12 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
  */
 public class Robot extends TimedRobot {
   private static final double kAngleSetpoint = 0.0;
-  private static final double kP = 0.005; // propotional turning constant
+  private static final double kP = 0.005; // proportional turning constant
 
   // gyro calibration constant, may need to be adjusted;
   // gyro value of 360 is set to correspond to one full revolution
-  private static final double kVoltsPerDegreePerSecond = 0.0128;
+  private static final Measure<Per<Voltage, Velocity<Angle>>> kGyroSensitivity =
+      Millivolts.per(DegreesPerSecond).of(12.800);
 
   private static final int kLeftMotorPort = 0;
   private static final int kRightMotorPort = 1;
@@ -36,7 +46,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_gyro.setSensitivity(kVoltsPerDegreePerSecond);
+    m_gyro.setSensitivity(kGyroSensitivity.in(Volts.per(DegreesPerSecond)));
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.

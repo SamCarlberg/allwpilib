@@ -4,7 +4,11 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot.commands;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.examples.gearsbot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 
@@ -21,11 +25,11 @@ public class SetDistanceToBox extends PIDCommand {
    *
    * @param distance The distance away from the box to drive to
    */
-  public SetDistanceToBox(double distance, Drivetrain drivetrain) {
+  public SetDistanceToBox(Measure<Distance> distance, Drivetrain drivetrain) {
     super(
         new PIDController(-2, 0, 0),
         drivetrain::getDistanceToObstacle,
-        distance,
+        distance.in(Meters),
         d -> drivetrain.drive(d, d));
 
     m_drivetrain = drivetrain;

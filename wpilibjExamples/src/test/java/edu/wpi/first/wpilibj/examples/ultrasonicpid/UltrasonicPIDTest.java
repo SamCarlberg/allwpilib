@@ -4,6 +4,7 @@
 
 package edu.wpi.first.wpilibj.examples.ultrasonicpid;
 
+import static edu.wpi.first.units.Units.Millimeters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -129,7 +130,7 @@ class UltrasonicPIDTest {
       // advance 100 timesteps
       SimHooks.stepTiming(2.0);
 
-      assertEquals(Robot.kHoldDistanceMillimeters, m_distanceMM, 10);
+      assertEquals(Robot.kHoldDistance.in(Millimeters), m_distanceMM, 10);
     }
   }
 }

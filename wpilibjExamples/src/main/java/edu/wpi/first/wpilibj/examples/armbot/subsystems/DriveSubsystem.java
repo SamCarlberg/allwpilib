@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.armbot.subsystems;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.examples.armbot.Constants.DriveConstants;
@@ -44,8 +46,8 @@ public class DriveSubsystem extends Subsystem {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Inches));
+    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Inches));
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -70,7 +72,7 @@ public class DriveSubsystem extends Subsystem {
   }
 
   /**
-   * Gets the average distance of the two encoders.
+   * Gets the average distance of the two encoders, in inches.
    *
    * @return the average of the two encoder readings
    */

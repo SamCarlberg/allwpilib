@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.drivedistanceoffboard;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.examples.drivedistanceoffboard.Constants.DriveConstants;
@@ -61,9 +64,13 @@ public class RobotContainer {
     m_driverController.rightBumper().onTrue(m_driveHalfSpeed).onFalse(m_driveFullSpeed);
 
     // Drive forward by 3 meters when the 'A' button is pressed, with a timeout of 10 seconds
-    m_driverController.a().onTrue(new DriveDistanceProfiled(3, m_robotDrive).withTimeout(10));
+    m_driverController.a()
+        .onTrue(new DriveDistanceProfiled(Meters.of(3), m_robotDrive).withTimeout(10));
 
     // Do the same thing as above when the 'B' button is pressed, but defined inline
+
+    // End at desired position in meters; implicitly starts at 0
+    TrapezoidProfile.State goal = new TrapezoidProfile.State(Meters.of(3), MetersPerSecond.zero());
     m_driverController
         .b()
         .onTrue(
@@ -71,12 +78,12 @@ public class RobotContainer {
                     new TrapezoidProfile(
                         // Limit the max acceleration and velocity
                         new TrapezoidProfile.Constraints(
-                            DriveConstants.kMaxSpeedMetersPerSecond,
-                            DriveConstants.kMaxAccelerationMetersPerSecondSquared)),
+                            DriveConstants.kMaxSpeed,
+                            DriveConstants.kMaxAcceleration)),
                     // Pipe the profile state to the drive
                     setpointState -> m_robotDrive.setDriveStates(setpointState, setpointState),
                     // End at desired position in meters; implicitly starts at 0
-                    () -> new TrapezoidProfile.State(3, 0),
+                    () -> goal,
                     // Current position
                     () -> new TrapezoidProfile.State(),
                     // Require the drive

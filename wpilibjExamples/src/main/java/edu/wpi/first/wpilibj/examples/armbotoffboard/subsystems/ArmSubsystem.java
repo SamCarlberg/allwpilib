@@ -4,8 +4,12 @@
 
 package edu.wpi.first.wpilibj.examples.armbotoffboard.subsystems;
 
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.examples.armbotoffboard.Constants.ArmConstants;
 import edu.wpi.first.wpilibj.examples.armbotoffboard.ExampleSmartMotorController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,16 +21,15 @@ public class ArmSubsystem extends TrapezoidProfileSubsystem {
   private final ExampleSmartMotorController m_motor =
       new ExampleSmartMotorController(ArmConstants.kMotorPort);
   private final ArmFeedforward m_feedforward =
-      new ArmFeedforward(
-          ArmConstants.kSVolts, ArmConstants.kGVolts,
-          ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
+      new ArmFeedforward(ArmConstants.kS, ArmConstants.kG, ArmConstants.kV, ArmConstants.kA);
 
   /** Create a new ArmSubsystem. */
   public ArmSubsystem() {
     super(
         new TrapezoidProfile.Constraints(
-            ArmConstants.kMaxVelocityRadPerSecond, ArmConstants.kMaxAccelerationRadPerSecSquared),
-        ArmConstants.kArmOffsetRads);
+            ArmConstants.kMaxVelocity,
+            ArmConstants.kMaxAcceleration),
+        ArmConstants.kArmOffset.baseUnitMagnitude());
     m_motor.setPID(ArmConstants.kP, 0, 0);
   }
 
@@ -39,7 +42,7 @@ public class ArmSubsystem extends TrapezoidProfileSubsystem {
         ExampleSmartMotorController.PIDMode.kPosition, setpoint.position, feedforward / 12.0);
   }
 
-  public Command setArmGoalCommand(double kArmOffsetRads) {
-    return Commands.runOnce(() -> setGoal(kArmOffsetRads), this);
+  public Command setArmGoalCommand(Measure<Angle> kArmOffset) {
+    return Commands.runOnce(() -> setGoal(kArmOffset.in(Radians)), this);
   }
 }

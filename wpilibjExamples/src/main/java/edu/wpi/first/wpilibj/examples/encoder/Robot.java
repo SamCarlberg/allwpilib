@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.encoder;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -34,6 +38,8 @@ public class Robot extends TimedRobot {
    */
   private final Encoder m_encoder = new Encoder(1, 2, false, CounterBase.EncodingType.k4X);
 
+  private static final Measure<Distance> kWheelDiameter = Inches.of(3);
+
   @Override
   public void robotInit() {
     /*
@@ -50,7 +56,7 @@ public class Robot extends TimedRobot {
      * attached to a 3 inch diameter (1.5inch radius) wheel,
      * and that we want to measure distance in inches.
      */
-    m_encoder.setDistancePerPulse(1.0 / 360.0 * 2.0 * Math.PI * 1.5);
+    m_encoder.setDistancePerPulse(kWheelDiameter.times(Math.PI).divide(360).in(Inches));
 
     /*
      * Defines the lowest rate at which the encoder will

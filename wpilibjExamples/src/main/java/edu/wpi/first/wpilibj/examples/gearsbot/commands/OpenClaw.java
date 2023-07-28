@@ -4,12 +4,17 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot.commands;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.examples.gearsbot.subsystems.Claw;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /** Opens the claw for one second. Real robots should use sensors, stalling motors is BAD! */
 public class OpenClaw extends WaitCommand {
   private final Claw m_claw;
+  private static final Measure<Time> k_defaultDuration = Seconds.of(1);
 
   /**
    * Creates a new OpenClaw command.
@@ -17,7 +22,7 @@ public class OpenClaw extends WaitCommand {
    * @param claw The claw to use
    */
   public OpenClaw(Claw claw) {
-    super(1);
+    super(k_defaultDuration);
     m_claw = claw;
     addRequirements(m_claw);
   }

@@ -4,6 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.mecanumdriveposeestimator;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -14,7 +22,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,8 +35,8 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 /** Represents a mecanum drive style drivetrain. */
 public class Drivetrain {
-  public static final double kMaxSpeed = 3.0; // 3 meters per second
-  public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+  public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3.0);
+  public static final Measure<Velocity<Angle>> kMaxAngularSpeed = RotationsPerSecond.of(0.5);
 
   private final MotorController m_frontLeftMotor = new PWMSparkMax(1);
   private final MotorController m_frontRightMotor = new PWMSparkMax(2);
@@ -36,10 +48,16 @@ public class Drivetrain {
   private final Encoder m_backLeftEncoder = new Encoder(4, 5);
   private final Encoder m_backRightEncoder = new Encoder(6, 7);
 
-  private final Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
-  private final Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
-  private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
-  private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
+  private static final Measure<Distance> kHalfWheelbase = Feet.of(1).plus(Inches.of(3));
+
+  private final Translation2d m_frontLeftLocation =
+      new Translation2d(kHalfWheelbase.in(Meters), kHalfWheelbase.in(Meters));
+  private final Translation2d m_frontRightLocation =
+      new Translation2d(kHalfWheelbase.in(Meters), -kHalfWheelbase.in(Meters));
+  private final Translation2d m_backLeftLocation =
+      new Translation2d(-kHalfWheelbase.in(Meters), kHalfWheelbase.in(Meters));
+  private final Translation2d m_backRightLocation =
+      new Translation2d(-kHalfWheelbase.in(Meters), -kHalfWheelbase.in(Meters));
 
   private final PIDController m_frontLeftPIDController = new PIDController(1, 0, 0);
   private final PIDController m_frontRightPIDController = new PIDController(1, 0, 0);
@@ -60,8 +78,8 @@ public class Drivetrain {
           m_gyro.getRotation2d(),
           getCurrentDistances(),
           new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+          VecBuilder.fill(0.05, 0.05, Radians.convertFrom(5, Degrees)),
+          VecBuilder.fill(0.5, 0.5, Radians.convertFrom(30, Degrees)));
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(1, 3);
@@ -141,7 +159,11 @@ public class Drivetrain {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(
-      double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
+      Measure<Velocity<Distance>> xSpeed,
+      Measure<Velocity<Distance>> ySpeed,
+      Measure<Velocity<Angle>> rot,
+      boolean fieldRelative,
+      Measure<Time> period) {
     var mecanumDriveWheelSpeeds =
         m_kinematics.toWheelSpeeds(
             ChassisSpeeds.fromDiscreteSpeeds(
@@ -149,7 +171,7 @@ public class Drivetrain {
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                     : new ChassisSpeeds(xSpeed, ySpeed, rot),
-                periodSeconds));
+                period));
     mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
     setSpeeds(mecanumDriveWheelSpeeds);
   }

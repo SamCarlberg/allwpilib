@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.gyrodrivecommands.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -53,8 +55,8 @@ public class DriveSubsystem extends Subsystem {
     m_rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
   }
 
   /**

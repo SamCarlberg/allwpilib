@@ -4,6 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.swervedriveposeestimator;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -11,17 +19,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 public class SwerveModule {
-  private static final double kWheelRadius = 0.0508;
+  private static final Measure<Distance> kWheelRadius = Inches.of(2);
   private static final int kEncoderResolution = 4096;
 
-  private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
-  private static final double kModuleMaxAngularAcceleration =
-      2 * Math.PI; // radians per second squared
+  private static final Measure<Velocity<Angle>> kModuleMaxAngularVelocity =
+      Drivetrain.kMaxAngularSpeed;
+  private static final Measure<Velocity<Velocity<Angle>>> kModuleMaxAngularAcceleration =
+      RotationsPerSecond.per(Second).of(1);
 
   private final MotorController m_driveMotor;
   private final MotorController m_turningMotor;
@@ -39,7 +52,8 @@ public class SwerveModule {
           0,
           0,
           new TrapezoidProfile.Constraints(
-              kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+              kModuleMaxAngularVelocity.in(RadiansPerSecond),
+              kModuleMaxAngularAcceleration.in(RadiansPerSecond.per(Second))));
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 3);
@@ -69,18 +83,20 @@ public class SwerveModule {
     m_turningEncoder = new Encoder(turningEncoderChannelA, turningEncoderChannelB);
 
     // Set the distance per pulse for the drive encoder. We can simply use the
-    // distance traveled for one rotation of the wheel divided by the encoder
+    // distance traveled for one rotation of the wheel (its circumference) divided by the encoder
     // resolution.
-    m_driveEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
+    m_driveEncoder.setDistancePerPulse(
+        kWheelRadius.times(2 * Math.PI).divide(kEncoderResolution).in(Meters));
 
     // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
-    // This is the the angle through an entire rotation (2 * pi) divided by the
-    // encoder resolution.
-    m_turningEncoder.setDistancePerPulse(2 * Math.PI / kEncoderResolution);
+    // This is the angle through an entire rotation divided by the encoder resolution.
+    m_turningEncoder.setDistancePerPulse(Rotations.one().divide(kEncoderResolution).in(Radians));
 
-    // Limit the PID Controller's input range between -pi and pi and set the input
-    // to be continuous.
-    m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    // Limit the PID Controller's input range between +/- a half rotation.
+    // Convert to radians to use consistent units.
+    m_turningPIDController.enableContinuousInput(
+        -Rotations.of(0.5).in(Radians),
+        Rotations.of(0.5).in(Radians));
   }
 
   /**

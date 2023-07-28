@@ -4,9 +4,20 @@
 
 package edu.wpi.first.wpilibj.examples.elevatorprofiledpid;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -15,15 +26,18 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 @SuppressWarnings("PMD.RedundantFieldInitializer")
 public class Robot extends TimedRobot {
-  private static double kDt = 0.02;
-  private static double kMaxVelocity = 1.75;
-  private static double kMaxAcceleration = 0.75;
-  private static double kP = 1.3;
-  private static double kI = 0.0;
-  private static double kD = 0.7;
-  private static double kS = 1.1;
-  private static double kG = 1.2;
-  private static double kV = 1.3;
+  private static final double kDt = 0.02;
+  private static final Measure<Velocity<Distance>> kMaxVelocity =
+      MetersPerSecond.of(1.75);
+  private static final Measure<Velocity<Velocity<Distance>>> kMaxAcceleration =
+      MetersPerSecondPerSecond.of(0.75);
+  private static final double kP = 1.3;
+  private static final double kI = 0.0;
+  private static final double kD = 0.7;
+  private static final Measure<Voltage> kS = Volts.of(1.1);
+  private static final Measure<Voltage> kG = Volts.of(1.2);
+  private static final Measure<Per<Voltage, Velocity<Distance>>> kV =
+      Volts.of(1.3).per(MetersPerSecond);
 
   private final Joystick m_joystick = new Joystick(1);
   private final Encoder m_encoder = new Encoder(1, 2);
@@ -37,9 +51,14 @@ public class Robot extends TimedRobot {
       new ProfiledPIDController(kP, kI, kD, m_constraints, kDt);
   private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(kS, kG, kV);
 
+  private static final double kEncoderResolution = 360;
+  private static final Measure<Distance> kDrumRadius = Inches.of(1.5);
+  public static final Measure<Distance> kEncoderDistancePerPulse =
+      kDrumRadius.times(2 * Math.PI).divide(kEncoderResolution);
+
   @Override
   public void robotInit() {
-    m_encoder.setDistancePerPulse(1.0 / 360.0 * 2.0 * Math.PI * 1.5);
+    m_encoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
   }
 
   @Override

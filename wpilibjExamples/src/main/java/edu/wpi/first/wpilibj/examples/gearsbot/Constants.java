@@ -4,6 +4,16 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot;
 
+import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Millimeters;
+
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+
 public final class Constants {
   public static final class DriveConstants {
     public static final int kLeftMotorPort1 = 0;
@@ -21,10 +31,10 @@ public final class Constants {
     public static final int kAnalogGyroPort = 1;
 
     public static final int kEncoderCPR = 1024;
-    public static final double kWheelDiameterInches = 6;
-    public static final double kEncoderDistancePerPulse =
+    public static final Measure<Distance> kWheelDiameter = Inches.of(6);
+    public static final Measure<Distance> kEncoderDistancePerPulse =
         // Assumes the encoders are directly mounted on the wheel shafts
-        (kWheelDiameterInches * Math.PI) / (double) kEncoderCPR;
+        kWheelDiameter.times(Math.PI).divide(kEncoderCPR);
   }
 
   public static final class ClawConstants {
@@ -58,14 +68,14 @@ public final class Constants {
 
     public static final double kD = 0.0;
 
-    public static final double kTolerance = 0.005;
+    public static final Measure<Distance> kTolerance = Millimeters.of(5);
   }
 
   public static final class AutoConstants {
-    public static final double kDistToBox1 = 0.10;
-    public static final double kDistToBox2 = 0.60;
+    public static final Measure<Distance> kDistToBox1 = Centimeters.of(10);
+    public static final Measure<Distance> kDistToBox2 = Centimeters.of(60);
 
-    public static final double kWristSetpoint = -45.0;
+    public static final Measure<Angle> kWristSetpoint = Degrees.of(-45.0);
   }
 
   public static final class DriveStraightConstants {
@@ -77,18 +87,18 @@ public final class Constants {
 
   public static final class Positions {
     public static final class Pickup {
-      public static final double kWristSetpoint = -45.0;
-      public static final double kElevatorSetpoint = 0.25;
+      public static final Measure<Angle> kWristSetpoint = Degrees.of(-45.0);
+      public static final Measure<Distance> kElevatorSetpoint = Meters.of(0.25);
     }
 
     public static final class Place {
-      public static final double kWristSetpoint = 0.0;
-      public static final double kElevatorSetpoint = 0.25;
+      public static final Measure<Angle> kWristSetpoint = Degrees.zero();
+      public static final Measure<Distance> kElevatorSetpoint = Meters.of(0.25);
     }
 
     public static final class PrepareToPickup {
-      public static final double kWristSetpoint = 0.0;
-      public static final double kElevatorSetpoint = 0.0;
+      public static final Measure<Angle> kWristSetpoint = Degrees.zero();
+      public static final Measure<Distance> kElevatorSetpoint = Meters.zero();
     }
   }
 }

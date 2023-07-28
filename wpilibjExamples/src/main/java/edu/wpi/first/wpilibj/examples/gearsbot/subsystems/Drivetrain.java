@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot.subsystems;
 
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -24,7 +28,7 @@ public class Drivetrain extends Subsystem {
   private final MotorController m_leftMotor =
       new MotorControllerGroup(
           new PWMSparkMax(DriveConstants.kLeftMotorPort1),
-          new PWMSparkMax(DriveConstants.kLeftMotorPort1));
+          new PWMSparkMax(DriveConstants.kLeftMotorPort2));
 
   private final MotorController m_rightMotor =
       new MotorControllerGroup(
@@ -61,12 +65,12 @@ public class Drivetrain extends Subsystem {
     // simulate 360 tick encoders. This if statement allows for the
     // real robot to handle this difference in devices.
     if (Robot.isReal()) {
-      m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-      m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+      m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+      m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
     } else {
-      // Circumference = diameter in feet * pi. 360 tick simulated encoders.
-      m_leftEncoder.setDistancePerPulse((4.0 / 12.0 * Math.PI) / 360.0);
-      m_rightEncoder.setDistancePerPulse((4.0 / 12.0 * Math.PI) / 360.0);
+      // Circumference = diameter * pi. 360 tick simulated encoders.
+      m_leftEncoder.setDistancePerPulse(Inches.of(4).times(Math.PI).divide(360).in(Feet));
+      m_rightEncoder.setDistancePerPulse(Inches.of(4).times(Math.PI).divide(360).in(Feet));
     }
 
     // Let's name the sensors on the LiveWindow

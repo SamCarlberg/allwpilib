@@ -23,7 +23,7 @@ public final class Autos {
         // Stop driving at the end of the command
         interrupt -> drive.arcadeDrive(0, 0),
         // End the command when the robot's driven distance exceeds the desired value
-        () -> drive.getAverageEncoderDistance() >= AutoConstants.kAutoDriveDistanceInches,
+        () -> drive.getAverageEncoderDistance().gte(AutoConstants.kAutoDriveDistance),
         // Require the drive subsystem
         drive);
   }
@@ -40,9 +40,7 @@ public final class Autos {
             // Stop driving at the end of the command
             interrupt -> driveSubsystem.arcadeDrive(0, 0),
             // End the command when the robot's driven distance exceeds the desired value
-            () ->
-                driveSubsystem.getAverageEncoderDistance()
-                    >= AutoConstants.kAutoDriveDistanceInches,
+            () -> driveSubsystem.getAverageEncoderDistance().gte(AutoConstants.kAutoDriveDistance),
             // Require the drive subsystem
             driveSubsystem),
 
@@ -58,9 +56,7 @@ public final class Autos {
             // Stop driving at the end of the command
             interrupt -> driveSubsystem.arcadeDrive(0, 0),
             // End the command when the robot's driven distance exceeds the desired value
-            () ->
-                driveSubsystem.getAverageEncoderDistance()
-                    <= AutoConstants.kAutoBackupDistanceInches,
+            () -> driveSubsystem.getAverageEncoderDistance().lte(AutoConstants.kAutoBackupDistance),
             // Require the drive subsystem
             driveSubsystem));
   }

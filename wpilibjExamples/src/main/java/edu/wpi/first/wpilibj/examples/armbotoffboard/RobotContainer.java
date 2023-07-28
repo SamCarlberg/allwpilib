@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.armbotoffboard;
 
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.examples.armbotoffboard.Constants.OIConstants;
 import edu.wpi.first.wpilibj.examples.armbotoffboard.subsystems.ArmSubsystem;
@@ -50,12 +52,12 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Move the arm to 2 radians above horizontal when the 'A' button is pressed.
-    m_driverController.a().onTrue(m_robotArm.setArmGoalCommand(2));
+    m_driverController.a().onTrue(m_robotArm.setArmGoalCommand(Radians.of(2)));
 
     // Move the arm to neutral position when the 'B' button is pressed.
     m_driverController
         .b()
-        .onTrue(m_robotArm.setArmGoalCommand(Constants.ArmConstants.kArmOffsetRads));
+        .onTrue(m_robotArm.setArmGoalCommand(Constants.ArmConstants.kArmOffset));
 
     // Drive at half speed when the bumper is held
     m_driverController

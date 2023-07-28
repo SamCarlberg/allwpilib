@@ -4,6 +4,12 @@
 
 package edu.wpi.first.wpilibj.examples.swervecontrollercommand;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -52,10 +58,9 @@ public class RobotContainer {
                     // Multiply by max speed to map the joystick unitless inputs to actual units.
                     // This will map the [-1, 1] to [max speed backwards, max speed forwards],
                     // converting them to actual units.
-                    m_driverController.getLeftY() * DriveConstants.kMaxSpeedMetersPerSecond,
-                    m_driverController.getLeftX() * DriveConstants.kMaxSpeedMetersPerSecond,
-                    m_driverController.getRightX()
-                        * ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
+                    DriveConstants.kMaxSpeed.times(m_driverController.getLeftY()),
+                    DriveConstants.kMaxSpeed.times(m_driverController.getLeftX()),
+                    ModuleConstants.kMaxModuleAngularSpeed.times(m_driverController.getRightX()),
                     false),
             m_robotDrive));
   }
@@ -77,8 +82,8 @@ public class RobotContainer {
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                AutoConstants.kMaxSpeed.in(MetersPerSecond),
+                AutoConstants.kMaxAcceleration.in(MetersPerSecondPerSecond))
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DriveConstants.kDriveKinematics);
 
@@ -96,7 +101,9 @@ public class RobotContainer {
     var thetaController =
         new ProfiledPIDController(
             AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaController.enableContinuousInput(
+        Radians.convertFrom(-0.5, Rotations),
+        Radians.convertFrom(+0.5, Rotations));
 
     SwerveControllerCommand swerveControllerCommand =
         new SwerveControllerCommand(
@@ -115,6 +122,12 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
+    return swerveControllerCommand.andThen(() -> {
+      m_robotDrive.drive(
+          MetersPerSecond.zero(),
+          MetersPerSecond.zero(),
+          RadiansPerSecond.zero(),
+          false);
+    });
   }
 }

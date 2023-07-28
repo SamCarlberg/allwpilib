@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.examples.gearsbot.commands.Autonomous;
 import edu.wpi.first.wpilibj.examples.gearsbot.commands.CloseClaw;
@@ -43,11 +46,11 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Put Some buttons on the SmartDashboard
-    SmartDashboard.putData("Elevator Bottom", new SetElevatorSetpoint(0, m_elevator));
-    SmartDashboard.putData("Elevator Top", new SetElevatorSetpoint(0.25, m_elevator));
+    SmartDashboard.putData("Elevator Bottom", new SetElevatorSetpoint(Meters.zero(), m_elevator));
+    SmartDashboard.putData("Elevator Top", new SetElevatorSetpoint(Meters.of(0.25), m_elevator));
 
-    SmartDashboard.putData("Wrist Horizontal", new SetWristSetpoint(0, m_wrist));
-    SmartDashboard.putData("Raise Wrist", new SetWristSetpoint(-45, m_wrist));
+    SmartDashboard.putData("Wrist Horizontal", new SetWristSetpoint(Degrees.zero(), m_wrist));
+    SmartDashboard.putData("Raise Wrist", new SetWristSetpoint(Degrees.of(-45), m_wrist));
 
     SmartDashboard.putData("Open Claw", new OpenClaw(m_claw));
     SmartDashboard.putData("Close Claw", new CloseClaw(m_claw));
@@ -87,8 +90,8 @@ public class RobotContainer {
     final JoystickButton r1 = new JoystickButton(m_joystick, 12);
 
     // Connect the buttons to commands
-    dpadUp.onTrue(new SetElevatorSetpoint(0.25, m_elevator));
-    dpadDown.onTrue(new SetElevatorSetpoint(0.0, m_elevator));
+    dpadUp.onTrue(new SetElevatorSetpoint(Meters.of(0.25), m_elevator));
+    dpadDown.onTrue(new SetElevatorSetpoint(Meters.zero(), m_elevator));
     dpadRight.onTrue(new CloseClaw(m_claw));
     dpadLeft.onTrue(new OpenClaw(m_claw));
 

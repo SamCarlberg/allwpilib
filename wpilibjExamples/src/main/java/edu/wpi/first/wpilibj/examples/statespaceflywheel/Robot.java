@@ -4,6 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.statespaceflywheel;
 
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
@@ -13,7 +21,10 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -29,7 +40,7 @@ public class Robot extends TimedRobot {
   private static final int kEncoderAChannel = 0;
   private static final int kEncoderBChannel = 1;
   private static final int kJoystickPort = 0;
-  private static final double kSpinupRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(500.0);
+  private static final Measure<Velocity<Angle>> kSpinup = RPM.of(500.0);
 
   private static final double kFlywheelMomentOfInertia = 0.00032; // kg * m^2
 
@@ -46,6 +57,9 @@ public class Robot extends TimedRobot {
       LinearSystemId.createFlywheelSystem(
           DCMotor.getNEO(2), kFlywheelMomentOfInertia, kFlywheelGearing);
 
+  // Nominal time between loops. 0.020 for TimedRobot, but can be lower if using notifiers.
+  private static final Measure<Time> kUpdatePeriod = Milliseconds.of(20);
+
   // The observer fuses our encoder data and voltage inputs to reject noise.
   private final KalmanFilter<N1, N1, N1> m_observer =
       new KalmanFilter<>(
@@ -53,9 +67,8 @@ public class Robot extends TimedRobot {
           Nat.N1(),
           m_flywheelPlant,
           VecBuilder.fill(3.0), // How accurate we think our model is
-          VecBuilder.fill(0.01), // How accurate we think our encoder
-          // data is
-          0.020);
+          VecBuilder.fill(0.01), // How accurate we think our encoder data is
+          kUpdatePeriod.in(Seconds));
 
   // A LQR uses feedback to create voltage commands.
   private final LinearQuadraticRegulator<N1, N1, N1> m_controller =
@@ -67,12 +80,16 @@ public class Robot extends TimedRobot {
           VecBuilder.fill(12.0), // relms. Control effort (voltage) tolerance. Decrease this to more
           // heavily penalize control effort, or make the controller less aggressive. 12 is a good
           // starting point because that is the (approximate) maximum voltage of a battery.
-          0.020); // Nominal time between loops. 0.020 for TimedRobot, but can be
-  // lower if using notifiers.
+          kUpdatePeriod.in(Seconds));
 
   // The state-space loop combines a controller, observer, feedforward and plant for easy control.
   private final LinearSystemLoop<N1, N1, N1> m_loop =
-      new LinearSystemLoop<>(m_flywheelPlant, m_controller, m_observer, 12.0, 0.020);
+      new LinearSystemLoop<>(
+          m_flywheelPlant,
+          m_controller,
+          m_observer,
+          Volts.of(12.0),
+          kUpdatePeriod);
 
   // An encoder set up to measure flywheel velocity in radians per second.
   private final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
@@ -84,8 +101,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // We go 2 pi radians per 4096 clicks.
-    m_encoder.setDistancePerPulse(2.0 * Math.PI / 4096.0);
+    // We go 1 revolution per 4096 clicks.
+    m_encoder.setDistancePerPulse(Rotations.one().divide(4096).in(Radians));
   }
 
   @Override
@@ -99,7 +116,7 @@ public class Robot extends TimedRobot {
     // PID controller.
     if (m_joystick.getTriggerPressed()) {
       // We just pressed the trigger, so let's set our next reference
-      m_loop.setNextR(VecBuilder.fill(kSpinupRadPerSec));
+      m_loop.setNextR(VecBuilder.fill(kSpinup.in(RadiansPerSecond)));
     } else if (m_joystick.getTriggerReleased()) {
       // We just released the trigger, so let's spin down
       m_loop.setNextR(VecBuilder.fill(0.0));
@@ -110,7 +127,7 @@ public class Robot extends TimedRobot {
 
     // Update our LQR to generate new voltage commands and use the voltages to predict the next
     // state with out Kalman filter.
-    m_loop.predict(0.020);
+    m_loop.predict(kUpdatePeriod.in(Seconds));
 
     // Send the new calculated voltage to the motors.
     // voltage = duty cycle * battery voltage, so

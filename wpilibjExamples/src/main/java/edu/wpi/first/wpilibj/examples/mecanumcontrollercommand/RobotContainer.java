@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.mecanumcontrollercommand;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -80,8 +82,8 @@ public class RobotContainer {
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                AutoConstants.kMaxSpeed,
+                AutoConstants.kMaxAcceleration)
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DriveConstants.kDriveKinematics);
 
@@ -110,7 +112,7 @@ public class RobotContainer {
                 AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints),
 
             // Needed for normalizing wheel speeds
-            AutoConstants.kMaxSpeedMetersPerSecond,
+            AutoConstants.kMaxSpeed.in(MetersPerSecond),
 
             // Velocity PID's
             new PIDController(DriveConstants.kPFrontLeftVel, 0, 0),

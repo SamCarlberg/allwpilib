@@ -4,6 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.differentialdriveposeestimator;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.ComputerVisionUtil;
 import edu.wpi.first.math.VecBuilder;
@@ -23,9 +31,12 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -42,12 +53,18 @@ import java.io.IOException;
 
 /** Represents a differential drive style drivetrain. */
 public class Drivetrain {
-  public static final double kMaxSpeed = 3.0; // meters per second
-  public static final double kMaxAngularSpeed = 2 * Math.PI; // one rotation per second
+  public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3);
+  public static final Measure<Velocity<Angle>> kMaxAngularSpeed = RotationsPerSecond.one();
 
-  private static final double kTrackWidth = 0.381 * 2; // meters
-  private static final double kWheelRadius = 0.0508; // meters
+  private static final Measure<Distance> kTrackWidth = Feet.one().plus(Inches.of(3));
+  private static final Measure<Distance> kWheelRadius = Inches.of(2);
   private static final int kEncoderResolution = 4096;
+
+  // The distance per pulse for the drive encoders. We can simply use the
+  // distance traveled for one rotation of the wheel divided by the encoder
+  // resolution.
+  private static final Measure<Distance> kEncoderDistancePerPulse =
+      kWheelRadius.times(2 * Math.PI).divide(kEncoderResolution);
 
   private final MotorController m_leftLeader = new PWMSparkMax(1);
   private final MotorController m_leftFollower = new PWMSparkMax(2);
@@ -91,8 +108,8 @@ public class Drivetrain {
           m_leftEncoder.getDistance(),
           m_rightEncoder.getDistance(),
           new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+          VecBuilder.fill(0.05, 0.05, Radians.convertFrom(5, Degrees)),
+          VecBuilder.fill(0.5, 0.5, Radians.convertFrom(30, Degrees)));
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(1, 3);
@@ -105,7 +122,12 @@ public class Drivetrain {
       LinearSystemId.identifyDrivetrainSystem(1.98, 0.2, 1.5, 0.3);
   private final DifferentialDrivetrainSim m_drivetrainSimulator =
       new DifferentialDrivetrainSim(
-          m_drivetrainSystem, DCMotor.getCIM(2), 8, kTrackWidth, kWheelRadius, null);
+          m_drivetrainSystem,
+          DCMotor.getCIM(2),
+          8,
+          kTrackWidth,
+          kWheelRadius,
+          null);
 
   /**
    * Constructs a differential drive object. Sets the encoder distance per pulse and resets the
@@ -122,8 +144,8 @@ public class Drivetrain {
     // Set the distance per pulse for the drive encoders. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
     // resolution.
-    m_leftEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
-    m_rightEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
+    m_leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
 
     m_leftEncoder.reset();
     m_rightEncoder.reset();
@@ -162,11 +184,12 @@ public class Drivetrain {
   /**
    * Drives the robot with the given linear velocity and angular velocity.
    *
-   * @param xSpeed Linear velocity in m/s.
-   * @param rot Angular velocity in rad/s.
+   * @param xSpeed Linear velocity
+   * @param rot Angular velocity
    */
-  public void drive(double xSpeed, double rot) {
-    var wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
+  public void drive(Measure<Velocity<Distance>> xSpeed, Measure<Velocity<Angle>> rot) {
+    var wheelSpeeds =
+        m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, MetersPerSecond.zero(), rot));
     setSpeeds(wheelSpeeds);
   }
 

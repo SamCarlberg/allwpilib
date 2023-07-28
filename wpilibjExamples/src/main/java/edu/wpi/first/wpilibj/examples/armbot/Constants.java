@@ -4,6 +4,22 @@
 
 package edu.wpi.first.wpilibj.examples.armbot;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -25,10 +41,10 @@ public final class Constants {
     public static final boolean kRightEncoderReversed = true;
 
     public static final int kEncoderCPR = 1024;
-    public static final double kWheelDiameterInches = 6;
-    public static final double kEncoderDistancePerPulse =
+    public static final Measure<Distance> kWheelDiameter = Inches.of(6);
+    public static final Measure<Distance> kEncoderDistancePerPulse =
         // Assumes the encoders are directly mounted on the wheel shafts
-        (kWheelDiameterInches * Math.PI) / (double) kEncoderCPR;
+        kWheelDiameter.times(Math.PI).divide(kEncoderCPR);
   }
 
   public static final class ArmConstants {
@@ -37,26 +53,31 @@ public final class Constants {
     public static final double kP = 1;
 
     // These are fake gains; in actuality these must be determined individually for each robot
-    public static final double kSVolts = 1;
-    public static final double kGVolts = 1;
-    public static final double kVVoltSecondPerRad = 0.5;
-    public static final double kAVoltSecondSquaredPerRad = 0.1;
+    public static final Measure<Voltage> kS = Volts.of(1);
+    public static final Measure<Voltage> kG = Volts.of(1);
+    public static final Measure<Per<Voltage, Velocity<Angle>>> kV =
+        Volts.of(0.5).per(RadiansPerSecond);
+    public static final Measure<Per<Voltage, Velocity<Velocity<Angle>>>> kA =
+        Volts.of(0.1).per(RadiansPerSecond.per(Second));
 
-    public static final double kMaxVelocityRadPerSecond = 3;
-    public static final double kMaxAccelerationRadPerSecSquared = 10;
+    public static final Measure<Velocity<Angle>> kMaxVelocity =
+        RadiansPerSecond.of(3);
+    public static final Measure<Velocity<Velocity<Angle>>> kMaxAcceleration =
+        RadiansPerSecond.per(Second).of(10);
 
     public static final int[] kEncoderPorts = new int[] {4, 5};
     public static final int kEncoderPPR = 256;
-    public static final double kEncoderDistancePerPulse = 2.0 * Math.PI / kEncoderPPR;
+    public static final Measure<Angle> kEncoderDistancePerPulse =
+        Rotations.one().divide(kEncoderPPR);
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
-    public static final double kArmOffsetRads = 0.5;
+    public static final Measure<Angle> kArmOffset = Radians.of(0.5);
   }
 
   public static final class AutoConstants {
-    public static final double kAutoTimeoutSeconds = 12;
-    public static final double kAutoShootTimeSeconds = 7;
+    public static final Measure<Time> kAutoTimeout = Seconds.of(12);
+    public static final Measure<Time> kAutoShootTime = Seconds.of(7);
   }
 
   public static final class OIConstants {

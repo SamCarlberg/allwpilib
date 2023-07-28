@@ -4,8 +4,18 @@
 
 package edu.wpi.first.wpilibj.examples.eventloop;
 
+import static edu.wpi.first.units.Units.Millimeters;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -16,9 +26,9 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 public class Robot extends TimedRobot {
-  public static final int SHOT_VELOCITY = 200; // rpm
-  public static final int TOLERANCE = 8; // rpm
-  public static final int KICKER_THRESHOLD = 15; // mm
+  public static final Measure<Velocity<Angle>> SHOT_VELOCITY = RPM.of(200);
+  public static final Measure<Velocity<Angle>> TOLERANCE = RPM.of(8);
+  public static final Measure<Distance> KICKER_THRESHOLD = Millimeters.of(15);
 
   private final MotorController m_shooter = new PWMSparkMax(0);
   private final Encoder m_shooterEncoder = new Encoder(0, 1);
@@ -35,10 +45,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_controller.setTolerance(TOLERANCE);
+    m_controller.setTolerance(TOLERANCE.in(RPM));
+    m_shooterEncoder.setDistancePerPulse(Rotations.one().divide(2048).in(Radians));
 
     BooleanEvent isBallAtKicker =
-        new BooleanEvent(m_loop, () -> m_kickerSensor.getRangeMM() < KICKER_THRESHOLD);
+        new BooleanEvent(
+            m_loop,
+            () -> m_kickerSensor.getRangeMM() < KICKER_THRESHOLD.in(Millimeters));
     BooleanEvent intakeButton = new BooleanEvent(m_loop, () -> m_joystick.getRawButton(2));
 
     // if the thumb button is held
@@ -64,8 +77,11 @@ public class Robot extends TimedRobot {
         .ifHigh(
         () ->
             m_shooter.setVoltage(
-                m_controller.calculate(m_shooterEncoder.getRate(), SHOT_VELOCITY)
-                    + m_ff.calculate(SHOT_VELOCITY)));
+                m_controller.calculate(
+                    m_shooterEncoder.getRate(),
+                    SHOT_VELOCITY.in(RadiansPerSecond)
+                )
+                    + m_ff.calculate(SHOT_VELOCITY.in(RadiansPerSecond))));
     // if not, stop
     shootTrigger.negate().ifHigh(m_shooter::stopMotor);
 

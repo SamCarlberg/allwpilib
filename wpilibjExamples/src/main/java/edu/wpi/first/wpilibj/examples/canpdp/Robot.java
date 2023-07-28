@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.canpdp;
 
+import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Fahrenheit;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,6 +40,8 @@ public class Robot extends TimedRobot {
     // Retrieves the temperature of the PDP, in degrees Celsius.
     double temperatureCelsius = m_pdp.getTemperature();
     SmartDashboard.putNumber("Temperature", temperatureCelsius);
+    SmartDashboard.putNumber(
+        "Temperature (F)", Fahrenheit.convertFrom(temperatureCelsius, Celsius));
 
     // Get the total current of all channels.
     double totalCurrent = m_pdp.getTotalCurrent();

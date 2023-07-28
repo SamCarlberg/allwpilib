@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.romireference.commands;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Millimeters;
+
 import edu.wpi.first.wpilibj.examples.romireference.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -55,7 +58,7 @@ public class TurnDegrees extends Command {
        has a wheel placement diameter (149 mm) - width of the wheel (8 mm) = 141 mm
        or 5.551 inches. We then take into consideration the width of the tires.
     */
-    double inchPerDegree = Math.PI * 5.551 / 360;
+    double inchPerDegree = Inches.convertFrom(149 - 8, Millimeters) * Math.PI / 360;
     // Compare distance travelled from start to distance based on degree turn
     return getAverageTurningDistance() >= (inchPerDegree * m_degrees);
   }

@@ -80,18 +80,18 @@ public class RobotContainer {
     // Create a voltage constraint to ensure we don't accelerate too fast
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(
-                DriveConstants.ksVolts,
-                DriveConstants.kvVoltSecondsPerMeter,
-                DriveConstants.kaVoltSecondsSquaredPerMeter),
+            new SimpleMotorFeedforward<>(
+                DriveConstants.kS,
+                DriveConstants.kV,
+                DriveConstants.kA),
             DriveConstants.kDriveKinematics,
             10);
 
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                AutoConstants.kMaxSpeed,
+                AutoConstants.kMaxAcceleration)
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DriveConstants.kDriveKinematics)
             // Apply the voltage constraint
@@ -114,10 +114,10 @@ public class RobotContainer {
             exampleTrajectory,
             m_robotDrive::getPose,
             new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-            new SimpleMotorFeedforward(
-                DriveConstants.ksVolts,
-                DriveConstants.kvVoltSecondsPerMeter,
-                DriveConstants.kaVoltSecondsSquaredPerMeter),
+            new SimpleMotorFeedforward<>(
+                DriveConstants.kS,
+                DriveConstants.kV,
+                DriveConstants.kA),
             DriveConstants.kDriveKinematics,
             m_robotDrive::getWheelSpeeds,
             new PIDController(DriveConstants.kPDriveVel, 0, 0),

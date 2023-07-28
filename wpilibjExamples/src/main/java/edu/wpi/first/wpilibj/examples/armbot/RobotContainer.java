@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.armbot;
 
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.examples.armbot.Constants.OIConstants;
 import edu.wpi.first.wpilibj.examples.armbot.subsystems.ArmSubsystem;
@@ -69,7 +71,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_robotArm.setGoal(Constants.ArmConstants.kArmOffsetRads);
+                  m_robotArm.setGoal(Constants.ArmConstants.kArmOffset.in(Radians));
                   m_robotArm.enable();
                 },
                 m_robotArm));

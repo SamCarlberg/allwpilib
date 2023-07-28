@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.mecanumcontrollercommand.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
@@ -65,11 +67,12 @@ public class DriveSubsystem extends Subsystem {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    // Sets the distance per pulse for the encoders
-    m_frontLeftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rearLeftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_frontRightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rearRightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    // Sets the distance per pulse for the encoders. Use meters so it's compatible with WPILib's
+    // MecanumDriveOdometry class, which expects values in terms of SI units (meters)
+    m_frontLeftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rearLeftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_frontRightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rearRightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.

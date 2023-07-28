@@ -4,22 +4,39 @@
 
 package edu.wpi.first.wpilibj.examples.swervebot;
 
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.AnalogGyro;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
-  public static final double kMaxSpeed = 3.0; // 3 meters per second
-  public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+  public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3.0);
+  public static final Measure<Velocity<Angle>> kMaxAngularSpeed = RotationsPerSecond.of(0.5);
 
-  private final Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
-  private final Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
-  private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
-  private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
+  private static final Measure<Distance> kHalfWheelbase = Feet.of(1).plus(Inches.of(3));
+
+  private final Translation2d m_frontLeftLocation =
+      new Translation2d(kHalfWheelbase.in(Meters), kHalfWheelbase.in(Meters));
+  private final Translation2d m_frontRightLocation =
+      new Translation2d(kHalfWheelbase.in(Meters), -kHalfWheelbase.in(Meters));
+  private final Translation2d m_backLeftLocation =
+      new Translation2d(-kHalfWheelbase.in(Meters), kHalfWheelbase.in(Meters));
+  private final Translation2d m_backRightLocation =
+      new Translation2d(-kHalfWheelbase.in(Meters), -kHalfWheelbase.in(Meters));
 
   private final SwerveModule m_frontLeft = new SwerveModule(1, 2, 0, 1, 2, 3);
   private final SwerveModule m_frontRight = new SwerveModule(3, 4, 4, 5, 6, 7);
@@ -48,7 +65,7 @@ public class Drivetrain {
   }
 
   /**
-   * Method to drive the robot using joystick info.
+   * Method to drive the robot with specified x, y, and rotational velocities.
    *
    * @param xSpeed Speed of the robot in the x direction (forward).
    * @param ySpeed Speed of the robot in the y direction (sideways).
@@ -56,7 +73,11 @@ public class Drivetrain {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(
-      double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
+      Measure<Velocity<Distance>> xSpeed,
+      Measure<Velocity<Distance>> ySpeed,
+      Measure<Velocity<Angle>> rot,
+      boolean fieldRelative,
+      Measure<Time> period) {
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
             ChassisSpeeds.fromDiscreteSpeeds(
@@ -64,7 +85,7 @@ public class Drivetrain {
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(
                         xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                     : new ChassisSpeeds(xSpeed, ySpeed, rot),
-                periodSeconds));
+                period));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);

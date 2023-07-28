@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.ramsetecommand.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -59,8 +61,8 @@ public class DriveSubsystem extends Subsystem {
     m_rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
 
     resetEncoders();
     m_odometry =

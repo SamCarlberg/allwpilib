@@ -4,8 +4,13 @@
 
 package edu.wpi.first.wpilibj.examples.ultrasonicpid;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Millimeters;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -18,7 +23,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 public class Robot extends TimedRobot {
   // distance the robot wants to stay from an object
   // (one meter)
-  static final double kHoldDistanceMillimeters = 1.0e3;
+  static final Measure<Distance> kHoldDistance = Meters.of(1);
 
   // proportional speed constant
   // negative because applying positive voltage will bring us closer to the target
@@ -46,8 +51,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    // Set setpoint of the pid controller
-    m_pidController.setSetpoint(kHoldDistanceMillimeters);
+    // Set setpoint of the pid controller. Use millimeters here to have consistent units
+    // with the inputs, which take the millimeter range from the ultrasonic sensor
+    m_pidController.setSetpoint(kHoldDistance.in(Millimeters));
   }
 
   @Override

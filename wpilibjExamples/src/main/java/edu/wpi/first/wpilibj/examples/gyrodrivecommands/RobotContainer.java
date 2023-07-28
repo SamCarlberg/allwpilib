@@ -4,6 +4,7 @@
 
 package edu.wpi.first.wpilibj.examples.gyrodrivecommands;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.wpilibj.PS4Controller.Button;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -80,11 +81,11 @@ public class RobotContainer {
 
     // Turn to 90 degrees when the 'X' button is pressed, with a 5 second timeout
     new JoystickButton(m_driverController, Button.kCross.value)
-        .onTrue(new TurnToAngle(90, m_robotDrive).withTimeout(5));
+        .onTrue(new TurnToAngle(Degrees.of(90), m_robotDrive).withTimeout(5));
 
     // Turn to -90 degrees with a profile when the Circle button is pressed, with a 5 second timeout
     new JoystickButton(m_driverController, Button.kCircle.value)
-        .onTrue(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(5));
+        .onTrue(new TurnToAngleProfiled(Degrees.of(-90), m_robotDrive).withTimeout(5));
   }
 
   /**

@@ -4,8 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.gyrodrivecommands.commands;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Second;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.examples.gyrodrivecommands.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.examples.gyrodrivecommands.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
@@ -15,22 +21,22 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
   /**
    * Turns to robot to the specified angle using a motion profile.
    *
-   * @param targetAngleDegrees The angle to turn to
+   * @param targetAngle The angle to turn to
    * @param drive The drive subsystem to use
    */
-  public TurnToAngleProfiled(double targetAngleDegrees, DriveSubsystem drive) {
+  public TurnToAngleProfiled(Measure<Angle> targetAngle, DriveSubsystem drive) {
     super(
         new ProfiledPIDController(
             DriveConstants.kTurnP,
             DriveConstants.kTurnI,
             DriveConstants.kTurnD,
             new TrapezoidProfile.Constraints(
-                DriveConstants.kMaxTurnRateDegPerS,
-                DriveConstants.kMaxTurnAccelerationDegPerSSquared)),
+                DriveConstants.kMaxTurnRate.in(DegreesPerSecond),
+                DriveConstants.kMaxTurnAcceleration.in(DegreesPerSecond.per(Second)))),
         // Close loop on heading
         drive::getHeading,
         // Set reference to target
-        targetAngleDegrees,
+        targetAngle.in(Degrees),
         // Pipe output to turn robot
         (output, setpoint) -> drive.arcadeDrive(0, output),
         // Require the drive
@@ -41,7 +47,9 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
     getController()
-        .setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
+        .setTolerance(
+            DriveConstants.kTurnTolerance.in(Degrees),
+            DriveConstants.kTurnRateTolerance.in(DegreesPerSecond));
   }
 
   @Override

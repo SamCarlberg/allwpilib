@@ -4,9 +4,24 @@
 
 package edu.wpi.first.wpilibj.examples.swervecontrollercommand;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
@@ -52,43 +67,46 @@ public final class Constants {
     // If you call DriveSubsystem.drive() with a different period make sure to update this.
     public static final double kDrivePeriod = TimedRobot.kDefaultPeriod;
 
-    public static final double kTrackWidth = 0.5;
+    public static final Measure<Distance> kHalfTrackWidth = Meters.of(0.25);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.7;
+    public static final Measure<Distance> kHalfWheelBase = Meters.of(0.35);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
-
+            new Translation2d(kHalfWheelBase.in(Meters), kHalfTrackWidth.in(Meters)),
+            new Translation2d(kHalfWheelBase.in(Meters), -kHalfTrackWidth.in(Meters)),
+            new Translation2d(-kHalfWheelBase.in(Meters), kHalfTrackWidth.in(Meters)),
+            new Translation2d(-kHalfWheelBase.in(Meters), -kHalfTrackWidth.in(Meters)));
     public static final boolean kGyroReversed = false;
 
     // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
     // These characterization values MUST be determined either experimentally or theoretically
     // for *your* robot's drive.
     // The SysId tool provides a convenient method for obtaining these values for your robot.
-    public static final double ksVolts = 1;
-    public static final double kvVoltSecondsPerMeter = 0.8;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.15;
+    public static final Measure<Voltage> kS = Volts.of(1);
+    public static final Measure<Per<Voltage, Velocity<Distance>>> kV =
+        Volts.of(0.8).per(MetersPerSecond);
+    public static final Measure<Per<Voltage, Velocity<Velocity<Distance>>>> kA =
+        Volts.of(0.15).per(MetersPerSecondPerSecond);
 
-    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3);
   }
 
   public static final class ModuleConstants {
-    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2 * Math.PI;
-    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
+    public static final Measure<Velocity<Angle>> kMaxModuleAngularSpeed =
+        RotationsPerSecond.of(1);
+    public static final Measure<Velocity<Velocity<Angle>>> kMaxModuleAngularAcceleration =
+        RotationsPerSecond.per(Second).of(1);
 
     public static final int kEncoderCPR = 1024;
-    public static final double kWheelDiameterMeters = 0.15;
-    public static final double kDriveEncoderDistancePerPulse =
+    public static final Measure<Distance> kWheelDiameter = Inches.of(6);
+    public static final Measure<Distance> kDriveEncoderDistancePerPulse =
         // Assumes the encoders are directly mounted on the wheel shafts
-        (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR;
+        kWheelDiameter.times(Math.PI).divide(kEncoderCPR);
 
-    public static final double kTurningEncoderDistancePerPulse =
+    public static final Measure<Angle> kTurningEncoderDistancePerPulse =
         // Assumes the encoders are on a 1:1 reduction with the module shaft.
-        (2 * Math.PI) / (double) kEncoderCPR;
+        Rotations.one().divide(kEncoderCPR);
 
     public static final double kPModuleTurningController = 1;
 
@@ -100,10 +118,12 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3);
+    public static final Measure<Velocity<Velocity<Distance>>> kMaxAcceleration =
+        MetersPerSecondPerSecond.of(3);
+    public static final Measure<Velocity<Angle>> kMaxAngularSpeed = RotationsPerSecond.of(0.5);
+    public static final Measure<Velocity<Velocity<Angle>>> kMaxAngularAcceleration =
+        RotationsPerSecond.per(Second).of(0.5);
 
     public static final double kPXController = 1;
     public static final double kPYController = 1;
@@ -111,7 +131,6 @@ public final class Constants {
 
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-        new TrapezoidProfile.Constraints(
-            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+        new TrapezoidProfile.Constraints(kMaxAngularSpeed, kMaxAngularAcceleration);
   }
 }

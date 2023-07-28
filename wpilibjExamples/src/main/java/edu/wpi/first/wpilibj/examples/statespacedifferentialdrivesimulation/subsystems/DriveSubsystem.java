@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.statespacedifferentialdrivesimulation.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -76,8 +78,8 @@ public class DriveSubsystem extends Subsystem {
     m_rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
 
     resetEncoders();
     m_odometry =
@@ -93,8 +95,8 @@ public class DriveSubsystem extends Subsystem {
               DriveConstants.kDrivetrainPlant,
               DriveConstants.kDriveGearbox,
               DriveConstants.kDriveGearing,
-              DriveConstants.kTrackwidthMeters,
-              DriveConstants.kWheelDiameterMeters / 2.0,
+              DriveConstants.kTrackwidth,
+              DriveConstants.kWheelRadius,
               VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
 
       // The encoder and gyro angle sims let us set simulated sensor readings

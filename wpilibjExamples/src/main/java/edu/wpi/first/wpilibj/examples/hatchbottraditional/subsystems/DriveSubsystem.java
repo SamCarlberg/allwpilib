@@ -4,6 +4,11 @@
 
 package edu.wpi.first.wpilibj.examples.hatchbottraditional.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -42,6 +47,9 @@ public class DriveSubsystem extends Subsystem {
           DriveConstants.kRightEncoderPorts[1],
           DriveConstants.kRightEncoderReversed);
 
+  // Keeps track of the average distance travelled.
+  private final MutableMeasure<Distance> m_averageDistance = MutableMeasure.zero(Meters);
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // We need to invert one side of the drivetrain so that positive voltages
@@ -50,8 +58,8 @@ public class DriveSubsystem extends Subsystem {
     m_rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
   }
 
   /**
@@ -75,8 +83,10 @@ public class DriveSubsystem extends Subsystem {
    *
    * @return the average of the TWO encoder readings
    */
-  public double getAverageEncoderDistance() {
-    return (m_leftEncoder.getDistance() + m_rightEncoder.getDistance()) / 2.0;
+  public Measure<Distance> getAverageEncoderDistance() {
+    m_averageDistance.mut_setMagnitude(
+        (m_leftEncoder.getDistance() + m_rightEncoder.getDistance()) / 2.0);
+    return m_averageDistance;
   }
 
   /**

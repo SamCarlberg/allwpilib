@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.rapidreactcommandbot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.examples.rapidreactcommandbot.Constants.DriveConstants;
@@ -51,8 +55,8 @@ public class Drive extends Subsystem {
     m_rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse.in(Meters));
   }
 
   /**
@@ -71,10 +75,10 @@ public class Drive extends Subsystem {
   /**
    * Returns a command that drives the robot forward a specified distance at a specified speed.
    *
-   * @param distanceMeters The distance to drive forward in meters
+   * @param distance The distance to drive forward in meters
    * @param speed The fraction of max speed at which to drive
    */
-  public Command driveDistanceCommand(double distanceMeters, double speed) {
+  public Command driveDistanceCommand(Measure<Distance> distance, double speed) {
     return runOnce(
             () -> {
               // Reset encoders at the start of the command
@@ -87,7 +91,7 @@ public class Drive extends Subsystem {
         .until(
             () ->
                 Math.max(m_leftEncoder.getDistance(), m_rightEncoder.getDistance())
-                    >= distanceMeters)
+                    >= distance.in(Meters))
         // Stop the drive when the command ends
         .finallyDo(interrupted -> m_drive.stopMotor());
   }

@@ -4,6 +4,11 @@
 
 package edu.wpi.first.wpilibj.examples.hatchbotinlined;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -25,10 +30,10 @@ public final class Constants {
     public static final boolean kRightEncoderReversed = true;
 
     public static final int kEncoderCPR = 1024;
-    public static final double kWheelDiameterInches = 6;
-    public static final double kEncoderDistancePerPulse =
+    public static final Measure<Distance> kWheelDiameter = Inches.of(6);
+    public static final Measure<Distance> kEncoderDistancePerPulse =
         // Assumes the encoders are directly mounted on the wheel shafts
-        (kWheelDiameterInches * Math.PI) / (double) kEncoderCPR;
+        kWheelDiameter.times(Math.PI).divide(kEncoderCPR);
   }
 
   public static final class HatchConstants {
@@ -37,8 +42,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kAutoDriveDistanceInches = 60;
-    public static final double kAutoBackupDistanceInches = 20;
+    public static final Measure<Distance> kAutoDriveDistance = Inches.of(60);
+    public static final Measure<Distance> kAutoBackupDistance = Inches.of(20);
     public static final double kAutoDriveSpeed = 0.5;
   }
 

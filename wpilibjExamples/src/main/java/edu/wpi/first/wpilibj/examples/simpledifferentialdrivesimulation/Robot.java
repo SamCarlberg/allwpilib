@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.simpledifferentialdrivesimulation;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +15,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,6 +36,14 @@ public class Robot extends TimedRobot {
   private final RamseteController m_ramsete = new RamseteController();
   private final Timer m_timer = new Timer();
   private Trajectory m_trajectory;
+
+  // Track x and angular speed in mutable measures to avoid creating new objects every time
+  // we set speeds on the drivetrain. This helps reduce garbage collector activity and avoid loop
+  // time overruns.
+  private final MutableMeasure<Velocity<Distance>> m_targetXSpeed =
+      MutableMeasure.zero(MetersPerSecond);
+  private final MutableMeasure<Velocity<Angle>> m_targetAngularSpeed =
+      MutableMeasure.zero(RadiansPerSecond);
 
   @Override
   public void robotInit() {
@@ -56,21 +71,27 @@ public class Robot extends TimedRobot {
     double elapsed = m_timer.get();
     Trajectory.State reference = m_trajectory.sample(elapsed);
     ChassisSpeeds speeds = m_ramsete.calculate(m_drive.getPose(), reference);
-    m_drive.drive(speeds.vxMetersPerSecond, speeds.omegaRadiansPerSecond);
+    m_targetXSpeed.mut_replace(speeds.vxMetersPerSecond, MetersPerSecond);
+    m_targetAngularSpeed.mut_replace(speeds.omegaRadiansPerSecond, RadiansPerSecond);
+    m_drive.drive(m_targetXSpeed, m_targetAngularSpeed);
   }
 
   @Override
   public void teleopPeriodic() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    double xSpeed = -m_speedLimiter.calculate(m_controller.getLeftY()) * Drivetrain.kMaxSpeed;
+    m_targetXSpeed.mut_replace(
+        Drivetrain.kMaxSpeed.magnitude() * -m_speedLimiter.calculate(m_controller.getLeftY()),
+        Drivetrain.kMaxSpeed.unit());
 
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
-    double rot = -m_rotLimiter.calculate(m_controller.getRightX()) * Drivetrain.kMaxAngularSpeed;
-    m_drive.drive(xSpeed, rot);
+    m_targetAngularSpeed.mut_replace(
+        Drivetrain.kMaxAngularSpeed.magnitude() * -m_rotLimiter.calculate(m_controller.getRightX()),
+        Drivetrain.kMaxAngularSpeed.unit());
+    m_drive.drive(m_targetXSpeed, m_targetAngularSpeed);
   }
 
   @Override

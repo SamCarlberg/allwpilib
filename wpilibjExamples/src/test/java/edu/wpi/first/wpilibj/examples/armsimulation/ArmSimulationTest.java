@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.armsimulation;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,13 +68,14 @@ class ArmSimulationTest {
     DriverStationSim.notifyNewData();
   }
 
-  @ValueSource(doubles = {Constants.kDefaultArmSetpointDegrees, 25.0, 50.0})
+  // Constants.kDefaultArmSetpoint = 75 degrees
+  @ValueSource(doubles = {75.0, 25.0, 50.0})
   @ParameterizedTest
   void teleopTest(double setpoint) {
     assertTrue(Preferences.containsKey(Constants.kArmPositionKey));
     assertTrue(Preferences.containsKey(Constants.kArmPKey));
     assertEquals(
-        Constants.kDefaultArmSetpointDegrees,
+        Constants.kDefaultArmSetpoint.in(Degrees),
         Preferences.getDouble(Constants.kArmPositionKey, Double.NaN));
 
     Preferences.setDouble(Constants.kArmPositionKey, setpoint);
@@ -86,12 +89,15 @@ class ArmSimulationTest {
       assertTrue(m_encoderSim.getInitialized());
     }
 
+    // Should start at zero after being initialized
+    assertEquals(0, m_encoderSim.getDistance(), 2.0, "Didn't start at the minimum angle?");
+
     {
-      // advance 50 timesteps
+      // advance 150 timesteps
       SimHooks.stepTiming(3);
 
       // Ensure elevator is still at 0.
-      assertEquals(Constants.kMinAngleRads, m_encoderSim.getDistance(), 2.0);
+      assertEquals(0, m_encoderSim.getDistance(), 2.0, "Didn't stay at zero after 3 seconds");
     }
 
     {
@@ -118,7 +124,7 @@ class ArmSimulationTest {
       // advance 75 timesteps
       SimHooks.stepTiming(3.0);
 
-      assertEquals(Constants.kMinAngleRads, m_encoderSim.getDistance(), 2.0);
+      assertEquals(Constants.kMinAngle.in(Radians), m_encoderSim.getDistance(), 2.0);
     }
 
     {
@@ -147,7 +153,7 @@ class ArmSimulationTest {
       SimHooks.stepTiming(3.5);
 
       assertEquals(0.0, m_motorSim.getSpeed(), 0.01);
-      assertEquals(Constants.kMinAngleRads, m_encoderSim.getDistance(), 2.0);
+      assertEquals(Constants.kMinAngle.in(Radians), m_encoderSim.getDistance(), 2.0);
     }
   }
 }

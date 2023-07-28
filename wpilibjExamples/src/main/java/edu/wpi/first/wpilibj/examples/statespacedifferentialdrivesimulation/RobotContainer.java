@@ -89,18 +89,18 @@ public class RobotContainer {
     // Create a voltage constraint to ensure we don't accelerate too fast
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(
-                Constants.DriveConstants.ksVolts,
-                Constants.DriveConstants.kvVoltSecondsPerMeter,
-                Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+            new SimpleMotorFeedforward<>(
+                Constants.DriveConstants.kS_linear,
+                Constants.DriveConstants.kV_linear,
+                Constants.DriveConstants.kA_linear),
             Constants.DriveConstants.kDriveKinematics,
             7);
 
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(
-                Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                Constants.AutoConstants.kMaxSpeed,
+                Constants.AutoConstants.kMaxAcceleration)
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(Constants.DriveConstants.kDriveKinematics)
             // Apply the voltage constraint
@@ -124,10 +124,10 @@ public class RobotContainer {
             m_robotDrive::getPose,
             new RamseteController(
                 Constants.AutoConstants.kRamseteB, Constants.AutoConstants.kRamseteZeta),
-            new SimpleMotorFeedforward(
-                Constants.DriveConstants.ksVolts,
-                Constants.DriveConstants.kvVoltSecondsPerMeter,
-                Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+            new SimpleMotorFeedforward<>(
+                Constants.DriveConstants.kS_linear,
+                Constants.DriveConstants.kV_linear,
+                Constants.DriveConstants.kA_linear),
             Constants.DriveConstants.kDriveKinematics,
             m_robotDrive::getWheelSpeeds,
             new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),

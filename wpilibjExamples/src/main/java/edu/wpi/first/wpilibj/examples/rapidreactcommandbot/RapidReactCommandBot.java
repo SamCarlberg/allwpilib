@@ -4,6 +4,7 @@
 
 package edu.wpi.first.wpilibj.examples.rapidreactcommandbot;
 
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
 import edu.wpi.first.wpilibj.examples.rapidreactcommandbot.Constants.AutoConstants;
@@ -67,7 +68,7 @@ public class RapidReactCommandBot {
         .a()
         .onTrue(
             parallel(
-                    m_shooter.shootCommand(ShooterConstants.kShooterTargetRPS),
+                    m_shooter.shootCommand(ShooterConstants.kShooterTargetSpeed),
                     m_storage.runCommand())
                 // Since we composed this inline we should give it a name
                 .withName("Shoot"));
@@ -84,7 +85,7 @@ public class RapidReactCommandBot {
   public Command getAutonomousCommand() {
     // Drive forward for 2 meters at half speed with a 3 second timeout
     return m_drive
-        .driveDistanceCommand(AutoConstants.kDriveDistanceMeters, AutoConstants.kDriveSpeed)
-        .withTimeout(AutoConstants.kTimeoutSeconds);
+        .driveDistanceCommand(AutoConstants.kDriveDistance, AutoConstants.kDriveSpeed)
+        .withTimeout(AutoConstants.kTimeout.in(Seconds));
   }
 }

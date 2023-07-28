@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.ramsetecontroller;
 
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +15,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -22,9 +28,11 @@ public class Drivetrain {
   public static final double kMaxSpeed = 3.0; // meters per second
   public static final double kMaxAngularSpeed = 2 * Math.PI; // one rotation per second
 
-  private static final double kTrackWidth = 0.381 * 2; // meters
-  private static final double kWheelRadius = 0.0508; // meters
+  private static final Measure<Distance> kTrackWidth = Feet.of(2).plus(Inches.of(6));
+  private static final Measure<Distance> kWheelRadius = Inches.of(2);
   private static final int kEncoderResolution = 4096;
+  private static final Measure<Distance> kEncoderDistancePerPulse =
+      kWheelRadius.times(2 * Math.PI).divide(kEncoderResolution);
 
   private final MotorController m_leftLeader = new PWMSparkMax(1);
   private final MotorController m_leftFollower = new PWMSparkMax(2);
@@ -67,8 +75,8 @@ public class Drivetrain {
     // Set the distance per pulse for the drive encoders. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
     // resolution.
-    m_leftEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
-    m_rightEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
+    m_leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
+    m_rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse.in(Meters));
 
     m_leftEncoder.reset();
     m_rightEncoder.reset();

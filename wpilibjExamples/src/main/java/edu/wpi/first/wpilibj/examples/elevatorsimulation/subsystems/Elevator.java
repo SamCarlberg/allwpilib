@@ -4,11 +4,17 @@
 
 package edu.wpi.first.wpilibj.examples.elevatorsimulation.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.examples.elevatorsimulation.Constants;
@@ -33,7 +39,8 @@ public class Elevator implements AutoCloseable {
           Constants.kElevatorKp,
           Constants.kElevatorKi,
           Constants.kElevatorKd,
-          new TrapezoidProfile.Constraints(2.45, 2.45));
+          new TrapezoidProfile.Constraints(
+              MetersPerSecond.of(2.45), MetersPerSecondPerSecond.of(2.45)));
   ElevatorFeedforward m_feedforward =
       new ElevatorFeedforward(
           Constants.kElevatorkS,
@@ -51,10 +58,10 @@ public class Elevator implements AutoCloseable {
           Constants.kElevatorGearing,
           Constants.kCarriageMass,
           Constants.kElevatorDrumRadius,
-          Constants.kMinElevatorHeightMeters,
-          Constants.kMaxElevatorHeightMeters,
+          Constants.kMinElevatorHeight,
+          Constants.kMaxElevatorHeight,
           true,
-          0,
+          Meters.zero(),
           VecBuilder.fill(0.01));
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
   private final PWMSim m_motorSim = new PWMSim(m_motor);
@@ -68,7 +75,9 @@ public class Elevator implements AutoCloseable {
 
   /** Subsystem constructor. */
   public Elevator() {
-    m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
+    // Use meters as the encoder units so we can update it with the simulation outputs, which
+    // use SI units (meters)
+    m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse.in(Meters));
 
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
@@ -96,8 +105,8 @@ public class Elevator implements AutoCloseable {
    *
    * @param goal the position to maintain
    */
-  public void reachGoal(double goal) {
-    m_controller.setGoal(goal);
+  public void reachGoal(Measure<Distance> goal) {
+    m_controller.setGoal(goal.in(Meters));
 
     // With the setpoint value we run PID control like normal
     double pidOutput = m_controller.calculate(m_encoder.getDistance());

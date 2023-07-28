@@ -4,6 +4,8 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.examples.gearsbot.Constants.ElevatorConstants;
@@ -33,7 +35,7 @@ public class Elevator extends PIDSubsystem {
               ElevatorConstants.kI_simulation,
               ElevatorConstants.kD);
     }
-    getController().setTolerance(ElevatorConstants.kTolerance);
+    getController().setTolerance(ElevatorConstants.kTolerance.in(Meters));
 
     // Conversion value of potentiometer varies between the real world and
     // simulation

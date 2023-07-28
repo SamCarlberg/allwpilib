@@ -4,6 +4,16 @@
 
 package edu.wpi.first.wpilibj.examples.gyrodrivecommands;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Second;
+
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -25,10 +35,10 @@ public final class Constants {
     public static final boolean kRightEncoderReversed = true;
 
     public static final int kEncoderCPR = 1024;
-    public static final double kWheelDiameterInches = 6;
-    public static final double kEncoderDistancePerPulse =
+    public static final Measure<Distance> kWheelDiameter = Inches.of(6);
+    public static final Measure<Distance> kEncoderDistancePerPulse =
         // Assumes the encoders are directly mounted on the wheel shafts
-        (kWheelDiameterInches * Math.PI) / (double) kEncoderCPR;
+        kWheelDiameter.times(Math.PI).divide(kEncoderCPR);
 
     public static final boolean kGyroReversed = false;
 
@@ -40,11 +50,13 @@ public final class Constants {
     public static final double kTurnI = 0;
     public static final double kTurnD = 0;
 
-    public static final double kMaxTurnRateDegPerS = 100;
-    public static final double kMaxTurnAccelerationDegPerSSquared = 300;
+    public static final Measure<Velocity<Angle>> kMaxTurnRate =
+        DegreesPerSecond.of(100);
+    public static final Measure<Velocity<Velocity<Angle>>> kMaxTurnAcceleration =
+        DegreesPerSecond.per(Second).of(300);
 
-    public static final double kTurnToleranceDeg = 5;
-    public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
+    public static final Measure<Angle> kTurnTolerance = Degrees.of(5);
+    public static final Measure<Velocity<Angle>> kTurnRateTolerance = DegreesPerSecond.of(10);
   }
 
   public static final class OIConstants {

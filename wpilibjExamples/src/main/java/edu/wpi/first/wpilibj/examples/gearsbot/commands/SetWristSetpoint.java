@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.examples.gearsbot.commands;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.examples.gearsbot.subsystems.Wrist;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -14,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class SetWristSetpoint extends Command {
   private final Wrist m_wrist;
-  private final double m_setpoint;
+  private final Measure<Angle> m_setpoint;
 
   /**
    * Create a new SetWristSetpoint command.
@@ -22,7 +26,7 @@ public class SetWristSetpoint extends Command {
    * @param setpoint The setpoint to set the wrist to
    * @param wrist The wrist to use
    */
-  public SetWristSetpoint(double setpoint, Wrist wrist) {
+  public SetWristSetpoint(Measure<Angle> setpoint, Wrist wrist) {
     m_wrist = wrist;
     m_setpoint = setpoint;
     addRequirements(m_wrist);
@@ -32,7 +36,7 @@ public class SetWristSetpoint extends Command {
   @Override
   public void initialize() {
     m_wrist.enable();
-    m_wrist.setSetpoint(m_setpoint);
+    m_wrist.setSetpoint(m_setpoint.in(Degrees));
   }
 
   // Make this return true when this Command no longer needs to run execute()

@@ -4,6 +4,11 @@
 
 package edu.wpi.first.wpilibj.examples.swervecontrollercommand.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,8 +36,8 @@ public class SwerveModule {
           0,
           0,
           new TrapezoidProfile.Constraints(
-              ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
-              ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
+              ModuleConstants.kMaxModuleAngularSpeed.in(RadiansPerSecond),
+              ModuleConstants.kMaxModuleAngularAcceleration.in(RadiansPerSecond.per(Second))));
 
   /**
    * Constructs a SwerveModule.
@@ -61,7 +66,7 @@ public class SwerveModule {
     // Set the distance per pulse for the drive encoder. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
     // resolution.
-    m_driveEncoder.setDistancePerPulse(ModuleConstants.kDriveEncoderDistancePerPulse);
+    m_driveEncoder.setDistancePerPulse(ModuleConstants.kDriveEncoderDistancePerPulse.in(Meters));
 
     // Set whether drive encoder should be reversed or not
     m_driveEncoder.setReverseDirection(driveEncoderReversed);
@@ -69,7 +74,8 @@ public class SwerveModule {
     // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
     // This is the the angle through an entire rotation (2 * pi) divided by the
     // encoder resolution.
-    m_turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderDistancePerPulse);
+    m_turningEncoder.setDistancePerPulse(
+        ModuleConstants.kTurningEncoderDistancePerPulse.in(Radians));
 
     // Set whether turning encoder should be reversed or not
     m_turningEncoder.setReverseDirection(turningEncoderReversed);

@@ -36,10 +36,10 @@ public class RobotContainer {
               // Start running the feeder
               Commands.runOnce(m_shooter::runFeeder, m_shooter),
               // Shoot for the specified time
-              Commands.waitSeconds(AutoConstants.kAutoShootTimeSeconds))
+              Commands.wait(AutoConstants.kAutoShootTime))
           // Add a timeout (will end the command if, for instance, the shooter
           // never gets up to speed)
-          .withTimeout(AutoConstants.kAutoTimeoutSeconds)
+          .withTimeout(AutoConstants.kAutoTimeout)
           // When the command ends, turn off the shooter and the feeder
           .andThen(
               Commands.runOnce(

@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.examples.apriltagsvision;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.apriltag.AprilTagDetection;
 import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.apriltag.AprilTagPoseEstimator;
@@ -16,6 +19,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.IntegerArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.TimedRobot;
 import java.util.ArrayList;
 import org.opencv.core.Mat;
@@ -30,6 +35,8 @@ import org.opencv.imgproc.Imgproc;
  * <p>Be aware that the performance on this is much worse than a coprocessor solution!
  */
 public class Robot extends TimedRobot {
+  private static final Measure<Distance> APRIL_TAG_SIZE = Inches.of(6);
+
   @Override
   public void robotInit() {
     var visionThread = new Thread(() -> apriltagVisionThreadProc());
@@ -46,7 +53,11 @@ public class Robot extends TimedRobot {
     // (https://www.chiefdelphi.com/t/wpilib-apriltagdetector-sample-code/421411/21)
     var poseEstConfig =
         new AprilTagPoseEstimator.Config(
-            0.1524, 699.3778103158814, 677.7161226393544, 345.6059345433618, 207.12741326228522);
+            APRIL_TAG_SIZE.in(Meters),
+            699.3778103158814,
+            677.7161226393544,
+            345.6059345433618,
+            207.12741326228522);
     var estimator = new AprilTagPoseEstimator(poseEstConfig);
 
     // Get the UsbCamera from CameraServer

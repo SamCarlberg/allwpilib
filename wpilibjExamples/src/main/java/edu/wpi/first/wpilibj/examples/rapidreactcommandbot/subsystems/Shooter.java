@@ -4,13 +4,20 @@
 
 package edu.wpi.first.wpilibj.examples.rapidreactcommandbot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.VoltsPerRadianPerSecond;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.examples.frisbeebot.Constants.ShooterConstants;
+import edu.wpi.first.wpilibj.examples.rapidreactcommandbot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -25,13 +32,13 @@ public class Shooter extends Subsystem {
           ShooterConstants.kEncoderReversed);
   private final SimpleMotorFeedforward m_shooterFeedforward =
       new SimpleMotorFeedforward(
-          ShooterConstants.kSVolts, ShooterConstants.kVVoltSecondsPerRotation);
+          ShooterConstants.kS.in(Volts), ShooterConstants.kV.in(VoltsPerRadianPerSecond));
   private final PIDController m_shooterFeedback = new PIDController(ShooterConstants.kP, 0.0, 0.0);
 
   /** The shooter subsystem for the robot. */
   public Shooter() {
-    m_shooterFeedback.setTolerance(ShooterConstants.kShooterToleranceRPS);
-    m_shooterEncoder.setDistancePerPulse(ShooterConstants.kEncoderDistancePerPulse);
+    m_shooterFeedback.setTolerance(ShooterConstants.kShooterSpeedTolerance.in(RotationsPerSecond));
+    m_shooterEncoder.setDistancePerPulse(ShooterConstants.kEncoderDistancePerPulse.in(Rotations));
 
     // Set default command to turn off both the shooter and feeder motors, and then idle
     setDefaultCommand(
@@ -48,17 +55,17 @@ public class Shooter extends Subsystem {
    * Returns a command to shoot the balls currently stored in the robot. Spins the shooter flywheel
    * up to the specified setpoint, and then runs the feeder motor.
    *
-   * @param setpointRotationsPerSecond The desired shooter velocity
+   * @param setpointSpeed The desired shooter velocity
    */
-  public Command shootCommand(double setpointRotationsPerSecond) {
+  public Command shootCommand(Measure<Velocity<Angle>> setpointSpeed) {
     return parallel(
             // Run the shooter flywheel at the desired setpoint using feedforward and feedback
             run(
                 () ->
                     m_shooterMotor.set(
-                        m_shooterFeedforward.calculate(setpointRotationsPerSecond)
+                        m_shooterFeedforward.calculate(setpointSpeed.in(RotationsPerSecond))
                             + m_shooterFeedback.calculate(
-                                m_shooterEncoder.getRate(), setpointRotationsPerSecond))),
+                                m_shooterEncoder.getRate(), setpointSpeed.in(RotationsPerSecond)))),
             // Wait until the shooter has reached the setpoint, and then run the feeder
             waitUntil(m_shooterFeedback::atSetpoint).andThen(() -> m_feederMotor.set(1)))
         .withName("Shoot");
