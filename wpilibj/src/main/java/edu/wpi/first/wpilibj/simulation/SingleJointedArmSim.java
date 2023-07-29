@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.simulation;
 
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
@@ -12,6 +16,10 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.NumericalIntegration;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Mass;
+import edu.wpi.first.units.Measure;
 
 /** Represents a simulated single jointed arm mechanism. */
 public class SingleJointedArmSim extends LinearSystemSim<N2, N1, N1> {
@@ -173,6 +181,42 @@ public class SingleJointedArmSim extends LinearSystemSim<N2, N1, N1> {
   }
 
   /**
+   * Creates a simulated arm mechanism.
+   *
+   * @param gearbox The type of and number of motors in the arm gearbox.
+   * @param gearing The gearing of the arm (numbers greater than 1 represent reductions).
+   * @param jKgMetersSquared The moment of inertia of the arm; can be calculated from CAD software.
+   * @param armLength The length of the arm.
+   * @param minAngle The minimum angle that the arm is capable of.
+   * @param maxAngle The maximum angle that the arm is capable of.
+   * @param simulateGravity Whether gravity should be simulated or not.
+   * @param startingAngle The initial position of the Arm simulation
+   * @param measurementStdDevs The standard deviations of the measurements.
+   */
+  public SingleJointedArmSim(
+      DCMotor gearbox,
+      double gearing,
+      double jKgMetersSquared,
+      Measure<Distance> armLength,
+      Measure<Angle> minAngle,
+      Measure<Angle> maxAngle,
+      boolean simulateGravity,
+      Measure<Angle> startingAngle,
+      Matrix<N1, N1> measurementStdDevs) {
+    this(
+        gearbox,
+        gearing,
+        jKgMetersSquared,
+        armLength.in(Meters),
+        minAngle.in(Radians),
+        maxAngle.in(Radians),
+        simulateGravity,
+        startingAngle.in(Radians),
+        measurementStdDevs
+    );
+  }
+
+  /**
    * Returns whether the arm would hit the lower limit.
    *
    * @param currentAngleRads The current arm height.
@@ -259,6 +303,17 @@ public class SingleJointedArmSim extends LinearSystemSim<N2, N1, N1> {
    */
   public static double estimateMOI(double lengthMeters, double massKg) {
     return 1.0 / 3.0 * massKg * lengthMeters * lengthMeters;
+  }
+
+  /**
+   * Calculates a rough estimate of the moment of inertia of an arm given its length and mass.
+   *
+   * @param length The length of the arm.
+   * @param mass The mass of the arm.
+   * @return The calculated moment of inertia, in terms of kg*m^2
+   */
+  public static double estimateMOI(Measure<Distance> length, Measure<Mass> mass) {
+    return estimateMOI(length.in(Meters), mass.in(Kilograms));
   }
 
   /**

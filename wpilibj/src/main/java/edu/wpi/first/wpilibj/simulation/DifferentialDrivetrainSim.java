@@ -4,6 +4,9 @@
 
 package edu.wpi.first.wpilibj.simulation;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.StateSpaceUtil;
@@ -18,6 +21,9 @@ import edu.wpi.first.math.system.NumericalIntegration;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 
 /**
@@ -132,6 +138,43 @@ public class DifferentialDrivetrainSim {
   }
 
   /**
+   * Create a SimDrivetrain .
+   *
+   * @param drivetrainPlant The {@link LinearSystem} representing the robot's drivetrain. This
+   *     system can be created with {@link
+   *     edu.wpi.first.math.system.plant.LinearSystemId#createDrivetrainVelocitySystem(DCMotor,
+   *     double, double, double, double, double)} or {@link
+   *     edu.wpi.first.math.system.plant.LinearSystemId#identifyDrivetrainSystem(double, double,
+   *     double, double)}.
+   * @param driveMotor A {@link DCMotor} representing the drivetrain.
+   * @param gearing The gearingRatio ratio of the robot, as output over input. This must be the same
+   *     ratio as the ratio used to identify or create the drivetrainPlant.
+   * @param trackWidth The distance between the two sides of the drivetrain. Can be found with
+   *     SysId.
+   * @param wheelRadius The radius of the wheels on the drivetrain.
+   * @param measurementStdDevs Standard deviations for measurements, in the form [x, y, heading,
+   *     left velocity, right velocity, left distance, right distance]ᵀ. Can be null if no noise is
+   *     desired. Gyro standard deviations of 0.0001 radians, velocity standard deviations of 0.05
+   *     m/s, and position measurement standard deviations of 0.005 meters are a reasonable starting
+   *     point.
+   */
+  public DifferentialDrivetrainSim(
+      LinearSystem<N2, N2, N2> drivetrainPlant,
+      DCMotor driveMotor,
+      double gearing,
+      Measure<Distance> trackWidth,
+      Measure<Distance> wheelRadius,
+      Matrix<N7, N1> measurementStdDevs) {
+    this(
+        drivetrainPlant,
+        driveMotor,
+        gearing,
+        trackWidth.in(Meters),
+        wheelRadius.in(Meters),
+        measurementStdDevs);
+  }
+
+  /**
    * Sets the applied voltage to the drivetrain. Note that positive voltage must make that side of
    * the drivetrain travel forward (+X).
    *
@@ -140,6 +183,17 @@ public class DifferentialDrivetrainSim {
    */
   public void setInputs(double leftVoltageVolts, double rightVoltageVolts) {
     m_u = clampInput(VecBuilder.fill(leftVoltageVolts, rightVoltageVolts));
+  }
+
+  /**
+   * Sets the applied voltage to the drivetrain. Note that positive voltage must make that side of
+   * the drivetrain travel forward (+X).
+   *
+   * @param left The left voltage.
+   * @param right The right voltage.
+   */
+  public void setInputs(Measure<Voltage> left, Measure<Voltage> right) {
+    setInputs(left.in(Volts), right.in(Volts));
   }
 
   /**

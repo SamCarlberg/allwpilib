@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj.motorcontrol;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 
 /** Interface for motor controlling devices. */
@@ -28,6 +32,21 @@ public interface MotorController {
    */
   default void setVoltage(double outputVolts) {
     set(outputVolts / RobotController.getBatteryVoltage());
+  }
+
+  /**
+   * Sets the voltage output of the MotorController. Compensates for the current bus voltage to
+   * ensure that the desired voltage is output even if the battery voltage is below 12V - highly
+   * useful when the voltage outputs are "meaningful" (e.g. they come from a feedforward
+   * calculation).
+   *
+   * <p>NOTE: This function *must* be called regularly in order for voltage compensation to work
+   * properly - unlike the ordinary set function, it is not "set it and forget it."
+   *
+   * @param output The voltage to output.
+   */
+  default void setVoltage(Measure<Voltage> output) {
+    setVoltage(output.in(Volts));
   }
 
   /**
