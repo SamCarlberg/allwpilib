@@ -4,8 +4,12 @@
 
 package edu.wpi.first.apriltag;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.apriltag.jni.AprilTagJNI;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 
 /** Pose estimators for AprilTag tags. */
 public class AprilTagPoseEstimator {
@@ -27,6 +31,19 @@ public class AprilTagPoseEstimator {
       this.fy = fy;
       this.cx = cx;
       this.cy = cy;
+    }
+
+    /**
+     * Creates a pose estimator configuration.
+     *
+     * @param tagSize tag size
+     * @param fx camera horizontal focal length, in pixels
+     * @param fy camera vertical focal length, in pixels
+     * @param cx camera horizontal focal center, in pixels
+     * @param cy camera vertical focal center, in pixels
+     */
+    public Config(Measure<Distance> tagSize, double fx, double fy, double cx, double cy) {
+      this(tagSize.in(Meters), fx, fy, cx, cy);
     }
 
     public double tagSize;
