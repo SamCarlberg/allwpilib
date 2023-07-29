@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.units.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -43,7 +44,7 @@ public class MecanumControllerCommand extends Command {
   private final boolean m_usePID;
   private final Trajectory m_trajectory;
   private final Supplier<Pose2d> m_pose;
-  private final SimpleMotorFeedforward m_feedforward;
+  private final SimpleMotorFeedforward<Distance> m_feedforward;
   private final MecanumDriveKinematics m_kinematics;
   private final HolonomicDriveController m_controller;
   private final Supplier<Rotation2d> m_desiredRotation;
@@ -89,7 +90,7 @@ public class MecanumControllerCommand extends Command {
   public MecanumControllerCommand(
       Trajectory trajectory,
       Supplier<Pose2d> pose,
-      SimpleMotorFeedforward feedforward,
+      SimpleMotorFeedforward<Distance> feedforward,
       MecanumDriveKinematics kinematics,
       PIDController xController,
       PIDController yController,
@@ -176,7 +177,7 @@ public class MecanumControllerCommand extends Command {
   public MecanumControllerCommand(
       Trajectory trajectory,
       Supplier<Pose2d> pose,
-      SimpleMotorFeedforward feedforward,
+      SimpleMotorFeedforward<Distance> feedforward,
       MecanumDriveKinematics kinematics,
       PIDController xController,
       PIDController yController,
@@ -242,7 +243,7 @@ public class MecanumControllerCommand extends Command {
       Subsystem... requirements) {
     m_trajectory = requireNonNullParam(trajectory, "trajectory", "MecanumControllerCommand");
     m_pose = requireNonNullParam(pose, "pose", "MecanumControllerCommand");
-    m_feedforward = new SimpleMotorFeedforward(0, 0, 0);
+    m_feedforward = new SimpleMotorFeedforward<>(0, 0, 0);
     m_kinematics = requireNonNullParam(kinematics, "kinematics", "MecanumControllerCommand");
 
     m_controller =

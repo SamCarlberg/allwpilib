@@ -4,8 +4,11 @@
 
 package edu.wpi.first.wpilibj2.command;
 
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -102,6 +105,17 @@ public final class Commands {
    */
   public static Command waitSeconds(double seconds) {
     return new WaitCommand(seconds);
+  }
+
+  /**
+   * Constructs a command that does nothing, finishing after a specified duration.
+   *
+   * @param time after how long the command finishes
+   * @return the command
+   * @see WaitCommand
+   */
+  public static Command wait(Measure<Time> time) {
+    return waitSeconds(time.in(Seconds));
   }
 
   /**

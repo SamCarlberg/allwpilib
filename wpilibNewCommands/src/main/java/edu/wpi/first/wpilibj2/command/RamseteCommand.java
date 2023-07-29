@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.units.Distance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.BiConsumer;
@@ -39,7 +40,7 @@ public class RamseteCommand extends Command {
   private final Trajectory m_trajectory;
   private final Supplier<Pose2d> m_pose;
   private final RamseteController m_follower;
-  private final SimpleMotorFeedforward m_feedforward;
+  private final SimpleMotorFeedforward<Distance> m_feedforward;
   private final DifferentialDriveKinematics m_kinematics;
   private final Supplier<DifferentialDriveWheelSpeeds> m_speeds;
   private final PIDController m_leftController;
@@ -74,7 +75,7 @@ public class RamseteCommand extends Command {
       Trajectory trajectory,
       Supplier<Pose2d> pose,
       RamseteController controller,
-      SimpleMotorFeedforward feedforward,
+      SimpleMotorFeedforward<Distance> feedforward,
       DifferentialDriveKinematics kinematics,
       Supplier<DifferentialDriveWheelSpeeds> wheelSpeeds,
       PIDController leftController,

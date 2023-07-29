@@ -4,6 +4,10 @@
 
 package edu.wpi.first.wpilibj2.command;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,6 +29,15 @@ public class WaitCommand extends Command {
   public WaitCommand(double seconds) {
     m_duration = seconds;
     SendableRegistry.setName(this, getName() + ": " + seconds + " seconds");
+  }
+
+  /**
+   * Creates a new WaitCommand. This command will do nothing, and end after the specified duration.
+   *
+   * @param duration the time to wait
+   */
+  public WaitCommand(Measure<Time> duration) {
+    this(duration.in(Seconds));
   }
 
   @Override
