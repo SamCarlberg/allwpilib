@@ -10,6 +10,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.units.Dimensionless;
 import org.junit.jupiter.api.Test;
 
 class SimpleMotorFeedforwardTest {
@@ -24,7 +25,7 @@ class SimpleMotorFeedforwardTest {
     var B = Matrix.mat(Nat.N1(), Nat.N1()).fill(1.0 / Ka);
 
     var plantInversion = new LinearPlantInversionFeedforward<N1, N1, N1>(A, B, dt);
-    var simpleMotor = new SimpleMotorFeedforward(Ks, Kv, Ka);
+    var simpleMotor = new SimpleMotorFeedforward<Dimensionless>(Ks, Kv, Ka);
 
     var r = VecBuilder.fill(2.0);
     var nextR = VecBuilder.fill(3.0);

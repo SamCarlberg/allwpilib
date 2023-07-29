@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.units.Distance;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class DifferentialDriveVoltageConstraintTest {
   @Test
   void testDifferentialDriveVoltageConstraint() {
     // Pick an unreasonably large kA to ensure the constraint has to do some work
-    var feedforward = new SimpleMotorFeedforward(1, 1, 3);
+    var feedforward = new SimpleMotorFeedforward<Distance>(1, 1, 3);
     var kinematics = new DifferentialDriveKinematics(0.5);
     double maxVoltage = 10;
     var constraint = new DifferentialDriveVoltageConstraint(feedforward, kinematics, maxVoltage);
@@ -75,7 +76,7 @@ class DifferentialDriveVoltageConstraintTest {
 
   @Test
   void testEndpointHighCurvature() {
-    var feedforward = new SimpleMotorFeedforward(1, 1, 3);
+    var feedforward = new SimpleMotorFeedforward<Distance>(1, 1, 3);
 
     // Large trackwidth - need to test with radius of curvature less than half of trackwidth
     var kinematics = new DifferentialDriveKinematics(3);

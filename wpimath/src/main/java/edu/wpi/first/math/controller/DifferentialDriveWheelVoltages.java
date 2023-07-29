@@ -4,6 +4,11 @@
 
 package edu.wpi.first.math.controller;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+
 /** Motor voltages for a differential drive. */
 public class DifferentialDriveWheelVoltages {
   public double left;
@@ -14,5 +19,9 @@ public class DifferentialDriveWheelVoltages {
   public DifferentialDriveWheelVoltages(double left, double right) {
     this.left = left;
     this.right = right;
+  }
+
+  public DifferentialDriveWheelVoltages(Measure<Voltage> left, Measure<Voltage> right) {
+    this(left.in(Volts), right.in(Volts));
   }
 }

@@ -4,7 +4,12 @@
 
 package edu.wpi.first.math.trajectory.constraint;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 
 /**
  * Represents a constraint that enforces a max velocity. This can be composed with the {@link
@@ -21,6 +26,15 @@ public class MaxVelocityConstraint implements TrajectoryConstraint {
    */
   public MaxVelocityConstraint(double maxVelocityMetersPerSecond) {
     m_maxVelocity = maxVelocityMetersPerSecond;
+  }
+
+  /**
+   * Constructs a new MaxVelocityConstraint.
+   *
+   * @param maxVelocity The max velocity.
+   */
+  public MaxVelocityConstraint(Measure<Velocity<Distance>> maxVelocity) {
+    this(maxVelocity.in(MetersPerSecond));
   }
 
   @Override

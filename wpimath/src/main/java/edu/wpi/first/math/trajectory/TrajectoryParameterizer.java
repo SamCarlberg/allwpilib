@@ -28,8 +28,14 @@
 
 package edu.wpi.first.math.trajectory;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+
 import edu.wpi.first.math.spline.PoseWithCurvature;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -256,6 +262,41 @@ public final class TrajectoryParameterizer {
     }
 
     return new Trajectory(states);
+  }
+
+  /**
+   * Parameterize the trajectory by time. This is where the velocity profile is generated.
+   *
+   * <p>The derivation of the algorithm used can be found <a
+   * href="http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf">here</a>.
+   *
+   * @param points Reference to the spline points.
+   * @param constraints A vector of various velocity and acceleration. constraints.
+   * @param startVelocity The start velocity for the trajectory.
+   * @param endVelocity The end velocity for the trajectory.
+   * @param maxVelocity The max velocity for the trajectory.
+   * @param maxAcceleration The max acceleration for the trajectory.
+   * @param reversed Whether the robot should move backwards. Note that the robot will still move
+   *     from a -&gt; b -&gt; ... -&gt; z as defined in the waypoints.
+   * @return The trajectory.
+   */
+  public static Trajectory timeParameterizeTrajectory(
+      List<PoseWithCurvature> points,
+      List<TrajectoryConstraint> constraints,
+      Measure<Velocity<Distance>> startVelocity,
+      Measure<Velocity<Distance>> endVelocity,
+      Measure<Velocity<Distance>> maxVelocity,
+      Measure<Velocity<Velocity<Distance>>> maxAcceleration,
+      boolean reversed) {
+    return timeParameterizeTrajectory(
+        points,
+        constraints,
+        startVelocity.in(MetersPerSecond),
+        endVelocity.in(MetersPerSecond),
+        maxVelocity.in(MetersPerSecond),
+        maxAcceleration.in(MetersPerSecondPerSecond),
+        reversed
+    );
   }
 
   private static void enforceAccelerationLimits(

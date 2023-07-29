@@ -4,9 +4,14 @@
 
 package edu.wpi.first.math.trajectory.constraint;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 
 /**
  * A class that enforces constraints on the swerve drive kinematics. This can be used to ensure that
@@ -27,6 +32,18 @@ public class SwerveDriveKinematicsConstraint implements TrajectoryConstraint {
       final SwerveDriveKinematics kinematics, double maxSpeedMetersPerSecond) {
     m_maxSpeedMetersPerSecond = maxSpeedMetersPerSecond;
     m_kinematics = kinematics;
+  }
+
+  /**
+   * Constructs a swerve drive kinematics constraint.
+   *
+   * @param kinematics Swerve drive kinematics.
+   * @param maxSpeed The max speed that a side of the robot can travel at.
+   */
+  public SwerveDriveKinematicsConstraint(
+      SwerveDriveKinematics kinematics,
+      Measure<Velocity<Distance>> maxSpeed) {
+    this(kinematics, maxSpeed.in(MetersPerSecond));
   }
 
   /**

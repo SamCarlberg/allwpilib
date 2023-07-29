@@ -4,6 +4,9 @@
 
 package edu.wpi.first.math.system;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.StateSpaceUtil;
@@ -11,6 +14,9 @@ import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Voltage;
 import java.util.function.Function;
 import org.ejml.MatrixDimensionException;
 import org.ejml.simple.SimpleMatrix;
@@ -57,6 +63,32 @@ public class LinearSystemLoop<States extends Num, Inputs extends Num, Outputs ex
         new LinearPlantInversionFeedforward<>(plant, dtSeconds),
         observer,
         u -> StateSpaceUtil.desaturateInputVector(u, maxVoltageVolts));
+  }
+
+  /**
+   * Constructs a state-space loop with the given plant, controller, and observer. By default, the
+   * initial reference is all zeros. Users should call reset with the initial system state before
+   * enabling the loop. This constructor assumes that the input(s) to this system are voltage.
+   *
+   * @param plant State-space plant.
+   * @param controller State-space controller.
+   * @param observer State-space observer.
+   * @param maxVoltage The maximum voltage that can be applied. Commonly 12 volts.
+   * @param dt The nominal timestep.
+   */
+  public LinearSystemLoop(
+      LinearSystem<States, Inputs, Outputs> plant,
+      LinearQuadraticRegulator<States, Inputs, Outputs> controller,
+      KalmanFilter<States, Inputs, Outputs> observer,
+      Measure<Voltage> maxVoltage,
+      Measure<Time> dt) {
+    this(
+        plant,
+        controller,
+        observer,
+        maxVoltage.in(Volts),
+        dt.in(Seconds)
+    );
   }
 
   /**

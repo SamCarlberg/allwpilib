@@ -4,15 +4,32 @@
 
 package edu.wpi.first.math.controller;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 
-/** A helper class that computes feedforward outputs for a simple permanent-magnet DC motor. */
-public class SimpleMotorFeedforward {
+/**
+ * A helper class that computes feedforward outputs for a simple permanent-magnet DC motor.
+ *
+ * @param <I> the type of the input units that velocity and acceleration are in.
+ */
+public class SimpleMotorFeedforward<I extends Unit<I>> {
   public final double ks;
   public final double kv;
   public final double ka;
+
+  private final MutableMeasure<Voltage> m_output = MutableMeasure.zero(Volts);
 
   /**
    * Creates a new SimpleMotorFeedforward with the specified gains. Units of the gain values will
@@ -29,6 +46,20 @@ public class SimpleMotorFeedforward {
   }
 
   /**
+   * Creates a new SimpleMotorFeedforward with the specified gains.
+   *
+   * @param ks The static gain.
+   * @param kv The velocity gain.
+   * @param ka The acceleration gain.
+   */
+  public SimpleMotorFeedforward(
+      Measure<Voltage> ks,
+      Measure<Per<Voltage, Velocity<I>>> kv,
+      Measure<Per<Voltage, Velocity<Velocity<I>>>> ka) {
+    this(ks.in(Volts), kv.baseUnitMagnitude(), ka.baseUnitMagnitude());
+  }
+
+  /**
    * Creates a new SimpleMotorFeedforward with the specified gains. Acceleration gain is defaulted
    * to zero. Units of the gain values will dictate units of the computed feedforward.
    *
@@ -40,6 +71,19 @@ public class SimpleMotorFeedforward {
   }
 
   /**
+   * Creates a new SimpleMotorFeedforward with the specified gains. Acceleration gain is defaulted
+   * to zero.
+   *
+   * @param ks The static gain.
+   * @param kv The velocity gain.
+   */
+  public SimpleMotorFeedforward(
+      Measure<Voltage> ks,
+      Measure<Per<Voltage, Velocity<I>>> kv) {
+    this(ks, kv, Units.<Per<Voltage, Velocity<Velocity<I>>>>anonymous().zero());
+  }
+
+  /**
    * Calculates the feedforward from the gains and setpoints.
    *
    * @param velocity The velocity setpoint.
@@ -48,6 +92,24 @@ public class SimpleMotorFeedforward {
    */
   public double calculate(double velocity, double acceleration) {
     return ks * Math.signum(velocity) + kv * velocity + ka * acceleration;
+  }
+
+  /**
+   * Calculates the feedforward from the gains and setpoints.
+   *
+   * @param velocity The velocity setpoint.
+   * @param acceleration The acceleration setpoint.
+   * @return The computed feedforward.
+   */
+  public Measure<Voltage> calculate(
+      Measure<Velocity<I>> velocity,
+      Measure<Velocity<Velocity<I>>> acceleration) {
+    m_output.mut_replace(
+        calculate(velocity.baseUnitMagnitude(), acceleration.baseUnitMagnitude()),
+        Volts
+    );
+
+    return m_output;
   }
 
   /**
@@ -68,6 +130,30 @@ public class SimpleMotorFeedforward {
     return ks * Math.signum(currentVelocity) + feedforward.calculate(r, nextR).get(0, 0);
   }
 
+  /**
+   * Calculates the feedforward from the gains and setpoints.
+   *
+   * @param currentVelocity The current velocity setpoint.
+   * @param nextVelocity The next velocity setpoint.
+   * @param dt Time between velocity setpoints.
+   * @return The computed feedforward.
+   */
+  public Measure<Voltage> calculate(
+      Measure<Velocity<I>> currentVelocity,
+      Measure<Velocity<I>> nextVelocity,
+      Measure<Time> dt) {
+    m_output.mut_replace(
+        calculate(
+            currentVelocity.baseUnitMagnitude(),
+            nextVelocity.baseUnitMagnitude(),
+            dt.in(Seconds)
+        ),
+        Volts
+    );
+
+    return m_output;
+  }
+
   // Rearranging the main equation from the calculate() method yields the
   // formulas for the methods below:
 
@@ -80,6 +166,17 @@ public class SimpleMotorFeedforward {
    */
   public double calculate(double velocity) {
     return calculate(velocity, 0);
+  }
+
+  /**
+   * Calculates the feedforward from the gains and velocity setpoint (acceleration is assumed to be
+   * zero).
+   *
+   * @param velocity The velocity setpoint.
+   * @return The computed feedforward.
+   */
+  public Measure<Voltage> calculate(Measure<Velocity<I>> velocity) {
+    return calculate(velocity, Units.<Velocity<Velocity<I>>>anonymous().zero());
   }
 
   /**

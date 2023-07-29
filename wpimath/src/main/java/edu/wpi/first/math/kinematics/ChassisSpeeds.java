@@ -4,8 +4,17 @@
 
 package edu.wpi.first.math.kinematics;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
 
 /**
  * Represents the speed of a robot chassis. Although this struct contains similar members compared
@@ -42,6 +51,20 @@ public class ChassisSpeeds {
     this.vxMetersPerSecond = vxMetersPerSecond;
     this.vyMetersPerSecond = vyMetersPerSecond;
     this.omegaRadiansPerSecond = omegaRadiansPerSecond;
+  }
+
+  /**
+   * Constructs a ChassisSpeeds object.
+   *
+   * @param vx Forward velocity.
+   * @param vy Sideways velocity.
+   * @param omega Angular velocity.
+   */
+  public ChassisSpeeds(
+      Measure<Velocity<Distance>> vx,
+      Measure<Velocity<Distance>> vy,
+      Measure<Velocity<Angle>> omega) {
+    this(vx.in(MetersPerSecond), vy.in(MetersPerSecond), omega.in(RadiansPerSecond));
   }
 
   /**
@@ -93,6 +116,22 @@ public class ChassisSpeeds {
   }
 
   /**
+   * Converts from a chassis speed for a discrete timestep into chassis speed for continuous time.
+   *
+   * <p>The difference between applying a chassis speed for a discrete timestep vs. continuously is
+   * that applying for a discrete timestep is just scaling the velocity components by the time and
+   * adding, while when applying continuously the changes to the heading affect the direction the
+   * translational components are applied to relative to the field.
+   *
+   * @param discreteSpeeds The speeds for a discrete timestep.
+   * @param dt The duration of the timestep the speeds should be applied for.
+   * @return ChassisSpeeds that can be applied continuously to produce the discrete chassis speeds.
+   */
+  public static ChassisSpeeds fromDiscreteSpeeds(ChassisSpeeds discreteSpeeds, Measure<Time> dt) {
+    return fromDiscreteSpeeds(discreteSpeeds, dt.in(Seconds));
+  }
+
+  /**
    * Converts a user provided field-relative set of speeds into a robot-relative ChassisSpeeds
    * object.
    *
@@ -115,6 +154,33 @@ public class ChassisSpeeds {
         vxMetersPerSecond * robotAngle.getCos() + vyMetersPerSecond * robotAngle.getSin(),
         -vxMetersPerSecond * robotAngle.getSin() + vyMetersPerSecond * robotAngle.getCos(),
         omegaRadiansPerSecond);
+  }
+
+  /**
+   * Converts a user provided field-relative set of speeds into a robot-relative ChassisSpeeds
+   * object.
+   *
+   * @param vx The component of speed in the x direction relative to the field.
+   *     Positive x is away from your alliance wall.
+   * @param vy The component of speed in the y direction relative to the field.
+   *     Positive y is to your left when standing behind the alliance wall.
+   * @param omega The angular rate of the robot.
+   * @param robotAngle The angle of the robot as measured by a gyroscope. The robot's angle is
+   *     considered to be zero when it is facing directly away from your alliance station wall.
+   *     Remember that this should be CCW positive.
+   * @return ChassisSpeeds object representing the speeds in the robot's frame of reference.
+   */
+  public static ChassisSpeeds fromFieldRelativeSpeeds(
+      Measure<Velocity<Distance>> vx,
+      Measure<Velocity<Distance>> vy,
+      Measure<Velocity<Angle>> omega,
+      Rotation2d robotAngle) {
+    return fromFieldRelativeSpeeds(
+        vx.in(MetersPerSecond),
+        vy.in(MetersPerSecond),
+        omega.in(RadiansPerSecond),
+        robotAngle
+    );
   }
 
   /**

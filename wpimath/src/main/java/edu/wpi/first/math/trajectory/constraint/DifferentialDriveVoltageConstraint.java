@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.units.Distance;
 
 /**
  * A class that enforces constraints on differential drive voltage expenditure based on the motor
@@ -18,7 +19,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  * voltage.
  */
 public class DifferentialDriveVoltageConstraint implements TrajectoryConstraint {
-  private final SimpleMotorFeedforward m_feedforward;
+  private final SimpleMotorFeedforward<Distance> m_feedforward;
   private final DifferentialDriveKinematics m_kinematics;
   private final double m_maxVoltage;
 
@@ -32,7 +33,7 @@ public class DifferentialDriveVoltageConstraint implements TrajectoryConstraint 
    *     current draw.
    */
   public DifferentialDriveVoltageConstraint(
-      SimpleMotorFeedforward feedforward,
+      SimpleMotorFeedforward<Distance> feedforward,
       DifferentialDriveKinematics kinematics,
       double maxVoltage) {
     m_feedforward =

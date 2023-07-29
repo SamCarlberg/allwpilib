@@ -4,6 +4,11 @@
 
 package edu.wpi.first.math.kinematics;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+
 /** Represents the motor voltages for a mecanum drive drivetrain. */
 public class MecanumDriveMotorVoltages {
   /** Voltage of the front left motor. */
@@ -38,6 +43,27 @@ public class MecanumDriveMotorVoltages {
     this.frontRightVoltage = frontRightVoltage;
     this.rearLeftVoltage = rearLeftVoltage;
     this.rearRightVoltage = rearRightVoltage;
+  }
+
+  /**
+   * Constructs a MecanumDriveMotorVoltages.
+   *
+   * @param frontLeft Voltage of the front left motor.
+   * @param frontRight Voltage of the front right motor.
+   * @param rearLeft Voltage of the rear left motor.
+   * @param rearRight Voltage of the rear right motor.
+   */
+  public MecanumDriveMotorVoltages(
+      Measure<Voltage> frontLeft,
+      Measure<Voltage> frontRight,
+      Measure<Voltage> rearLeft,
+      Measure<Voltage> rearRight) {
+    this(
+        frontLeft.in(Volts),
+        frontRight.in(Volts),
+        rearLeft.in(Volts),
+        rearRight.in(Volts)
+    );
   }
 
   @Override

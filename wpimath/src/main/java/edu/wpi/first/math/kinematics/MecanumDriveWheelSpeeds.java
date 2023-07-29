@@ -4,6 +4,11 @@
 
 package edu.wpi.first.math.kinematics;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import java.util.stream.DoubleStream;
 
 public class MecanumDriveWheelSpeeds {
@@ -71,6 +76,20 @@ public class MecanumDriveWheelSpeeds {
       rearRightMetersPerSecond =
           rearRightMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond;
     }
+  }
+
+  /**
+   * Renormalizes the wheel speeds if any individual speed is above the specified maximum.
+   *
+   * <p>Sometimes, after inverse kinematics, the requested speed from one or more wheels may be
+   * above the max attainable speed for the driving motor on that wheel. To fix this issue, one can
+   * reduce all the wheel speeds to make sure that all requested module speeds are at-or-below the
+   * absolute threshold, while maintaining the ratio of speeds between wheels.
+   *
+   * @param attainableMaxSpeed The absolute max speed that a wheel can reach.
+   */
+  public void desaturate(Measure<Velocity<Distance>> attainableMaxSpeed) {
+    desaturate(attainableMaxSpeed.in(MetersPerSecond));
   }
 
   @Override

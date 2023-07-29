@@ -4,7 +4,12 @@
 
 package edu.wpi.first.math.trajectory.constraint;
 
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 
 /**
  * A constraint on the maximum absolute centripetal acceleration allowed when traversing a
@@ -24,6 +29,16 @@ public class CentripetalAccelerationConstraint implements TrajectoryConstraint {
    */
   public CentripetalAccelerationConstraint(double maxCentripetalAccelerationMetersPerSecondSq) {
     m_maxCentripetalAccelerationMetersPerSecondSq = maxCentripetalAccelerationMetersPerSecondSq;
+  }
+
+  /**
+   * Constructs a centripetal acceleration constraint.
+   *
+   * @param maxCentripetalAcceleration The max centripetal acceleration.
+   */
+  public CentripetalAccelerationConstraint(
+      Measure<Velocity<Velocity<Distance>>> maxCentripetalAcceleration) {
+    this(maxCentripetalAcceleration.in(MetersPerSecondPerSecond));
   }
 
   /**

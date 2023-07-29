@@ -4,6 +4,9 @@
 
 package edu.wpi.first.math.trajectory;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -11,6 +14,9 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConst
 import edu.wpi.first.math.trajectory.constraint.MecanumDriveKinematicsConstraint;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +47,18 @@ public class TrajectoryConfig {
     m_maxVelocity = maxVelocityMetersPerSecond;
     m_maxAcceleration = maxAccelerationMetersPerSecondSq;
     m_constraints = new ArrayList<>();
+  }
+
+  /**
+   * Constructs the trajectory configuration class.
+   *
+   * @param maxVelocity The max velocity for the trajectory.
+   * @param maxAcceleration The max acceleration for the trajectory.
+   */
+  public TrajectoryConfig(
+      Measure<Velocity<Distance>> maxVelocity,
+      Measure<Velocity<Velocity<Distance>>> maxAcceleration) {
+    this(maxVelocity.in(MetersPerSecond), maxAcceleration.in(MetersPerSecondPerSecond));
   }
 
   /**

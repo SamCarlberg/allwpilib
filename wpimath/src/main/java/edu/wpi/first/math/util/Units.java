@@ -4,14 +4,21 @@
 
 package edu.wpi.first.math.util;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
+
 /** Utility class that converts between commonly used units in FRC. */
 public final class Units {
-  private static final double kInchesPerFoot = 12.0;
-  private static final double kMetersPerInch = 0.0254;
-  private static final double kSecondsPerMinute = 60;
-  private static final double kMillisecondsPerSecond = 1000;
-  private static final double kKilogramsPerLb = 0.453592;
-
   /** Utility class, so constructor is private. */
   private Units() {
     throw new UnsupportedOperationException("This is a utility class!");
@@ -24,7 +31,7 @@ public final class Units {
    * @return Feet converted from meters.
    */
   public static double metersToFeet(double meters) {
-    return metersToInches(meters) / kInchesPerFoot;
+    return Feet.convertFrom(meters, Meters);
   }
 
   /**
@@ -34,7 +41,7 @@ public final class Units {
    * @return Meters converted from feet.
    */
   public static double feetToMeters(double feet) {
-    return inchesToMeters(feet * kInchesPerFoot);
+    return Meters.convertFrom(feet, Feet);
   }
 
   /**
@@ -44,7 +51,7 @@ public final class Units {
    * @return Inches converted from meters.
    */
   public static double metersToInches(double meters) {
-    return meters / kMetersPerInch;
+    return Inches.convertFrom(meters, Meters);
   }
 
   /**
@@ -54,7 +61,7 @@ public final class Units {
    * @return Meters converted from inches.
    */
   public static double inchesToMeters(double inches) {
-    return inches * kMetersPerInch;
+    return Meters.convertFrom(inches, Inches);
   }
 
   /**
@@ -64,7 +71,7 @@ public final class Units {
    * @return Radians converted from degrees.
    */
   public static double degreesToRadians(double degrees) {
-    return Math.toRadians(degrees);
+    return Radians.convertFrom(degrees, Degrees);
   }
 
   /**
@@ -74,7 +81,7 @@ public final class Units {
    * @return Degrees converted from radians.
    */
   public static double radiansToDegrees(double radians) {
-    return Math.toDegrees(radians);
+    return Degrees.convertFrom(radians, Radians);
   }
 
   /**
@@ -84,7 +91,7 @@ public final class Units {
    * @return rotations Converted from radians.
    */
   public static double radiansToRotations(double radians) {
-    return radians / (Math.PI * 2);
+    return Rotations.convertFrom(radians, Radians);
   }
 
   /**
@@ -94,7 +101,7 @@ public final class Units {
    * @return rotations Converted from degrees.
    */
   public static double degreesToRotations(double degrees) {
-    return degrees / 360;
+    return Rotations.convertFrom(degrees, Degrees);
   }
 
   /**
@@ -104,7 +111,7 @@ public final class Units {
    * @return degrees Converted from rotations.
    */
   public static double rotationsToDegrees(double rotations) {
-    return rotations * 360;
+    return Degrees.convertFrom(rotations, Rotations);
   }
 
   /**
@@ -114,7 +121,7 @@ public final class Units {
    * @return radians Converted from rotations.
    */
   public static double rotationsToRadians(double rotations) {
-    return rotations * 2 * Math.PI;
+    return Radians.convertFrom(rotations, Rotations);
   }
 
   /**
@@ -124,7 +131,7 @@ public final class Units {
    * @return Radians per second converted from rotations per minute.
    */
   public static double rotationsPerMinuteToRadiansPerSecond(double rpm) {
-    return rpm * Math.PI / (kSecondsPerMinute / 2);
+    return RadiansPerSecond.convertFrom(rpm, RPM);
   }
 
   /**
@@ -134,7 +141,7 @@ public final class Units {
    * @return Rotations per minute converted from radians per second.
    */
   public static double radiansPerSecondToRotationsPerMinute(double radiansPerSecond) {
-    return radiansPerSecond * (kSecondsPerMinute / 2) / Math.PI;
+    return RPM.convertFrom(radiansPerSecond, RadiansPerSecond);
   }
 
   /**
@@ -144,7 +151,7 @@ public final class Units {
    * @return Seconds converted from milliseconds.
    */
   public static double millisecondsToSeconds(double milliseconds) {
-    return milliseconds / kMillisecondsPerSecond;
+    return Seconds.convertFrom(milliseconds, Milliseconds);
   }
 
   /**
@@ -154,7 +161,7 @@ public final class Units {
    * @return Milliseconds converted from seconds.
    */
   public static double secondsToMilliseconds(double seconds) {
-    return seconds * kMillisecondsPerSecond;
+    return Milliseconds.convertFrom(seconds, Seconds);
   }
 
   /**
@@ -164,7 +171,7 @@ public final class Units {
    * @return Lbs (pound-mass) converted from kilograms.
    */
   public static double kilogramsToLbs(double kilograms) {
-    return kilograms / kKilogramsPerLb;
+    return Pounds.convertFrom(kilograms, Kilograms);
   }
 
   /**
@@ -174,6 +181,6 @@ public final class Units {
    * @return Kilograms converted from lbs (pound-mass).
    */
   public static double lbsToKilograms(double lbs) {
-    return lbs * kKilogramsPerLb;
+    return Kilograms.convertFrom(lbs, Pounds);
   }
 }

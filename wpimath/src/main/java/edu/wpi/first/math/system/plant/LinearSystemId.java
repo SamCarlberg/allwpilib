@@ -4,12 +4,27 @@
 
 package edu.wpi.first.math.system.plant;
 
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
+import static edu.wpi.first.units.Units.VoltsPerMeterPerSecondSquared;
+import static edu.wpi.first.units.Units.VoltsPerRadianPerSecond;
+import static edu.wpi.first.units.Units.VoltsPerRadianPerSecondSquared;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Mass;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 
 public final class LinearSystemId {
   private LinearSystemId() {
@@ -55,6 +70,22 @@ public final class LinearSystemId {
         VecBuilder.fill(0, G * motor.KtNMPerAmp / (motor.rOhms * radiusMeters * massKg)),
         Matrix.mat(Nat.N1(), Nat.N2()).fill(1, 0),
         new Matrix<>(Nat.N1(), Nat.N1()));
+  }
+
+  /**
+   * Create a state-space model of an elevator system. The states of the system are [position,
+   * velocity]ᵀ, inputs are [voltage], and outputs are [position].
+   *
+   * @param motor The motor (or gearbox) attached to the carriage.
+   * @param mass The mass of the elevator carriage.
+   * @param radius The radius of the elevator's driving drum.
+   * @param G The reduction between motor and drum, as a ratio of output to input.
+   * @return A LinearSystem representing the given characterized constants.
+   * @throws IllegalArgumentException if mass &lt;= 0, radius &lt;= 0, or G &lt;= 0.
+   */
+  public static LinearSystem<N2, N1, N1> createElevatorSystem(
+      DCMotor motor, Measure<Mass> mass, Measure<Distance> radius, double G) {
+    return createElevatorSystem(motor, mass.in(Kilograms), radius.in(Meters), G);
   }
 
   /**
@@ -240,6 +271,38 @@ public final class LinearSystemId {
   }
 
   /**
+   * Create a state-space model for a 1 DOF velocity system from its kV (volts/(unit/sec)) and kA
+   * (volts/(unit/sec²). These constants cam be found using SysId. The states of the system are
+   * [velocity], inputs are [voltage], and outputs are [velocity].
+   *
+   * <p>The parameters provided by the user are from this feedforward model:
+   *
+   * <p>u = K_v v + K_a a
+   *
+   * @param kV The velocity gain, in volts/(unit/sec)
+   * @param kA The acceleration gain, in volts/(unit/sec^2)
+   * @return A LinearSystem representing the given characterized constants.
+   * @throws IllegalArgumentException if kV &lt;= 0 or kA &lt;= 0.
+   * @see <a href="https://github.com/wpilibsuite/sysid">https://github.com/wpilibsuite/sysid</a>
+   */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static <U extends Unit<U>> LinearSystem<N1, N1, N1> identifyVelocitySystem(
+      Measure<Per<Voltage, Velocity<U>>> kV,
+      Measure<Per<Voltage, Velocity<Velocity<U>>>> kA) {
+    if (kV.unit().denominator().getUnit() instanceof Angle) {
+      // base angle unit is rotations, but radians are needed
+      return identifyVelocitySystem(
+          ((Measure) kV).in(VoltsPerRadianPerSecond),
+          ((Measure) kA).in(VoltsPerRadianPerSecondSquared)
+      );
+    }
+    return identifyVelocitySystem(
+        kV.baseUnitMagnitude(),
+        kA.baseUnitMagnitude()
+    );
+  }
+
+  /**
    * Create a state-space model for a 1 DOF position system from its kV (volts/(unit/sec)) and kA
    * (volts/(unit/sec²). These constants cam be found using SysId. The states of the system are
    * [position, velocity]ᵀ, inputs are [voltage], and outputs are [position].
@@ -273,6 +336,39 @@ public final class LinearSystemId {
   }
 
   /**
+   * Create a state-space model for a 1 DOF position system from its kV (volts/(unit/sec)) and kA
+   * (volts/(unit/sec²). These constants cam be found using SysId. The states of the system are
+   * [position, velocity]ᵀ, inputs are [voltage], and outputs are [position].
+   *
+   * <p>The parameters provided by the user are from this feedforward model:
+   *
+   * <p>u = K_v v + K_a a
+   *
+   * @param kV The velocity gain, in volts/(unit/sec)
+   * @param kA The acceleration gain, in volts/(unit/sec²)
+   * @return A LinearSystem representing the given characterized constants.
+   * @throws IllegalArgumentException if kV &lt;= 0 or kA &lt;= 0.
+   * @see <a href="https://github.com/wpilibsuite/sysid">https://github.com/wpilibsuite/sysid</a>
+   */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static <U extends Unit<U>> LinearSystem<N2, N1, N1> identifyPositionSystem(
+      Measure<Per<Voltage, Velocity<U>>> kV,
+      Measure<Per<Voltage, Velocity<Velocity<U>>>> kA) {
+    if (kV.unit().denominator().getUnit() instanceof Angle) {
+      // base angle unit is rotations, but radians are needed
+      return identifyPositionSystem(
+          ((Measure) kV).in(VoltsPerRadianPerSecond),
+          ((Measure) kA).in(VoltsPerRadianPerSecondSquared)
+      );
+    }
+
+    return identifyPositionSystem(
+        kV.baseUnitMagnitude(),
+        kA.baseUnitMagnitude()
+    );
+  }
+
+  /**
    * Identify a differential drive drivetrain given the drivetrain's kV and kA in both linear
    * {(volts/(meter/sec), (volts/(meter/sec²))} and angular {(volts/(radian/sec)),
    * (volts/(radian/sec²))} cases. These constants can be found using SysId.
@@ -283,8 +379,8 @@ public final class LinearSystemId {
    *
    * @param kVLinear The linear velocity gain in volts per (meters per second).
    * @param kALinear The linear acceleration gain in volts per (meters per second squared).
-   * @param kVAngular The angular velocity gain in volts per (meters per second).
-   * @param kAAngular The angular acceleration gain in volts per (meters per second squared).
+   * @param kVAngular The angular velocity gain in volts per (radians per second).
+   * @param kAAngular The angular acceleration gain in volts per (radians per second squared).
    * @return A LinearSystem representing the given characterized constants.
    * @throws IllegalArgumentException if kVLinear &lt;= 0, kALinear &lt;= 0, kVAngular &lt;= 0, or
    *     kAAngular &lt;= 0.
@@ -315,6 +411,37 @@ public final class LinearSystemId {
         Matrix.mat(Nat.N2(), Nat.N2()).fill(B1, B2, B2, B1),
         Matrix.mat(Nat.N2(), Nat.N2()).fill(1, 0, 0, 1),
         Matrix.mat(Nat.N2(), Nat.N2()).fill(0, 0, 0, 0));
+  }
+
+  /**
+   * Identify a differential drive drivetrain given the drivetrain's kV and kA in both linear
+   * {(volts/(meter/sec), (volts/(meter/sec²))} and angular {(volts/(radian/sec)),
+   * (volts/(radian/sec²))} cases. These constants can be found using SysId.
+   *
+   * <p>States: [[left velocity], [right velocity]]<br>
+   * Inputs: [[left voltage], [right voltage]]<br>
+   * Outputs: [[left velocity], [right velocity]]
+   *
+   * @param kVLinear The linear velocity gain.
+   * @param kALinear The linear acceleration gain.
+   * @param kVAngular The angular velocity gain.
+   * @param kAAngular The angular acceleration gain.
+   * @return A LinearSystem representing the given characterized constants.
+   * @throws IllegalArgumentException if kVLinear &lt;= 0, kALinear &lt;= 0, kVAngular &lt;= 0, or
+   *     kAAngular &lt;= 0.
+   * @see <a href="https://github.com/wpilibsuite/sysid">https://github.com/wpilibsuite/sysid</a>
+   */
+  public static LinearSystem<N2, N2, N2> identifyDrivetrainSystem(
+      Measure<Per<Voltage, Velocity<Distance>>> kVLinear,
+      Measure<Per<Voltage, Velocity<Velocity<Distance>>>> kALinear,
+      Measure<Per<Voltage, Velocity<Angle>>> kVAngular,
+      Measure<Per<Voltage, Velocity<Velocity<Angle>>>> kAAngular) {
+    return identifyDrivetrainSystem(
+        kVLinear.in(VoltsPerMeterPerSecond),
+        kALinear.in(VoltsPerMeterPerSecondSquared),
+        kVAngular.in(VoltsPerRadianPerSecond),
+        kAAngular.in(VoltsPerRadianPerSecondSquared)
+    );
   }
 
   /**
@@ -368,5 +495,39 @@ public final class LinearSystemId {
     // to V/(m/s).
     return identifyDrivetrainSystem(
         kVLinear, kALinear, kVAngular * 2.0 / trackwidth, kAAngular * 2.0 / trackwidth);
+  }
+
+  /**
+   * Identify a differential drive drivetrain given the drivetrain's kV and kA in both linear
+   * {(volts/(meter/sec)), (volts/(meter/sec²))} and angular {(volts/(radian/sec)),
+   * (volts/(radian/sec²))} cases. This can be found using SysId.
+   *
+   * <p>States: [[left velocity], [right velocity]]<br>
+   * Inputs: [[left voltage], [right voltage]]<br>
+   * Outputs: [[left velocity], [right velocity]]
+   *
+   * @param kVLinear The linear velocity gain.
+   * @param kALinear The linear acceleration gain.
+   * @param kVAngular The angular velocity gain.
+   * @param kAAngular The angular acceleration gain.
+   * @param trackWidth The distance between the differential drive's left and right wheels.
+   * @return A LinearSystem representing the given characterized constants.
+   * @throws IllegalArgumentException if kVLinear &lt;= 0, kALinear &lt;= 0, kVAngular &lt;= 0,
+   *     kAAngular &lt;= 0, or trackwidth &lt;= 0.
+   * @see <a href="https://github.com/wpilibsuite/sysid">https://github.com/wpilibsuite/sysid</a>
+   */
+  public static LinearSystem<N2, N2, N2> identifyDrivetrainSystem(
+      Measure<Per<Voltage, Velocity<Distance>>> kVLinear,
+      Measure<Per<Voltage, Velocity<Velocity<Distance>>>> kALinear,
+      Measure<Per<Voltage, Velocity<Angle>>> kVAngular,
+      Measure<Per<Voltage, Velocity<Velocity<Angle>>>> kAAngular,
+      Measure<Distance> trackWidth) {
+    return identifyDrivetrainSystem(
+        kVLinear.in(VoltsPerMeterPerSecond),
+        kALinear.in(VoltsPerMeterPerSecondSquared),
+        kVAngular.in(VoltsPerRadianPerSecond),
+        kAAngular.in(VoltsPerRadianPerSecondSquared),
+        trackWidth.in(Meters)
+    );
   }
 }

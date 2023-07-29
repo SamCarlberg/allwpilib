@@ -4,10 +4,22 @@
 
 package edu.wpi.first.math.controller;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 
 /**
  * Filters the provided voltages to limit a differential drive's linear and angular acceleration.
@@ -43,6 +55,27 @@ public class DifferentialDriveAccelerationLimiter {
    * Constructs a DifferentialDriveAccelerationLimiter.
    *
    * @param system The differential drive dynamics.
+   * @param trackwidth The distance between the differential drive's left and right wheels.
+   * @param maxLinearAccel The maximum linear acceleration.
+   * @param maxAngularAccel The maximum angular acceleration.
+   */
+  public DifferentialDriveAccelerationLimiter(
+      LinearSystem<N2, N2, N2> system,
+      Measure<Distance> trackwidth,
+      Measure<Velocity<Velocity<Distance>>> maxLinearAccel,
+      Measure<Velocity<Velocity<Angle>>> maxAngularAccel) {
+    this(
+        system,
+        trackwidth.in(Meters),
+        maxLinearAccel.in(MetersPerSecondPerSecond),
+        maxAngularAccel.in(RadiansPerSecond.per(Second))
+    );
+  }
+
+  /**
+   * Constructs a DifferentialDriveAccelerationLimiter.
+   *
+   * @param system The differential drive dynamics.
    * @param trackwidth The distance between the differential drive's left and right wheels in
    *     meters.
    * @param minLinearAccel The minimum (most negative) linear acceleration in meters per second
@@ -67,6 +100,54 @@ public class DifferentialDriveAccelerationLimiter {
     m_minLinearAccel = minLinearAccel;
     m_maxLinearAccel = maxLinearAccel;
     m_maxAngularAccel = maxAngularAccel;
+  }
+
+  /**
+   * Constructs a DifferentialDriveAccelerationLimiter.
+   *
+   * @param system The differential drive dynamics.
+   * @param trackwidth The distance between the differential drive's left and right wheels.
+   * @param minLinearAccel The minimum (most negative) linear acceleration.
+   * @param maxLinearAccel The maximum (most positive) linear acceleration.
+   * @param maxAngularAccel The maximum angular acceleration.
+   * @throws IllegalArgumentException if minimum linear acceleration is greater than maximum linear
+   *     acceleration
+   */
+  public DifferentialDriveAccelerationLimiter(
+      LinearSystem<N2, N2, N2> system,
+      Measure<Distance> trackwidth,
+      Measure<Velocity<Velocity<Distance>>> minLinearAccel,
+      Measure<Velocity<Velocity<Distance>>> maxLinearAccel,
+      Measure<Velocity<Velocity<Angle>>> maxAngularAccel) {
+    this(
+        system,
+        trackwidth.in(Meters),
+        minLinearAccel.in(MetersPerSecondPerSecond),
+        maxLinearAccel.in(MetersPerSecondPerSecond),
+        maxAngularAccel.in(RadiansPerSecond.per(Second))
+    );
+  }
+
+  /**
+   * Returns the next voltage pair subject to acceleration constraints.
+   *
+   * @param leftVelocity The left wheel velocity.
+   * @param rightVelocity The right wheel velocity.
+   * @param leftVoltage The unconstrained left motor voltage.
+   * @param rightVoltage The unconstrained right motor voltage.
+   * @return The constrained wheel voltages.
+   */
+  public DifferentialDriveWheelVoltages calculate(
+      Measure<Velocity<Distance>> leftVelocity,
+      Measure<Velocity<Distance>> rightVelocity,
+      Measure<Voltage> leftVoltage,
+      Measure<Voltage> rightVoltage) {
+    return calculate(
+        leftVelocity.in(MetersPerSecond),
+        rightVelocity.in(MetersPerSecond),
+        leftVoltage.in(Volts),
+        rightVoltage.in(Volts)
+    );
   }
 
   /**
