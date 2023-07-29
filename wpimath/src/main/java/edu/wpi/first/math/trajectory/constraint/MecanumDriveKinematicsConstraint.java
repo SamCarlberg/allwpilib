@@ -41,8 +41,7 @@ public class MecanumDriveKinematicsConstraint implements TrajectoryConstraint {
    * @param maxSpeed The max speed that a side of the robot can travel at.
    */
   public MecanumDriveKinematicsConstraint(
-      MecanumDriveKinematics kinematics,
-      Measure<Velocity<Distance>> maxSpeed) {
+      MecanumDriveKinematics kinematics, Measure<Velocity<Distance>> maxSpeed) {
     this(kinematics, maxSpeed.in(MetersPerSecond));
   }
 

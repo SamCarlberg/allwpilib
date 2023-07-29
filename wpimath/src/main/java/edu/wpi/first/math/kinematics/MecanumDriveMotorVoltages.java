@@ -58,12 +58,7 @@ public class MecanumDriveMotorVoltages {
       Measure<Voltage> frontRight,
       Measure<Voltage> rearLeft,
       Measure<Voltage> rearRight) {
-    this(
-        frontLeft.in(Volts),
-        frontRight.in(Volts),
-        rearLeft.in(Volts),
-        rearRight.in(Volts)
-    );
+    this(frontLeft.in(Volts), frontRight.in(Volts), rearLeft.in(Volts), rearRight.in(Volts));
   }
 
   @Override

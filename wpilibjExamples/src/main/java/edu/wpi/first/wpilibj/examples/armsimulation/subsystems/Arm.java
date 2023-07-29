@@ -56,8 +56,7 @@ public class Arm implements AutoCloseable {
           true,
           Radians.zero(),
           // Add noise with a std-dev of 1 tick
-          VecBuilder.fill(Constants.kArmEncoderDistPerPulse.in(Radians))
-          );
+          VecBuilder.fill(Constants.kArmEncoderDistPerPulse.in(Radians)));
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
   // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
@@ -119,9 +118,7 @@ public class Arm implements AutoCloseable {
 
   /** Run the control loop to reach and maintain the setpoint from the preferences. */
   public void reachSetpoint() {
-    var pidOutput =
-        m_controller.calculate(
-            m_encoder.getDistance(), m_armSetpoint.in(Radians));
+    var pidOutput = m_controller.calculate(m_encoder.getDistance(), m_armSetpoint.in(Radians));
     m_motor.setVoltage(pidOutput);
   }
 

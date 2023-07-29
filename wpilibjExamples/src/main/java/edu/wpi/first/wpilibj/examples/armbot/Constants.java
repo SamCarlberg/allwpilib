@@ -60,8 +60,7 @@ public final class Constants {
     public static final Measure<Per<Voltage, Velocity<Velocity<Angle>>>> kA =
         Volts.of(0.1).per(RadiansPerSecond.per(Second));
 
-    public static final Measure<Velocity<Angle>> kMaxVelocity =
-        RadiansPerSecond.of(3);
+    public static final Measure<Velocity<Angle>> kMaxVelocity = RadiansPerSecond.of(3);
     public static final Measure<Velocity<Velocity<Angle>>> kMaxAcceleration =
         RadiansPerSecond.per(Second).of(10);
 

@@ -82,13 +82,7 @@ public class LinearSystemLoop<States extends Num, Inputs extends Num, Outputs ex
       KalmanFilter<States, Inputs, Outputs> observer,
       Measure<Voltage> maxVoltage,
       Measure<Time> dt) {
-    this(
-        plant,
-        controller,
-        observer,
-        maxVoltage.in(Volts),
-        dt.in(Seconds)
-    );
+    this(plant, controller, observer, maxVoltage.in(Volts), dt.in(Seconds));
   }
 
   /**

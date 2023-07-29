@@ -41,8 +41,7 @@ public final class Constants {
 
     public static final double kp = 1;
 
-    public static final Measure<Velocity<Distance>> kMaxSpeed =
-        MetersPerSecond.of(3);
+    public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3);
     public static final Measure<Velocity<Velocity<Distance>>> kMaxAcceleration =
         MetersPerSecondPerSecond.of(10);
   }

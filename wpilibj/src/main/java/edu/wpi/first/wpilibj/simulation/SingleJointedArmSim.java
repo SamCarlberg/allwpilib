@@ -212,8 +212,7 @@ public class SingleJointedArmSim extends LinearSystemSim<N2, N1, N1> {
         maxAngle.in(Radians),
         simulateGravity,
         startingAngle.in(Radians),
-        measurementStdDevs
-    );
+        measurementStdDevs);
   }
 
   /**

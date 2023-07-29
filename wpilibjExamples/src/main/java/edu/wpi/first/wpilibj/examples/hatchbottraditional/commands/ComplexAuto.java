@@ -20,8 +20,7 @@ public class ComplexAuto extends SequentialCommandGroup {
   public ComplexAuto(DriveSubsystem drive, HatchSubsystem hatch) {
     addCommands(
         // Drive forward the specified distance
-        new DriveDistance(
-            AutoConstants.kAutoDriveDistance, AutoConstants.kAutoDriveSpeed, drive),
+        new DriveDistance(AutoConstants.kAutoDriveDistance, AutoConstants.kAutoDriveSpeed, drive),
 
         // Release the hatch
         new ReleaseHatch(hatch),

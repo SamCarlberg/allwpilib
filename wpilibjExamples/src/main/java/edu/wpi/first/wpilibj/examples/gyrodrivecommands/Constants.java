@@ -50,8 +50,7 @@ public final class Constants {
     public static final double kTurnI = 0;
     public static final double kTurnD = 0;
 
-    public static final Measure<Velocity<Angle>> kMaxTurnRate =
-        DegreesPerSecond.of(100);
+    public static final Measure<Velocity<Angle>> kMaxTurnRate = DegreesPerSecond.of(100);
     public static final Measure<Velocity<Velocity<Angle>>> kMaxTurnAcceleration =
         DegreesPerSecond.per(Second).of(300);
 

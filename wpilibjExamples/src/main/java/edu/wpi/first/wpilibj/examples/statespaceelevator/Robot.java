@@ -110,11 +110,7 @@ public class Robot extends TimedRobot {
   // The state-space loop combines a controller, observer, feedforward and plant for easy control.
   private final LinearSystemLoop<N2, N1, N1> m_loop =
       new LinearSystemLoop<>(
-          m_elevatorPlant,
-          m_controller,
-          m_observer,
-          Volts.of(12),
-          kUpdatePeriod);
+          m_elevatorPlant, m_controller, m_observer, Volts.of(12), kUpdatePeriod);
 
   // An encoder set up to measure elevator height in meters.
   private final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);

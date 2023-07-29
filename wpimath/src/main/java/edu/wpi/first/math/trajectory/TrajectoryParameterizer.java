@@ -295,8 +295,7 @@ public final class TrajectoryParameterizer {
         endVelocity.in(MetersPerSecond),
         maxVelocity.in(MetersPerSecond),
         maxAcceleration.in(MetersPerSecondPerSecond),
-        reversed
-    );
+        reversed);
   }
 
   private static void enforceAccelerationLimits(

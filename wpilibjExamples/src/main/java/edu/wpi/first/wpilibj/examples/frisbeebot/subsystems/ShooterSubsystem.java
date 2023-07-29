@@ -24,8 +24,7 @@ public class ShooterSubsystem extends PIDSubsystem {
           ShooterConstants.kEncoderPorts[1],
           ShooterConstants.kEncoderReversed);
   private final SimpleMotorFeedforward<Angle> m_shooterFeedforward =
-      new SimpleMotorFeedforward<>(
-          ShooterConstants.kS, ShooterConstants.kV);
+      new SimpleMotorFeedforward<>(ShooterConstants.kS, ShooterConstants.kV);
 
   /** The shooter subsystem for the robot. */
   public ShooterSubsystem() {

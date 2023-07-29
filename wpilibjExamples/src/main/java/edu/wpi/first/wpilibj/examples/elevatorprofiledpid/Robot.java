@@ -27,8 +27,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 @SuppressWarnings("PMD.RedundantFieldInitializer")
 public class Robot extends TimedRobot {
   private static final double kDt = 0.02;
-  private static final Measure<Velocity<Distance>> kMaxVelocity =
-      MetersPerSecond.of(1.75);
+  private static final Measure<Velocity<Distance>> kMaxVelocity = MetersPerSecond.of(1.75);
   private static final Measure<Velocity<Velocity<Distance>>> kMaxAcceleration =
       MetersPerSecondPerSecond.of(0.75);
   private static final double kP = 1.3;

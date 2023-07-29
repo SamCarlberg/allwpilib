@@ -77,9 +77,7 @@ public class SimpleMotorFeedforward<I extends Unit<I>> {
    * @param ks The static gain.
    * @param kv The velocity gain.
    */
-  public SimpleMotorFeedforward(
-      Measure<Voltage> ks,
-      Measure<Per<Voltage, Velocity<I>>> kv) {
+  public SimpleMotorFeedforward(Measure<Voltage> ks, Measure<Per<Voltage, Velocity<I>>> kv) {
     this(ks, kv, Units.<Per<Voltage, Velocity<Velocity<I>>>>anonymous().zero());
   }
 
@@ -102,12 +100,9 @@ public class SimpleMotorFeedforward<I extends Unit<I>> {
    * @return The computed feedforward.
    */
   public Measure<Voltage> calculate(
-      Measure<Velocity<I>> velocity,
-      Measure<Velocity<Velocity<I>>> acceleration) {
+      Measure<Velocity<I>> velocity, Measure<Velocity<Velocity<I>>> acceleration) {
     m_output.mut_replace(
-        calculate(velocity.baseUnitMagnitude(), acceleration.baseUnitMagnitude()),
-        Volts
-    );
+        calculate(velocity.baseUnitMagnitude(), acceleration.baseUnitMagnitude()), Volts);
 
     return m_output;
   }
@@ -139,17 +134,11 @@ public class SimpleMotorFeedforward<I extends Unit<I>> {
    * @return The computed feedforward.
    */
   public Measure<Voltage> calculate(
-      Measure<Velocity<I>> currentVelocity,
-      Measure<Velocity<I>> nextVelocity,
-      Measure<Time> dt) {
+      Measure<Velocity<I>> currentVelocity, Measure<Velocity<I>> nextVelocity, Measure<Time> dt) {
     m_output.mut_replace(
         calculate(
-            currentVelocity.baseUnitMagnitude(),
-            nextVelocity.baseUnitMagnitude(),
-            dt.in(Seconds)
-        ),
-        Volts
-    );
+            currentVelocity.baseUnitMagnitude(), nextVelocity.baseUnitMagnitude(), dt.in(Seconds)),
+        Volts);
 
     return m_output;
   }

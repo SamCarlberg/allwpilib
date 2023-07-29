@@ -39,12 +39,8 @@ public class DifferentialDriveWheelSpeeds {
    * @param right The right speed.
    */
   public DifferentialDriveWheelSpeeds(
-      Measure<Velocity<Distance>> left,
-      Measure<Velocity<Distance>> right) {
-    this(
-        left.in(MetersPerSecond),
-        right.in(MetersPerSecond)
-    );
+      Measure<Velocity<Distance>> left, Measure<Velocity<Distance>> right) {
+    this(left.in(MetersPerSecond), right.in(MetersPerSecond));
   }
 
   /**

@@ -41,8 +41,7 @@ public class DifferentialDriveKinematicsConstraint implements TrajectoryConstrai
    * @param maxSpeed The max speed that a side of the robot can travel at.
    */
   public DifferentialDriveKinematicsConstraint(
-      DifferentialDriveKinematics kinematics,
-      Measure<Velocity<Distance>> maxSpeed) {
+      DifferentialDriveKinematics kinematics, Measure<Velocity<Distance>> maxSpeed) {
     this(kinematics, maxSpeed.in(MetersPerSecond));
   }
 

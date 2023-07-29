@@ -85,11 +85,7 @@ public class Robot extends TimedRobot {
   // The state-space loop combines a controller, observer, feedforward and plant for easy control.
   private final LinearSystemLoop<N1, N1, N1> m_loop =
       new LinearSystemLoop<>(
-          m_flywheelPlant,
-          m_controller,
-          m_observer,
-          Volts.of(12.0),
-          kUpdatePeriod);
+          m_flywheelPlant, m_controller, m_observer, Volts.of(12.0), kUpdatePeriod);
 
   // An encoder set up to measure flywheel velocity in radians per second.
   private final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);

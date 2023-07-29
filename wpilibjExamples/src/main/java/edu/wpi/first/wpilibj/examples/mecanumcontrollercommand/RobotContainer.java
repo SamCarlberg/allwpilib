@@ -81,9 +81,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Create config for trajectory
     TrajectoryConfig config =
-        new TrajectoryConfig(
-                AutoConstants.kMaxSpeed,
-                AutoConstants.kMaxAcceleration)
+        new TrajectoryConfig(AutoConstants.kMaxSpeed, AutoConstants.kMaxAcceleration)
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DriveConstants.kDriveKinematics);
 

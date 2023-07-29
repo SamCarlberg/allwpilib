@@ -51,8 +51,7 @@ public class SwerveModule {
           0,
           0,
           new TrapezoidProfile.Constraints(
-              kModuleMaxAngularVelocity,
-              kModuleMaxAngularAcceleration));
+              kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 3);
@@ -94,9 +93,7 @@ public class SwerveModule {
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     m_turningPIDController.enableContinuousInput(
-        -Rotations.of(0.5).in(Radians),
-        Rotations.of(0.5).in(Radians)
-    );
+        -Rotations.of(0.5).in(Radians), Rotations.of(0.5).in(Radians));
   }
 
   /**

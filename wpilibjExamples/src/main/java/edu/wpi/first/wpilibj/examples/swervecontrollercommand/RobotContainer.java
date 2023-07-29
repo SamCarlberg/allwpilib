@@ -102,8 +102,7 @@ public class RobotContainer {
         new ProfiledPIDController(
             AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     thetaController.enableContinuousInput(
-        Radians.convertFrom(-0.5, Rotations),
-        Radians.convertFrom(+0.5, Rotations));
+        Radians.convertFrom(-0.5, Rotations), Radians.convertFrom(+0.5, Rotations));
 
     SwerveControllerCommand swerveControllerCommand =
         new SwerveControllerCommand(
@@ -122,12 +121,10 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> {
-      m_robotDrive.drive(
-          MetersPerSecond.zero(),
-          MetersPerSecond.zero(),
-          RadiansPerSecond.zero(),
-          false);
-    });
+    return swerveControllerCommand.andThen(
+        () -> {
+          m_robotDrive.drive(
+              MetersPerSecond.zero(), MetersPerSecond.zero(), RadiansPerSecond.zero(), false);
+        });
   }
 }

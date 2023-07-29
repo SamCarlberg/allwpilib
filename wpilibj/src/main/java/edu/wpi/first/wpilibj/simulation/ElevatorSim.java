@@ -111,8 +111,7 @@ public class ElevatorSim extends LinearSystemSim<N2, N1, N1> {
         maxHeight.in(Meters),
         simulateGravity,
         startingHeight.in(Meters),
-        measurementStdDevs
-    );
+        measurementStdDevs);
   }
 
   /**
@@ -215,8 +214,7 @@ public class ElevatorSim extends LinearSystemSim<N2, N1, N1> {
         maxHeight.in(Meters),
         simulateGravity,
         startingHeight.in(Meters),
-        measurementStdDevs
-    );
+        measurementStdDevs);
   }
 
   /**

@@ -64,7 +64,8 @@ public class RobotContainer {
     m_driverController.rightBumper().onTrue(m_driveHalfSpeed).onFalse(m_driveFullSpeed);
 
     // Drive forward by 3 meters when the 'A' button is pressed, with a timeout of 10 seconds
-    m_driverController.a()
+    m_driverController
+        .a()
         .onTrue(new DriveDistanceProfiled(Meters.of(3), m_robotDrive).withTimeout(10));
 
     // Do the same thing as above when the 'B' button is pressed, but defined inline
@@ -78,8 +79,7 @@ public class RobotContainer {
                     new TrapezoidProfile(
                         // Limit the max acceleration and velocity
                         new TrapezoidProfile.Constraints(
-                            DriveConstants.kMaxSpeed,
-                            DriveConstants.kMaxAcceleration)),
+                            DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration)),
                     // Pipe the profile state to the drive
                     setpointState -> m_robotDrive.setDriveStates(setpointState, setpointState),
                     // End at desired position in meters; implicitly starts at 0

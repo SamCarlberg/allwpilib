@@ -26,8 +26,7 @@ public class DriveDistanceProfiled extends TrapezoidProfileCommand {
         new TrapezoidProfile(
             // Limit the max acceleration and velocity
             new TrapezoidProfile.Constraints(
-                DriveConstants.kMaxSpeed,
-                DriveConstants.kMaxAcceleration)),
+                DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration)),
         // Pipe the profile state to the drive
         setpointState -> drive.setDriveStates(setpointState, setpointState),
         // End at desired position in meters; implicitly starts at 0

@@ -47,8 +47,8 @@ public class ArmFeedforward {
   }
 
   /**
-   * Creates a new ArmFeedforward with the specified gains. The computed feedforward will
-   * return values in terms of Volts.
+   * Creates a new ArmFeedforward with the specified gains. The computed feedforward will return
+   * values in terms of Volts.
    *
    * @param ks The static gain.
    * @param kg The gravity gain.
@@ -87,9 +87,7 @@ public class ArmFeedforward {
    * @param kv The velocity gain.
    */
   public ArmFeedforward(
-      Measure<Voltage> ks,
-      Measure<Voltage> kg,
-      Measure<Per<Voltage, Velocity<Angle>>> kv) {
+      Measure<Voltage> ks, Measure<Voltage> kg, Measure<Per<Voltage, Velocity<Angle>>> kv) {
     this(ks, kg, kv, VoltsPerRadianPerSecondSquared.zero());
   }
 
@@ -125,10 +123,11 @@ public class ArmFeedforward {
       Measure<Angle> position,
       Measure<Velocity<Angle>> velocity,
       Measure<Velocity<Velocity<Angle>>> acceleration) {
-    double rawVolts = calculate(
-        position.in(Radians),
-        velocity.in(RadiansPerSecond),
-        acceleration.in(RadiansPerSecond.per(Second)));
+    double rawVolts =
+        calculate(
+            position.in(Radians),
+            velocity.in(RadiansPerSecond),
+            acceleration.in(RadiansPerSecond.per(Second)));
     m_output.mut_replace(rawVolts, Volts);
     return m_output;
   }

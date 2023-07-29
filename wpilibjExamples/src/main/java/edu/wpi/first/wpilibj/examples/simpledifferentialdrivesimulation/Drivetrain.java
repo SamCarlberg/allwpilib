@@ -83,12 +83,7 @@ public class Drivetrain {
       LinearSystemId.identifyDrivetrainSystem(1.98, 0.2, 1.5, 0.3);
   private final DifferentialDrivetrainSim m_drivetrainSimulator =
       new DifferentialDrivetrainSim(
-          m_drivetrainSystem,
-          DCMotor.getCIM(2),
-          8,
-          kTrackWidth,
-          kWheelRadius,
-          null);
+          m_drivetrainSystem, DCMotor.getCIM(2), 8, kTrackWidth, kWheelRadius, null);
 
   /** Subsystem constructor. */
   public Drivetrain() {
@@ -132,12 +127,7 @@ public class Drivetrain {
    * @param rot the rotation
    */
   public void drive(Measure<Velocity<Distance>> xSpeed, Measure<Velocity<Angle>> rot) {
-    setSpeeds(
-        m_kinematics.toWheelSpeeds(
-            new ChassisSpeeds(
-                xSpeed,
-                MetersPerSecond.zero(),
-                rot)));
+    setSpeeds(m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, MetersPerSecond.zero(), rot)));
   }
 
   /** Update robot odometry. */

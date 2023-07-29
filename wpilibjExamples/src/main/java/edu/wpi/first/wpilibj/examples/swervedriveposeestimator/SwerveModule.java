@@ -95,8 +95,7 @@ public class SwerveModule {
     // Limit the PID Controller's input range between +/- a half rotation.
     // Convert to radians to use consistent units.
     m_turningPIDController.enableContinuousInput(
-        -Rotations.of(0.5).in(Radians),
-        Rotations.of(0.5).in(Radians));
+        -Rotations.of(0.5).in(Radians), Rotations.of(0.5).in(Radians));
   }
 
   /**

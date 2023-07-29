@@ -28,11 +28,8 @@ public class Robot extends TimedRobot {
 
   // Bottom, middle, and top elevator setpoints
   @SuppressWarnings("unchecked")
-  static final Measure<Distance>[] kSetpoints = new Measure[]{
-      Meters.of(0.2),
-      Meters.of(0.8),
-      Meters.of(1.4)
-  };
+  static final Measure<Distance>[] kSetpoints =
+      new Measure[] {Meters.of(0.2), Meters.of(0.8), Meters.of(1.4)};
 
   // proportional, integral, and derivative speed constants
   // DANGER: when tuning PID constants, high/inappropriate values for kP, kI,

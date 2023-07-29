@@ -26,9 +26,7 @@ public class ArmSubsystem extends TrapezoidProfileSubsystem {
   /** Create a new ArmSubsystem. */
   public ArmSubsystem() {
     super(
-        new TrapezoidProfile.Constraints(
-            ArmConstants.kMaxVelocity,
-            ArmConstants.kMaxAcceleration),
+        new TrapezoidProfile.Constraints(ArmConstants.kMaxVelocity, ArmConstants.kMaxAcceleration),
         ArmConstants.kArmOffset.baseUnitMagnitude());
     m_motor.setPID(ArmConstants.kP, 0, 0);
   }

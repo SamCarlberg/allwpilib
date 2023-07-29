@@ -55,9 +55,7 @@ public class RobotContainer {
     m_driverController.a().onTrue(m_robotArm.setArmGoalCommand(Radians.of(2)));
 
     // Move the arm to neutral position when the 'B' button is pressed.
-    m_driverController
-        .b()
-        .onTrue(m_robotArm.setArmGoalCommand(Constants.ArmConstants.kArmOffset));
+    m_driverController.b().onTrue(m_robotArm.setArmGoalCommand(Constants.ArmConstants.kArmOffset));
 
     // Drive at half speed when the bumper is held
     m_driverController

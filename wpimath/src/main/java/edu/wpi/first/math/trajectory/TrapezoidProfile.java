@@ -6,6 +6,8 @@ package edu.wpi.first.math.trajectory;
 
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Velocity;
@@ -74,12 +76,13 @@ public class TrapezoidProfile {
     /**
      * Construct constraints for a TrapezoidProfile.
      *
+     * @param <U> the base unit of the profile's constraints, such as {@link Distance} or {@link
+     *     Angle}.
      * @param maxVelocity maximum velocity
      * @param maxAcceleration maximum acceleration
      */
     public <U extends Unit<U>> Constraints(
-        Measure<Velocity<U>> maxVelocity,
-        Measure<Velocity<Velocity<U>>> maxAcceleration) {
+        Measure<Velocity<U>> maxVelocity, Measure<Velocity<Velocity<U>>> maxAcceleration) {
       this(maxVelocity.baseUnitMagnitude(), maxAcceleration.baseUnitMagnitude());
     }
   }

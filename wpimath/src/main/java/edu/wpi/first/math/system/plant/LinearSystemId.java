@@ -279,6 +279,7 @@ public final class LinearSystemId {
    *
    * <p>u = K_v v + K_a a
    *
+   * @param <U> the base unit of the measurement, such as {@link Distance} or {@link Angle}.
    * @param kV The velocity gain, in volts/(unit/sec)
    * @param kA The acceleration gain, in volts/(unit/sec^2)
    * @return A LinearSystem representing the given characterized constants.
@@ -287,19 +288,14 @@ public final class LinearSystemId {
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
   public static <U extends Unit<U>> LinearSystem<N1, N1, N1> identifyVelocitySystem(
-      Measure<Per<Voltage, Velocity<U>>> kV,
-      Measure<Per<Voltage, Velocity<Velocity<U>>>> kA) {
+      Measure<Per<Voltage, Velocity<U>>> kV, Measure<Per<Voltage, Velocity<Velocity<U>>>> kA) {
     if (kV.unit().denominator().getUnit() instanceof Angle) {
       // base angle unit is rotations, but radians are needed
       return identifyVelocitySystem(
           ((Measure) kV).in(VoltsPerRadianPerSecond),
-          ((Measure) kA).in(VoltsPerRadianPerSecondSquared)
-      );
+          ((Measure) kA).in(VoltsPerRadianPerSecondSquared));
     }
-    return identifyVelocitySystem(
-        kV.baseUnitMagnitude(),
-        kA.baseUnitMagnitude()
-    );
+    return identifyVelocitySystem(kV.baseUnitMagnitude(), kA.baseUnitMagnitude());
   }
 
   /**
@@ -344,6 +340,7 @@ public final class LinearSystemId {
    *
    * <p>u = K_v v + K_a a
    *
+   * @param <U> the base unit of the measurement, such as {@link Distance} or {@link Angle}.
    * @param kV The velocity gain, in volts/(unit/sec)
    * @param kA The acceleration gain, in volts/(unit/sec²)
    * @return A LinearSystem representing the given characterized constants.
@@ -352,20 +349,15 @@ public final class LinearSystemId {
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
   public static <U extends Unit<U>> LinearSystem<N2, N1, N1> identifyPositionSystem(
-      Measure<Per<Voltage, Velocity<U>>> kV,
-      Measure<Per<Voltage, Velocity<Velocity<U>>>> kA) {
+      Measure<Per<Voltage, Velocity<U>>> kV, Measure<Per<Voltage, Velocity<Velocity<U>>>> kA) {
     if (kV.unit().denominator().getUnit() instanceof Angle) {
       // base angle unit is rotations, but radians are needed
       return identifyPositionSystem(
           ((Measure) kV).in(VoltsPerRadianPerSecond),
-          ((Measure) kA).in(VoltsPerRadianPerSecondSquared)
-      );
+          ((Measure) kA).in(VoltsPerRadianPerSecondSquared));
     }
 
-    return identifyPositionSystem(
-        kV.baseUnitMagnitude(),
-        kA.baseUnitMagnitude()
-    );
+    return identifyPositionSystem(kV.baseUnitMagnitude(), kA.baseUnitMagnitude());
   }
 
   /**
@@ -440,8 +432,7 @@ public final class LinearSystemId {
         kVLinear.in(VoltsPerMeterPerSecond),
         kALinear.in(VoltsPerMeterPerSecondSquared),
         kVAngular.in(VoltsPerRadianPerSecond),
-        kAAngular.in(VoltsPerRadianPerSecondSquared)
-    );
+        kAAngular.in(VoltsPerRadianPerSecondSquared));
   }
 
   /**
@@ -527,7 +518,6 @@ public final class LinearSystemId {
         kALinear.in(VoltsPerMeterPerSecondSquared),
         kVAngular.in(VoltsPerRadianPerSecond),
         kAAngular.in(VoltsPerRadianPerSecondSquared),
-        trackWidth.in(Meters)
-    );
+        trackWidth.in(Meters));
   }
 }

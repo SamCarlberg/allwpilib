@@ -93,8 +93,7 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
-    public static final Measure<Velocity<Angle>> kMaxModuleAngularSpeed =
-        RotationsPerSecond.of(1);
+    public static final Measure<Velocity<Angle>> kMaxModuleAngularSpeed = RotationsPerSecond.of(1);
     public static final Measure<Velocity<Velocity<Angle>>> kMaxModuleAngularAcceleration =
         RotationsPerSecond.per(Second).of(1);
 

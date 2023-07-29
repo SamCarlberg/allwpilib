@@ -78,9 +78,7 @@ public class ElevatorFeedforward {
   }
 
   public ElevatorFeedforward(
-      Measure<Voltage> ks,
-      Measure<Voltage> kg,
-      Measure<Per<Voltage, Velocity<Distance>>> kv) {
+      Measure<Voltage> ks, Measure<Voltage> kg, Measure<Per<Voltage, Velocity<Distance>>> kv) {
     this(ks, kg, kv, VoltsPerMeterPerSecondSquared.zero());
   }
 
@@ -103,11 +101,9 @@ public class ElevatorFeedforward {
    * @return The computed feedforward.
    */
   public Measure<Voltage> calculate(
-      Measure<Velocity<Distance>> velocity,
-      Measure<Velocity<Velocity<Distance>>> acceleration) {
-    double rawVolts = calculate(
-        velocity.in(MetersPerSecond),
-        acceleration.in(MetersPerSecondPerSecond));
+      Measure<Velocity<Distance>> velocity, Measure<Velocity<Velocity<Distance>>> acceleration) {
+    double rawVolts =
+        calculate(velocity.in(MetersPerSecond), acceleration.in(MetersPerSecondPerSecond));
     m_output.mut_replace(rawVolts, Volts);
     return m_output;
   }

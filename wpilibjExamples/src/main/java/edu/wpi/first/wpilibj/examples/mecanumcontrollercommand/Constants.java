@@ -86,8 +86,7 @@ public final class Constants {
     public static final Measure<Velocity<Distance>> kMaxSpeed = MetersPerSecond.of(3);
     public static final Measure<Velocity<Velocity<Distance>>> kMaxAcceleration =
         MetersPerSecondPerSecond.of(3);
-    public static final Measure<Velocity<Angle>> kMaxAngularSpeed =
-        RotationsPerSecond.of(0.5);
+    public static final Measure<Velocity<Angle>> kMaxAngularSpeed = RotationsPerSecond.of(0.5);
     public static final Measure<Velocity<Velocity<Angle>>> kMaxAngularAcceleration =
         RotationsPerSecond.per(Second).of(0.5);
 

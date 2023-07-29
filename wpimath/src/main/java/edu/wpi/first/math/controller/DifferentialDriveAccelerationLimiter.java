@@ -68,8 +68,7 @@ public class DifferentialDriveAccelerationLimiter {
         system,
         trackwidth.in(Meters),
         maxLinearAccel.in(MetersPerSecondPerSecond),
-        maxAngularAccel.in(RadiansPerSecond.per(Second))
-    );
+        maxAngularAccel.in(RadiansPerSecond.per(Second)));
   }
 
   /**
@@ -124,8 +123,7 @@ public class DifferentialDriveAccelerationLimiter {
         trackwidth.in(Meters),
         minLinearAccel.in(MetersPerSecondPerSecond),
         maxLinearAccel.in(MetersPerSecondPerSecond),
-        maxAngularAccel.in(RadiansPerSecond.per(Second))
-    );
+        maxAngularAccel.in(RadiansPerSecond.per(Second)));
   }
 
   /**
@@ -146,8 +144,7 @@ public class DifferentialDriveAccelerationLimiter {
         leftVelocity.in(MetersPerSecond),
         rightVelocity.in(MetersPerSecond),
         leftVoltage.in(Volts),
-        rightVoltage.in(Volts)
-    );
+        rightVoltage.in(Volts));
   }
 
   /**

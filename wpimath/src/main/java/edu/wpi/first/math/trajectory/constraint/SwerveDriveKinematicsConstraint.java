@@ -41,8 +41,7 @@ public class SwerveDriveKinematicsConstraint implements TrajectoryConstraint {
    * @param maxSpeed The max speed that a side of the robot can travel at.
    */
   public SwerveDriveKinematicsConstraint(
-      SwerveDriveKinematics kinematics,
-      Measure<Velocity<Distance>> maxSpeed) {
+      SwerveDriveKinematics kinematics, Measure<Velocity<Distance>> maxSpeed) {
     this(kinematics, maxSpeed.in(MetersPerSecond));
   }
 

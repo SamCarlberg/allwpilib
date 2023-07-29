@@ -50,8 +50,7 @@ public class Robot extends TimedRobot {
 
     BooleanEvent isBallAtKicker =
         new BooleanEvent(
-            m_loop,
-            () -> m_kickerSensor.getRangeMM() < KICKER_THRESHOLD.in(Millimeters));
+            m_loop, () -> m_kickerSensor.getRangeMM() < KICKER_THRESHOLD.in(Millimeters));
     BooleanEvent intakeButton = new BooleanEvent(m_loop, () -> m_joystick.getRawButton(2));
 
     // if the thumb button is held
@@ -78,9 +77,7 @@ public class Robot extends TimedRobot {
         () ->
             m_shooter.setVoltage(
                 m_controller.calculate(
-                    m_shooterEncoder.getRate(),
-                    SHOT_VELOCITY.in(RadiansPerSecond)
-                )
+                        m_shooterEncoder.getRate(), SHOT_VELOCITY.in(RadiansPerSecond))
                     + m_ff.calculate(SHOT_VELOCITY.in(RadiansPerSecond))));
     // if not, stop
     shootTrigger.negate().ifHigh(m_shooter::stopMotor);
