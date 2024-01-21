@@ -88,8 +88,8 @@ public sealed interface Option<T> permits Some, None {
    *
    * @param fallbackSupplier a function that yields fallback values to be used if the option is
    *     empty
-   * @return the value contained or the option, or a value returned by the supplier if the option
-   *     is empty
+   * @return the value contained or the option, or a value returned by the supplier if the option is
+   *     empty
    */
   T orElseGet(Supplier<? extends T> fallbackSupplier);
 

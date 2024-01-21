@@ -334,9 +334,8 @@ public abstract class IterativeRobotBase extends RobotBase {
           }
           testExit();
         }
-        default -> {
-          // Unknown mode, error in development (NOP in release)
-          assert false;
+        case kNone -> {
+          // No exit function, do nothing
         }
       }
 
@@ -362,9 +361,8 @@ public abstract class IterativeRobotBase extends RobotBase {
           testInit();
           m_watchdog.addEpoch("testInit()");
         }
-        default -> {
-          // Unknown mode, error in development (NOP in release)
-          assert false;
+        case kNone -> {
+          // No entry function, do nothing
         }
       }
 
@@ -388,10 +386,13 @@ public abstract class IterativeRobotBase extends RobotBase {
         teleopPeriodic();
         m_watchdog.addEpoch("teleopPeriodic()");
       }
-      default -> {
+      case kTest -> {
         DriverStationJNI.observeUserProgramTest();
         testPeriodic();
         m_watchdog.addEpoch("testPeriodic()");
+      }
+      case kNone -> {
+        // No period function, do nothing
       }
     }
 

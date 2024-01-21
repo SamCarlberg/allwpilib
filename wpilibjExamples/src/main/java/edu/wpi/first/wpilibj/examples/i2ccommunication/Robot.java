@@ -51,14 +51,14 @@ public class Robot extends TimedRobot {
     StringBuilder stateMessage = new StringBuilder(6);
 
     String allianceString =
-      switch (DriverStation.getAlliance()) {
-        case Some<DriverStation.Alliance>(var alliance) ->
-          switch (alliance) {
-            case Red -> "R";
-            case Blue -> "B";
-          };
-        case None<?> unknown -> "U";
-      };
+        switch (DriverStation.getAlliance()) {
+          case Some<DriverStation.Alliance>(var alliance) ->
+              switch (alliance) {
+                case Red -> "R";
+                case Blue -> "B";
+              };
+          case None<?> unknown -> "U";
+        };
 
     stateMessage
         .append(allianceString)

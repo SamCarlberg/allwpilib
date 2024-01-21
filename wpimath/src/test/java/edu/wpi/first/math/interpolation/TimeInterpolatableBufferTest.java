@@ -17,19 +17,19 @@ class TimeInterpolatableBufferTest {
 
     // No entries
     buffer.addSample(1.0, new Rotation2d());
-    assertEquals(0.0, buffer.getSample(1.0).get().getRadians(), 0.001);
+    assertEquals(0.0, buffer.getSample(1.0).unwrap().getRadians(), 0.001);
 
     // New entry at start of container
     buffer.addSample(0.0, new Rotation2d(1.0));
-    assertEquals(1.0, buffer.getSample(0.0).get().getRadians(), 0.001);
+    assertEquals(1.0, buffer.getSample(0.0).unwrap().getRadians(), 0.001);
 
     // New entry in middle of container
     buffer.addSample(0.5, new Rotation2d(0.5));
-    assertEquals(0.5, buffer.getSample(0.5).get().getRadians(), 0.001);
+    assertEquals(0.5, buffer.getSample(0.5).unwrap().getRadians(), 0.001);
 
     // Override sample
     buffer.addSample(0.5, new Rotation2d(1.0));
-    assertEquals(1.0, buffer.getSample(0.5).get().getRadians(), 0.001);
+    assertEquals(1.0, buffer.getSample(0.5).unwrap().getRadians(), 0.001);
   }
 
   @Test
@@ -37,15 +37,15 @@ class TimeInterpolatableBufferTest {
     TimeInterpolatableBuffer<Rotation2d> buffer = TimeInterpolatableBuffer.createBuffer(10);
 
     buffer.addSample(0.0, new Rotation2d());
-    assertEquals(0.0, buffer.getSample(0.0).get().getRadians(), 0.001);
+    assertEquals(0.0, buffer.getSample(0.0).unwrap().getRadians(), 0.001);
     buffer.addSample(1.0, new Rotation2d(1.0));
-    assertEquals(0.5, buffer.getSample(0.5).get().getRadians(), 0.001);
-    assertEquals(1.0, buffer.getSample(1.0).get().getRadians(), 0.001);
+    assertEquals(0.5, buffer.getSample(0.5).unwrap().getRadians(), 0.001);
+    assertEquals(1.0, buffer.getSample(1.0).unwrap().getRadians(), 0.001);
     buffer.addSample(3.0, new Rotation2d(2.0));
-    assertEquals(1.5, buffer.getSample(2.0).get().getRadians(), 0.001);
+    assertEquals(1.5, buffer.getSample(2.0).unwrap().getRadians(), 0.001);
 
     buffer.addSample(10.5, new Rotation2d(2));
-    assertEquals(new Rotation2d(1.0), buffer.getSample(0.0).get());
+    assertEquals(new Rotation2d(1.0), buffer.getSample(0.0).unwrap());
   }
 
   @Test
@@ -55,7 +55,7 @@ class TimeInterpolatableBufferTest {
     // We expect to be at (1 - 1/Math.sqrt(2), 1/Math.sqrt(2), 45deg) at t=0.5
     buffer.addSample(0.0, new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(90.0)));
     buffer.addSample(1.0, new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0.0)));
-    Pose2d sample = buffer.getSample(0.5).get();
+    Pose2d sample = buffer.getSample(0.5).unwrap();
 
     assertEquals(1.0 - 1.0 / Math.sqrt(2.0), sample.getTranslation().getX(), 0.01);
     assertEquals(1.0 / Math.sqrt(2.0), sample.getTranslation().getY(), 0.01);

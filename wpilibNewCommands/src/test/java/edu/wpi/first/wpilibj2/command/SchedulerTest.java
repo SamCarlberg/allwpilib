@@ -78,7 +78,7 @@ class SchedulerTest extends CommandTestBase {
       scheduler.onCommandInterrupt(
           (interrupted, cause) -> {
             assertTrue(cause.isPresent());
-            assertSame(interruptor, cause.get());
+            assertSame(interruptor, cause.unwrap());
             counter.incrementAndGet();
           });
 
@@ -103,7 +103,7 @@ class SchedulerTest extends CommandTestBase {
       scheduler.onCommandInterrupt(
           (interrupted, cause) -> {
             assertTrue(cause.isPresent());
-            assertSame(interruptor, cause.get());
+            assertSame(interruptor, cause.unwrap());
             counter.incrementAndGet();
           });
 

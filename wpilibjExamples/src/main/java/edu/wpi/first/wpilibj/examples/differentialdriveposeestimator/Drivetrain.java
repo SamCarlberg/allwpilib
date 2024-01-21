@@ -125,7 +125,8 @@ public class Drivetrain {
 
     m_cameraToObjectEntry = cameraToObjectTopic.getEntry(m_defaultVal);
 
-    m_objectInField = AprilTagFields.k2022RapidReact.loadAprilTagLayoutField().getTagPose(0).get();
+    m_objectInField =
+        AprilTagFields.k2022RapidReact.loadAprilTagLayoutField().getTagPose(0).unwrap();
 
     SmartDashboard.putData("Field", m_fieldSim);
     SmartDashboard.putData("FieldEstimation", m_fieldApproximation);

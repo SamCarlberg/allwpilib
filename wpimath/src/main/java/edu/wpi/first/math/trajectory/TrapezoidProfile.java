@@ -123,7 +123,8 @@ public class TrapezoidProfile {
     @Override
     public boolean equals(Object other) {
       return other instanceof State rhs
-               && this.position == rhs.position && this.velocity == rhs.velocity;
+          && this.position == rhs.position
+          && this.velocity == rhs.velocity;
     }
 
     @Override

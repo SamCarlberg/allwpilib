@@ -186,8 +186,8 @@ public class AprilTagFieldLayout {
    * Gets an AprilTag pose by its ID.
    *
    * @param ID The ID of the tag.
-   * @return The pose corresponding to the ID passed in or an empty option if a tag with that ID
-   *     was not found.
+   * @return The pose corresponding to the ID passed in or an empty option if a tag with that ID was
+   *     not found.
    */
   @SuppressWarnings("ParameterName")
   public Option<Pose3d> getTagPose(int ID) {
@@ -245,8 +245,8 @@ public class AprilTagFieldLayout {
   @Override
   public boolean equals(Object obj) {
     return obj instanceof AprilTagFieldLayout layout
-             && m_apriltags.equals(layout.m_apriltags)
-             && m_origin.equals(layout.m_origin);
+        && m_apriltags.equals(layout.m_apriltags)
+        && m_origin.equals(layout.m_origin);
   }
 
   @Override

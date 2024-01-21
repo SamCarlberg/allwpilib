@@ -232,8 +232,7 @@ public class Translation2d
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof Translation2d other) {
-      return Math.abs(other.m_x - m_x) < 1E-9
-          && Math.abs(other.m_y - m_y) < 1E-9;
+      return Math.abs(other.m_x - m_x) < 1E-9 && Math.abs(other.m_y - m_y) < 1E-9;
     }
     return false;
   }

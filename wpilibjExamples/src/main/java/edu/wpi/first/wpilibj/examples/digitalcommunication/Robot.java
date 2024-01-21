@@ -5,7 +5,6 @@
 package edu.wpi.first.wpilibj.examples.digitalcommunication;
 
 import edu.wpi.first.util.None;
-import edu.wpi.first.util.Option;
 import edu.wpi.first.util.Some;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,10 +28,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    boolean setAlliance = switch (DriverStation.getAlliance()) {
-      case Some<DriverStation.Alliance>(var alliance) -> alliance == DriverStation.Alliance.Red;
-      case None<?> none -> false;
-    };
+    boolean setAlliance =
+        switch (DriverStation.getAlliance()) {
+          case Some<DriverStation.Alliance>(var alliance) -> alliance == DriverStation.Alliance.Red;
+          case None<?> none -> false;
+        };
 
     // pull alliance port high if on red alliance, pull low if on blue alliance
     m_allianceOutput.set(setAlliance);
