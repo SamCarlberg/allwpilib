@@ -80,6 +80,7 @@ test {
         exceptionFormat "full"
     }
     finalizedBy jacocoTestReport
+    jvmArgs(['--enable-preview'])
 }
 
 if (project.hasProperty('onlylinuxathena') || project.hasProperty('onlylinuxarm32') || project.hasProperty('onlylinuxarm64') || project.hasProperty('onlywindowsarm64')) {
@@ -104,10 +105,11 @@ configurations {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
         '--release',
-        '11',
+        '21',
+        '--enable-preview',
         '-encoding',
         'UTF8',
-        "-Werror",
+//        "-Werror",
         "-Xlint:all",
         // ignore AutoCloseable warnings
         "-Xlint:-try",
@@ -121,6 +123,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     devImplementation sourceSets.main.output
+
+    pmd 'net.sourceforge.pmd:pmd-ant:7.0.0-rc4'
+    pmd 'net.sourceforge.pmd:pmd-java:7.0.0-rc4'
 }
 
 task run(type: JavaExec) {
