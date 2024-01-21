@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.util.Option;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Class for representing a layout of AprilTags on a field and reading them from a JSON format.
@@ -147,19 +147,16 @@ public class AprilTagFieldLayout {
    */
   @JsonIgnore
   public final void setOrigin(OriginPosition origin) {
-    switch (origin) {
-      case kBlueAllianceWallRightSide:
-        setOrigin(new Pose3d());
-        break;
-      case kRedAllianceWallRightSide:
-        setOrigin(
-            new Pose3d(
-                new Translation3d(m_fieldDimensions.fieldLength, m_fieldDimensions.fieldWidth, 0),
-                new Rotation3d(0, 0, Math.PI)));
-        break;
-      default:
-        throw new IllegalArgumentException("Unsupported enum value");
-    }
+    var pose =
+        switch (origin) {
+          case kBlueAllianceWallRightSide -> new Pose3d();
+          case kRedAllianceWallRightSide ->
+              new Pose3d(
+                  new Translation3d(m_fieldDimensions.fieldLength, m_fieldDimensions.fieldWidth, 0),
+                  new Rotation3d(0, 0, Math.PI));
+        };
+
+    setOrigin(pose);
   }
 
   /**
@@ -193,12 +190,12 @@ public class AprilTagFieldLayout {
    *     was not found.
    */
   @SuppressWarnings("ParameterName")
-  public Optional<Pose3d> getTagPose(int ID) {
+  public Option<Pose3d> getTagPose(int ID) {
     AprilTag tag = m_apriltags.get(ID);
     if (tag == null) {
-      return Optional.empty();
+      return Option.none();
     }
-    return Optional.of(tag.pose.relativeTo(m_origin));
+    return Option.some(tag.pose.relativeTo(m_origin));
   }
 
   /**
@@ -247,11 +244,9 @@ public class AprilTagFieldLayout {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof AprilTagFieldLayout) {
-      var other = (AprilTagFieldLayout) obj;
-      return m_apriltags.equals(other.m_apriltags) && m_origin.equals(other.m_origin);
-    }
-    return false;
+    return obj instanceof AprilTagFieldLayout layout
+             && m_apriltags.equals(layout.m_apriltags)
+             && m_origin.equals(layout.m_origin);
   }
 
   @Override
@@ -261,6 +256,7 @@ public class AprilTagFieldLayout {
 
   @JsonIgnoreProperties(ignoreUnknown = true)
   @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
+  @SuppressWarnings("PMD.ImmutableField")
   private static class FieldDimensions {
     @SuppressWarnings("MemberName")
     @JsonProperty(value = "length")

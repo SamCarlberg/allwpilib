@@ -26,8 +26,7 @@ public class SwerveDriveWheelPositions implements WheelPositions<SwerveDriveWhee
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof SwerveDriveWheelPositions) {
-      SwerveDriveWheelPositions other = (SwerveDriveWheelPositions) obj;
+    if (obj instanceof SwerveDriveWheelPositions other) {
       return Arrays.equals(this.positions, other.positions);
     }
     return false;

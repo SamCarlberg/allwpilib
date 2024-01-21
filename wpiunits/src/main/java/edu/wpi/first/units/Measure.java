@@ -90,29 +90,23 @@ public interface Measure<U extends Unit<U>> extends Comparable<Measure<U>> {
       return times(other.baseUnitMagnitude());
     }
 
-    if (unit() instanceof Per
-        && other.unit().m_baseType.equals(((Per<?, ?>) unit()).denominator().m_baseType)) {
+    if (unit() instanceof Per<?, ?> per
+        && other.unit().m_baseType.equals(per.denominator().m_baseType)) {
       // denominator of the Per cancels out, return with just the units of the numerator
-      Unit<?> numerator = ((Per<?, ?>) unit()).numerator();
+      Unit<?> numerator = per.numerator();
       return numerator.ofBaseUnits(baseUnitMagnitude() * other.baseUnitMagnitude());
-    } else if (unit() instanceof Velocity && other.unit().m_baseType.equals(Time.class)) {
+    } else if (unit() instanceof Velocity<?> v && other.unit().m_baseType.equals(Time.class)) {
       // Multiplying a velocity by a time, return the scalar unit (eg Distance)
-      Unit<?> numerator = ((Velocity<?>) unit()).getUnit();
+      Unit<?> numerator = v.getUnit();
       return numerator.ofBaseUnits(baseUnitMagnitude() * other.baseUnitMagnitude());
-    } else if (other.unit() instanceof Per
-        && unit().m_baseType.equals(((Per<?, ?>) other.unit()).denominator().m_baseType)) {
-      Unit<?> numerator = ((Per<?, ?>) other.unit()).numerator();
+    } else if (other.unit() instanceof Per<?, ?> per
+        && unit().m_baseType.equals(per.denominator().m_baseType)) {
+      Unit<?> numerator = per.numerator();
       return numerator.ofBaseUnits(baseUnitMagnitude() * other.baseUnitMagnitude());
-    } else if (unit() instanceof Per
-        && other.unit() instanceof Per
-        && ((Per<?, ?>) unit())
-            .denominator()
-            .m_baseType
-            .equals(((Per<?, U>) other.unit()).numerator().m_baseType)
-        && ((Per<?, ?>) unit())
-            .numerator()
-            .m_baseType
-            .equals(((Per<?, ?>) other.unit()).denominator().m_baseType)) {
+    } else if (unit() instanceof Per<?, ?> a
+        && other.unit() instanceof Per<?, ?> b
+        && a.denominator().m_baseType.equals(b.numerator().m_baseType)
+        && a.numerator().m_baseType.equals(b.denominator().m_baseType)) {
       // multiplying eg meters per second * milliseconds per foot
       // return a scalar
       return Units.Value.of(baseUnitMagnitude() * other.baseUnitMagnitude());
