@@ -186,7 +186,7 @@ public class AprilTagFieldLayout {
    * Gets an AprilTag pose by its ID.
    *
    * @param ID The ID of the tag.
-   * @return The pose corresponding to the ID passed in or an empty optional if a tag with that ID
+   * @return The pose corresponding to the ID passed in or an empty option if a tag with that ID
    *     was not found.
    */
   @SuppressWarnings("ParameterName")

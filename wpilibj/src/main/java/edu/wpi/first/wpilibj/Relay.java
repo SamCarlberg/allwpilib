@@ -72,7 +72,7 @@ public class Relay extends MotorSafety implements Sendable, AutoCloseable {
      * Returns the value for a given pretty string.
      *
      * @param value The pretty string.
-     * @return The value or an empty optional if there is no corresponding value.
+     * @return The value or an empty option if there is no corresponding value.
      */
     public static Option<Value> getValueOf(String value) {
       return Option.wrapOptional(

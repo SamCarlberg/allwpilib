@@ -557,7 +557,7 @@ public final class CommandScheduler implements Sendable, AutoCloseable {
 
   /**
    * Adds an action to perform on the interruption of any command by the scheduler. The action
-   * receives the interrupted command and an Optional containing the interrupting command, or
+   * receives the interrupted command and an Option containing the interrupting command, or
    * Option.none() if it was not canceled by a command (e.g., by {@link CommandScheduler#cancel}).
    *
    * @param action the action to perform

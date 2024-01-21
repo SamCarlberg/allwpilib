@@ -95,10 +95,10 @@ public final class TimeInterpolatableBuffer<T> {
   }
 
   /**
-   * Sample the buffer at the given time. If the buffer is empty, an empty Optional is returned.
+   * Sample the buffer at the given time. If the buffer is empty, an empty Option is returned.
    *
    * @param timeSeconds The time at which to sample.
-   * @return The interpolated value at that timestamp or an empty Optional.
+   * @return The interpolated value at that timestamp or an empty Option.
    */
   public Option<T> getSample(double timeSeconds) {
     if (m_pastSnapshots.isEmpty()) {
