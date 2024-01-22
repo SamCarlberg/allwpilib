@@ -124,8 +124,10 @@ dependencies {
 
     devImplementation sourceSets.main.output
 
-    pmd 'net.sourceforge.pmd:pmd-ant:7.0.0-rc4'
-    pmd 'net.sourceforge.pmd:pmd-java:7.0.0-rc4'
+    // The PMD gradle plugin does not currently provide dependencies
+    // for the version 7 release candidates
+    add('pmd', 'net.sourceforge.pmd:pmd-ant:7.0.0-rc4')
+    add('pmd', 'net.sourceforge.pmd:pmd-java:7.0.0-rc4')
 }
 
 task run(type: JavaExec) {

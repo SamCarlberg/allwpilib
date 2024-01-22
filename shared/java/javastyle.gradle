@@ -13,6 +13,7 @@ checkstyle {
 apply plugin: 'pmd'
 
 pmd {
+    // Version 6 does not support Java 21; use the latest version 7 release candidate
     toolVersion = '7.0.0-rc4'
     consoleOutput = true
     reportsDir = file("$project.buildDir/reports/pmd")
