@@ -8,7 +8,11 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/** An option without a value. All instances of this class are effectively identical. */
+/**
+ * An option without a value. All instances of this class are effectively identical.
+ *
+ * @param <T> the type of the values that can be contained
+ */
 public final class None<T> implements Option<T> {
   /** The singleton {@code None} instance. */
   static final None<?> NONE = new None<>();

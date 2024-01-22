@@ -7,8 +7,19 @@ package edu.wpi.first.util;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/** An option that contains a value. */
+/**
+ * An option that contains a value.
+ *
+ * @param value the value of the option
+ * @param <T> the type of the values that can be contained
+ */
 public record Some<T>(T value) implements Option<T> {
+  /**
+   * Creates an option containing a value. Prefer to use {@link Option#some} over calling this
+   * constructor directly.
+   *
+   * @param value the value of the option
+   */
   public Some {
     ErrorMessages.requireNonNullParam(value, "value", "Some");
   }
