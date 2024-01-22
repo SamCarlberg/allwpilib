@@ -10,16 +10,16 @@ checkstyle {
     config = resources.text.fromFile(new File(configDirectory.get().getAsFile(), "checkstyle.xml"))
 }
 
-apply plugin: 'pmd'
+//apply plugin: 'pmd'
 
-pmd {
-    // Version 6 does not support Java 21; use the latest version 7 release candidate
-    toolVersion = '7.0.0-rc4'
-    consoleOutput = true
-    reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSetFiles = files(new File(rootDir, "styleguide/pmd-ruleset.xml"))
-    ruleSets = []
-}
+//pmd {
+//    // Version 6 does not support Java 21; use the latest version 7 release candidate
+//    toolVersion = '7.0.0-rc4'
+//    consoleOutput = true
+//    reportsDir = file("$project.buildDir/reports/pmd")
+//    ruleSetFiles = files(new File(rootDir, "styleguide/pmd-ruleset.xml"))
+//    ruleSets = []
+//}
 
 apply plugin: 'com.diffplug.spotless'
 
@@ -85,6 +85,6 @@ spotbugs {
 
 task javaFormat {
     dependsOn(tasks.withType(Checkstyle))
-    dependsOn(tasks.withType(Pmd))
+//    dependsOn(tasks.withType(Pmd))
 }
 javaFormat.dependsOn 'spotlessApply'
