@@ -106,9 +106,10 @@ public final class MutableMeasure<U extends Unit<U>> implements Measure<U> {
    *
    * @param magnitude the new magnitude of the measurement
    */
-  public void mut_setMagnitude(double magnitude) {
+  public MutableMeasure<U> mut_setMagnitude(double magnitude) {
     m_magnitude = magnitude;
     m_baseUnitMagnitude = m_unit.toBaseUnits(magnitude);
+    return this;
   }
 
   /**
@@ -117,9 +118,10 @@ public final class MutableMeasure<U extends Unit<U>> implements Measure<U> {
    *
    * @param baseUnitMagnitude the new magnitude of the measurement
    */
-  public void mut_setBaseUnitMagnitude(double baseUnitMagnitude) {
+  public MutableMeasure<U> mut_setBaseUnitMagnitude(double baseUnitMagnitude) {
     m_baseUnitMagnitude = baseUnitMagnitude;
     m_magnitude = m_unit.fromBaseUnits(baseUnitMagnitude);
+    return this;
   }
 
   /**
