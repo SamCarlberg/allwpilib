@@ -9,7 +9,7 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.proto.DifferentialDriveWheelPositionsProto;
 import edu.wpi.first.math.kinematics.struct.DifferentialDriveWheelPositionsStruct;
-import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Measure;
 import java.util.Objects;
 
@@ -47,7 +47,7 @@ public class DifferentialDriveWheelPositions
    * @param left Distance measured by the left side.
    * @param right Distance measured by the right side.
    */
-  public DifferentialDriveWheelPositions(Measure<Distance> left, Measure<Distance> right) {
+  public DifferentialDriveWheelPositions(Measure<DistanceUnit> left, Measure<DistanceUnit> right) {
     this(left.in(Meters), right.in(Meters));
   }
 
