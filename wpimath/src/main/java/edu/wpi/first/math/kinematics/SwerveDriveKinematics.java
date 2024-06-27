@@ -12,8 +12,8 @@ import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.units.AngularVelocity;
-import edu.wpi.first.units.LinearVelocity;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.Arrays;
 import org.ejml.simple.SimpleMatrix;
 
