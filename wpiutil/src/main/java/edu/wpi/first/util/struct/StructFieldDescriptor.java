@@ -31,6 +31,7 @@ public class StructFieldDescriptor {
       StructFieldType type,
       int size,
       int arraySize,
+      boolean variableLength,
       int bitWidth,
       Map<String, Long> enumValues,
       StructDescriptor structDesc) {
@@ -38,6 +39,7 @@ public class StructFieldDescriptor {
     m_name = name;
     m_size = size;
     m_arraySize = arraySize;
+    m_variableLength = variableLength;
     m_enum = enumValues;
     m_struct = structDesc;
     m_bitMask = toBitMask(size, bitWidth);
@@ -142,7 +144,7 @@ public class StructFieldDescriptor {
    * @return true if array
    */
   public boolean isArray() {
-    return m_arraySize > 1;
+    return m_arraySize > 1 || m_variableLength;
   }
 
   /**
@@ -152,6 +154,15 @@ public class StructFieldDescriptor {
    */
   public int getArraySize() {
     return m_arraySize;
+  }
+
+  /**
+   * Returns whether the field is a variable-length array.
+   *
+   * @return true if a variable-length array
+   */
+  public boolean isVariableLength() {
+    return m_variableLength;
   }
 
   /**
@@ -232,6 +243,7 @@ public class StructFieldDescriptor {
   int m_size;
   int m_offset;
   final int m_arraySize; // 1 for non-arrays
+  final boolean m_variableLength;
   private final Map<String, Long> m_enum;
   private final StructDescriptor m_struct; // null for non-structs
   private final long m_bitMask;

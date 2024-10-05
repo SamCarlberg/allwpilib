@@ -74,6 +74,21 @@ public interface Struct<T> {
   int getSize();
 
   /**
+   * Gets the serialized size of a particular object (in bytes). This should always return the same
+   * value for the same input object. Defaults to {@link #getSize()} for backwards compatibility.
+   *
+   * <p><strong>NOTE</strong>: variable-length arrays require an extra int32 field to store the
+   * array length. Fixed-length arrays do <i>not</i> require this field because the length is baked
+   * into the schema definition.
+   *
+   * @param object the object to be serialized
+   * @return serialized size
+   */
+  default int getSerializedSize(T object) {
+    return getSize();
+  }
+
+  /**
    * Gets the schema.
    *
    * @return schema

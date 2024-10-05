@@ -206,4 +206,15 @@ class ParserTest {
     Parser p = new Parser("int32 a[0]");
     assertThrows(ParseException.class, p::parse, "8: array size '0' is not a positive integer");
   }
+
+  @Test
+  void variableLengthArray() {
+    Parser p = new Parser("int32 a[varying]");
+    ParsedSchema schema = assertDoesNotThrow(p::parse);
+    assertEquals(1, schema.declarations.size());
+    var decl = schema.declarations.get(0);
+    assertEquals("in32", decl.typeString);
+    assertEquals("a", decl.name);
+    assertTrue(decl.variableLengthArray);
+  }
 }

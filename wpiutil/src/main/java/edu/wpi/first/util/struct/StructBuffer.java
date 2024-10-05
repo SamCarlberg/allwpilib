@@ -7,6 +7,7 @@ package edu.wpi.first.util.struct;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -16,8 +17,6 @@ import java.util.Collection;
  */
 public final class StructBuffer<T> {
   private StructBuffer(Struct<T> struct) {
-    m_structSize = struct.getSize();
-    m_buf = ByteBuffer.allocateDirect(m_structSize).order(ByteOrder.LITTLE_ENDIAN);
     m_struct = struct;
   }
 
@@ -51,14 +50,13 @@ public final class StructBuffer<T> {
   }
 
   /**
-   * Ensures sufficient buffer space is available for the given number of elements.
+   * Ensures sufficient buffer space is available for the given number of elements. This can only
+   * be used with fixed-length structs.
    *
    * @param nelem number of elements
    */
   public void reserve(int nelem) {
-    if ((nelem * m_structSize) > m_buf.capacity()) {
-      m_buf = ByteBuffer.allocateDirect(nelem * m_structSize).order(ByteOrder.LITTLE_ENDIAN);
-    }
+    requireCapacity(nelem * m_struct.getSize());
   }
 
   /**
@@ -69,6 +67,9 @@ public final class StructBuffer<T> {
    * @return byte buffer
    */
   public ByteBuffer write(T value) {
+    int requiredCapacity = m_struct.getSerializedSize(value);
+    requireCapacity(requiredCapacity);
+
     m_buf.position(0);
     m_struct.pack(m_buf, value);
     return m_buf;
@@ -147,15 +148,19 @@ public final class StructBuffer<T> {
    * buffer with the position set to the end of the serialized data.
    *
    * @param values values
+   * @param fixedLength if the values should be encoded as a fixed-length array. If false, an int32
+   *                    field will be prepended
    * @return byte buffer
    */
   public ByteBuffer writeArray(Collection<T> values) {
+    int totalCapacity =
+        Struct.kSizeInt32 + values.stream().mapToInt(m_struct::getSerializedSize).sum();
+
+    requireCapacity(totalCapacity);
+
     m_buf.position(0);
-    if ((values.size() * m_structSize) > m_buf.capacity()) {
-      m_buf =
-          ByteBuffer.allocateDirect(values.size() * m_structSize * 2)
-              .order(ByteOrder.LITTLE_ENDIAN);
-    }
+
+    m_buf.putInt(values.size());
     for (T v : values) {
       m_struct.pack(m_buf, v);
     }
@@ -170,12 +175,14 @@ public final class StructBuffer<T> {
    * @return byte buffer
    */
   public ByteBuffer writeArray(T[] values) {
+    int totalCapacity =
+        Struct.kSizeInt32 + Arrays.stream(values).mapToInt(m_struct::getSerializedSize).sum();
+
+    requireCapacity(totalCapacity);
+
     m_buf.position(0);
-    if ((values.length * m_structSize) > m_buf.capacity()) {
-      m_buf =
-          ByteBuffer.allocateDirect(values.length * m_structSize * 2)
-              .order(ByteOrder.LITTLE_ENDIAN);
-    }
+
+    m_buf.putInt(values.length);
     for (T v : values) {
       m_struct.pack(m_buf, v);
     }
@@ -209,14 +216,12 @@ public final class StructBuffer<T> {
    *
    * @param buf byte buffer
    * @return new object array
+   * @throws java.nio.BufferUnderflowException if the encoded array size at the current buffer
+   *   position is greater than the remaining readable capacity of the buffer
    */
   public T[] readArray(ByteBuffer buf) {
     buf.order(ByteOrder.LITTLE_ENDIAN);
-    int len = buf.limit() - buf.position();
-    if ((len % m_structSize) != 0) {
-      throw new RuntimeException("buffer size not a multiple of struct size");
-    }
-    int nelem = len / m_structSize;
+    int nelem = buf.getInt();
     @SuppressWarnings("unchecked")
     T[] arr = (T[]) Array.newInstance(m_struct.getTypeClass(), nelem);
     for (int i = 0; i < nelem; i++) {
@@ -225,7 +230,21 @@ public final class StructBuffer<T> {
     return arr;
   }
 
+  private void requireCapacity(int capacity) {
+    int allocationSize;
+
+    if (m_buf == null) {
+      allocationSize = capacity;
+    } else if (m_buf.capacity() < capacity) {
+      // Current capacity is too small - need to resize
+      allocationSize = capacity * 2;
+    } else {
+      return;
+    }
+
+    m_buf = ByteBuffer.allocateDirect(allocationSize).order(ByteOrder.LITTLE_ENDIAN);
+  }
+
   private ByteBuffer m_buf;
   private final Struct<T> m_struct;
-  private final int m_structSize;
 }

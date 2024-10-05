@@ -101,6 +101,7 @@ public class StructDescriptorDatabase {
               type,
               size,
               decl.arraySize,
+              decl.variableLengthArray,
               decl.bitWidth,
               decl.enumValues,
               structDesc);

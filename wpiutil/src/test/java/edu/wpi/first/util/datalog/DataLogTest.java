@@ -707,23 +707,23 @@ class DataLogTest {
 
     entry.update(new Thing[] {new Thing(1), new Thing(2)}, 7);
     log.flush();
-    assertEquals(123, data.size());
+    assertEquals(127, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(new Thing[] {new Thing(1), new Thing(2)}, entry.getLastValue());
 
     entry.update(new Thing[] {new Thing(1), new Thing(2)}, 8);
     log.flush();
-    assertEquals(123, data.size());
+    assertEquals(127, data.size());
 
     entry.update(new Thing[] {new Thing(1), new Thing(3)}, 9);
     log.flush();
-    assertEquals(129, data.size());
+    assertEquals(137, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(new Thing[] {new Thing(1), new Thing(3)}, entry.getLastValue());
 
     entry.update(new Thing[] {}, 10);
     log.flush();
-    assertEquals(133, data.size());
+    assertEquals(145, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(new Thing[] {}, entry.getLastValue());
   }
@@ -737,7 +737,7 @@ class DataLogTest {
     entry.update(new CloneableThing[] {new CloneableThing(1), new CloneableThing(2)}, 7);
     assertEquals(2, cloneCalls);
     log.flush();
-    assertEquals(123, data.size());
+    assertEquals(127, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(
         new CloneableThing[] {new CloneableThing(1), new CloneableThing(2)}, entry.getLastValue());
@@ -746,12 +746,12 @@ class DataLogTest {
     entry.update(new CloneableThing[] {new CloneableThing(1), new CloneableThing(2)}, 8);
     assertEquals(4, cloneCalls);
     log.flush();
-    assertEquals(123, data.size());
+    assertEquals(127, data.size());
 
     entry.update(new CloneableThing[] {new CloneableThing(1), new CloneableThing(3)}, 9);
     assertEquals(6, cloneCalls);
     log.flush();
-    assertEquals(129, data.size());
+    assertEquals(137, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(
         new CloneableThing[] {new CloneableThing(1), new CloneableThing(3)}, entry.getLastValue());
@@ -760,7 +760,7 @@ class DataLogTest {
     entry.update(new CloneableThing[] {}, 10);
     assertEquals(8, cloneCalls);
     log.flush();
-    assertEquals(133, data.size());
+    assertEquals(145, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(new CloneableThing[] {}, entry.getLastValue());
     assertEquals(8, cloneCalls);
@@ -774,25 +774,25 @@ class DataLogTest {
 
     entry.update(new ImmutableThing[] {new ImmutableThing(1), new ImmutableThing(2)}, 7);
     log.flush();
-    assertEquals(123, data.size());
+    assertEquals(127, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(
         new ImmutableThing[] {new ImmutableThing(1), new ImmutableThing(2)}, entry.getLastValue());
 
     entry.update(new ImmutableThing[] {new ImmutableThing(1), new ImmutableThing(2)}, 8);
     log.flush();
-    assertEquals(123, data.size());
+    assertEquals(127, data.size());
 
     entry.update(new ImmutableThing[] {new ImmutableThing(1), new ImmutableThing(3)}, 9);
     log.flush();
-    assertEquals(129, data.size());
+    assertEquals(137, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(
         new ImmutableThing[] {new ImmutableThing(1), new ImmutableThing(3)}, entry.getLastValue());
 
     entry.update(new ImmutableThing[] {}, 10);
     log.flush();
-    assertEquals(133, data.size());
+    assertEquals(145, data.size());
     assertTrue(entry.hasLastValue());
     assertArrayEquals(new ImmutableThing[] {}, entry.getLastValue());
   }

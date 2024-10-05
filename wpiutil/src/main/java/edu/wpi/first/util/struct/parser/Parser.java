@@ -4,6 +4,7 @@
 
 package edu.wpi.first.util.struct.parser;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,19 +67,24 @@ public class Parser {
     // array or bit field
     if (m_token == TokenKind.kLeftBracket) {
       getNextToken();
-      expect(TokenKind.kInteger);
+      expect(TokenKind.kInteger, TokenKind.kIdentifier);
       String valueStr = m_lexer.getTokenText();
-      int value;
-      try {
-        value = Integer.parseInt(valueStr);
-      } catch (NumberFormatException e) {
-        value = 0;
-      }
-      if (value > 0) {
-        decl.arraySize = value;
+      if (valueStr.equals("varying")) {
+        decl.arraySize = -1;
+        decl.variableLengthArray = true;
       } else {
-        throw new ParseException(
-            m_lexer.m_pos, "array size '" + valueStr + "' is not a positive integer");
+        int value;
+        try {
+          value = Integer.parseInt(valueStr);
+        } catch (NumberFormatException e) {
+          value = 0;
+        }
+        if (value > 0) {
+          decl.arraySize = value;
+        } else {
+          throw new ParseException(
+              m_lexer.m_pos, "array size '" + valueStr + "' is not a positive integer");
+        }
       }
       getNextToken();
       expect(TokenKind.kRightBracket);
@@ -145,10 +151,23 @@ public class Parser {
     return m_token;
   }
 
-  private void expect(TokenKind kind) throws ParseException {
-    if (m_token != kind) {
+  private void expect(TokenKind... expectedKinds) throws ParseException {
+    boolean included = false;
+    for (TokenKind expectedKind : expectedKinds) {
+      if (m_token == expectedKind) {
+        included = true;
+        break;
+      }
+    }
+
+    if (!included) {
       throw new ParseException(
-          m_lexer.m_pos, "expected " + kind + ", got '" + m_lexer.getTokenText() + "'");
+          m_lexer.m_pos,
+          "expected one of "
+            + Arrays.toString(expectedKinds)
+            + ", got '"
+            + m_lexer.getTokenText()
+            + "'");
     }
   }
 

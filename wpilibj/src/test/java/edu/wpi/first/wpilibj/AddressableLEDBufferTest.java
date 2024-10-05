@@ -11,6 +11,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -125,5 +127,20 @@ class AddressableLEDBufferTest {
     var buffer = new AddressableLEDBuffer(0);
 
     buffer.forEach((i, r, g, b) -> fail("Iterator should not be called on an empty buffer"));
+  }
+
+  @Test
+  void structSerialization() {
+    var original = new AddressableLEDBuffer(256);
+    for (int i = 0; i < 256; i++) {
+      original.setRGB(i, i, i / 2, 255 - i);
+    }
+
+    // 4 bytes for size, plus 3 bytes for each color
+    var buffer = ByteBuffer.allocateDirect(4 + 256 * 3).order(ByteOrder.LITTLE_ENDIAN);
+    AddressableLEDBuffer.struct.pack(buffer, original);
+
+    var recreated = AddressableLEDBuffer.struct.unpack(buffer);
+    assertEquals(256 * 4, recreated.m_buffer.length);
   }
 }

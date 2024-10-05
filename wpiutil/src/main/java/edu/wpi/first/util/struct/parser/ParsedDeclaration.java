@@ -24,6 +24,10 @@ public class ParsedDeclaration {
   @SuppressWarnings("MemberName")
   public int arraySize = 1;
 
+  /** Variable length array. */
+  @SuppressWarnings("MemberName")
+  public boolean variableLengthArray = false;
+
   /** Bit width. */
   @SuppressWarnings("MemberName")
   public int bitWidth;

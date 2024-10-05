@@ -12,4 +12,15 @@ import edu.wpi.first.util.WPISerializable;
  * <p>While this cannot be enforced by the interface, any class implementing this interface should
  * provide a public final static `struct` member variable.
  */
-public interface StructSerializable extends WPISerializable {}
+public interface StructSerializable extends WPISerializable {
+  default Struct<?> getStruct() {
+    try {
+      return (Struct<?>) getClass().getDeclaredField("struct").get(null);
+    } catch (ReflectiveOperationException e) {
+      throw new Error(
+          getClass().getName()
+              + " did not implement getStruct() or declare a public static `struct` field!",
+          e);
+    }
+  }
+}
