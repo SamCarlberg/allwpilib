@@ -4,11 +4,13 @@
 
 package edu.wpi.first.epilogue.logging;
 
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import us.hebi.quickbuf.ProtoMessage;
 
 /**
  * A data logger implementation that only logs data when it changes. Useful for keeping bandwidth
@@ -210,6 +212,21 @@ public class LazyLogger implements DataLogger {
 
     m_previousValues.put(identifier, value);
     m_logger.log(identifier, value);
+  }
+
+  @Override
+  public <T, Msg extends ProtoMessage<Msg>> void log(
+      String identifier, T value, Protobuf<T, Msg> proto) {
+
+    var previous = m_previousValues.get(identifier);
+
+    if (Objects.equals(previous, value)) {
+      // no change
+      return;
+    }
+
+    m_previousValues.put(identifier, value);
+    m_logger.log(identifier, value, proto);
   }
 
   @Override

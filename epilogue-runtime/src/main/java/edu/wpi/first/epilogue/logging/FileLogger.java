@@ -16,15 +16,18 @@ import edu.wpi.first.util.datalog.FloatArrayLogEntry;
 import edu.wpi.first.util.datalog.FloatLogEntry;
 import edu.wpi.first.util.datalog.IntegerArrayLogEntry;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
+import edu.wpi.first.util.datalog.ProtobufLogEntry;
 import edu.wpi.first.util.datalog.RawLogEntry;
 import edu.wpi.first.util.datalog.StringArrayLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.util.datalog.StructArrayLogEntry;
 import edu.wpi.first.util.datalog.StructLogEntry;
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import us.hebi.quickbuf.ProtoMessage;
 
 /** A data logger implementation that saves information to a WPILib {@link DataLog} file on disk. */
 public class FileLogger implements DataLogger {
@@ -126,6 +129,13 @@ public class FileLogger implements DataLogger {
   @Override
   public void log(String identifier, String[] value) {
     getEntry(identifier, StringArrayLogEntry::new).append(value);
+  }
+
+  @Override
+  public <T, Msg extends ProtoMessage<Msg>> void log(
+      String identifier, T value, Protobuf<T, Msg> proto) {
+    m_dataLog.addSchema(proto);
+    getEntry(identifier, (log, k) -> ProtobufLogEntry.create(log, k, proto)).append(value);
   }
 
   @Override

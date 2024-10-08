@@ -4,10 +4,12 @@
 
 package edu.wpi.first.epilogue.logging;
 
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import us.hebi.quickbuf.ProtoMessage;
 
 /**
  * A data logger implementation that delegates to other loggers. Helpful for simultaneous logging to
@@ -115,6 +117,14 @@ public class MultiLogger implements DataLogger {
   public void log(String identifier, String[] value) {
     for (DataLogger logger : m_loggers) {
       logger.log(identifier, value);
+    }
+  }
+
+  @Override
+  public <T, Msg extends ProtoMessage<Msg>> void log(
+      String identifier, T value, Protobuf<T, Msg> proto) {
+    for (DataLogger logger : m_loggers) {
+      logger.log(identifier, value, proto);
     }
   }
 

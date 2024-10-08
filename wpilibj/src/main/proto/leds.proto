@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package wpi.proto;
+
+option java_package = "edu.wpi.first.wpilibj.proto";
+
+message AddressableLEDBuffer {
+  repeated ColorBGR colors = 1;
+}
+
+message ColorBGR {
+  // These are all actually uint8, and protobuf will scale these fields down to fit
+  uint32 blue = 1;
+  uint32 green = 2;
+  uint32 red = 3;
+}

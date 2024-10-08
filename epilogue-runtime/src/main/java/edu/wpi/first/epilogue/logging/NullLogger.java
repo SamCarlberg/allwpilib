@@ -4,7 +4,9 @@
 
 package edu.wpi.first.epilogue.logging;
 
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
+import us.hebi.quickbuf.ProtoMessage;
 
 /** Null data logger implementation that logs nothing. */
 public class NullLogger implements DataLogger {
@@ -56,6 +58,10 @@ public class NullLogger implements DataLogger {
 
   @Override
   public void log(String identifier, String[] value) {}
+
+  @Override
+  public <T, Msg extends ProtoMessage<Msg>> void log(
+      String identifier, T value, Protobuf<T, Msg> proto) {}
 
   @Override
   public <S> void log(String identifier, S value, Struct<S> struct) {}

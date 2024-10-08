@@ -13,15 +13,18 @@ import edu.wpi.first.networktables.FloatPublisher;
 import edu.wpi.first.networktables.IntegerArrayPublisher;
 import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.ProtobufPublisher;
 import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.RawPublisher;
 import edu.wpi.first.networktables.StringArrayPublisher;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
 import java.util.HashMap;
 import java.util.Map;
+import us.hebi.quickbuf.ProtoMessage;
 
 /**
  * A data logger implementation that sends data over network tables. Be careful when using this,
@@ -143,6 +146,16 @@ public class NTDataLogger implements DataLogger {
   public void log(String identifier, String[] value) {
     ((StringArrayPublisher)
             m_publishers.computeIfAbsent(identifier, k -> m_nt.getStringArrayTopic(k).publish()))
+        .set(value);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T, Msg extends ProtoMessage<Msg>> void log(
+      String identifier, T value, Protobuf<T, Msg> proto) {
+    m_nt.addSchema(proto);
+    ((ProtobufPublisher<T>)
+            m_publishers.computeIfAbsent(identifier, k -> m_nt.getProtobufTopic(k, proto).publish()))
         .set(value);
   }
 

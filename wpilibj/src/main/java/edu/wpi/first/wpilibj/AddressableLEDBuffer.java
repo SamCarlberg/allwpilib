@@ -26,14 +26,15 @@ public class AddressableLEDBuffer implements LEDReader, LEDWriter, StructSeriali
   }
 
   /**
-   * Gets raw access to the full data buffer that will be sent to the addressable LED strip. Data
-   * is structured in repeating [B, G, R, 0] four-byte groups. If you want to change the colors in
-   * the buffer, use {@link #setRGB(int, int, int, int)} instead of modifying the buffer directly;
-   * similarly, for reading colors, use {@link #getRed(int)}, {@link #getGreen(int)}, and
-   * {@link #getBlue(int)}. This method is primarily intended for serialization.
+   * Gets raw access to the full data buffer that will be sent to the addressable LED strip. Data is
+   * structured in repeating [B, G, R, 0] four-byte groups. If you want to change the colors in the
+   * buffer, use {@link #setRGB(int, int, int, int)} instead of modifying the buffer directly;
+   * similarly, for reading colors, use {@link #getRed(int)}, {@link #getGreen(int)}, and {@link
+   * #getBlue(int)}. This method is primarily intended for serialization.
    *
    * @return the raw data buffer
    */
+  @SuppressWarnings("PMD.MethodReturnsInternalArray") // This is the entire fucking point
   public byte[] getRawBuffer() {
     return m_buffer;
   }
@@ -180,7 +181,7 @@ public class AddressableLEDBuffer implements LEDReader, LEDWriter, StructSeriali
 
     @Override
     public Struct<?>[] getNested() {
-      return new Struct<?>[] { BGRStruct.kInstance };
+      return new Struct<?>[] {BGRStruct.kInstance};
     }
 
     @Override

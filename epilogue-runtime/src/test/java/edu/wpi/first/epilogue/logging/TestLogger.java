@@ -4,12 +4,14 @@
 
 package edu.wpi.first.epilogue.logging;
 
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import us.hebi.quickbuf.ProtoMessage;
 
 @SuppressWarnings("PMD.TestClassWithoutTestCases") // This is not a test class!
 public class TestLogger implements DataLogger {
@@ -91,6 +93,15 @@ public class TestLogger implements DataLogger {
   @Override
   public void log(String identifier, String[] value) {
     m_entries.add(new LogEntry<>(identifier, value));
+  }
+
+  @Override
+  public <T, Msg extends ProtoMessage<Msg>> void log(
+      String identifier, T value, Protobuf<T, Msg> proto) {
+    var msg = proto.createMessage();
+    proto.pack(msg, value);
+
+    m_entries.add(new LogEntry<>(identifier, msg));
   }
 
   @Override

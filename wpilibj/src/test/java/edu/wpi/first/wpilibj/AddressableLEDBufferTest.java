@@ -140,6 +140,8 @@ class AddressableLEDBufferTest {
     var buffer = ByteBuffer.allocateDirect(4 + 256 * 3).order(ByteOrder.LITTLE_ENDIAN);
     AddressableLEDBuffer.struct.pack(buffer, original);
 
+    buffer.position(0);
+
     var recreated = AddressableLEDBuffer.struct.unpack(buffer);
     assertEquals(256 * 4, recreated.m_buffer.length);
   }

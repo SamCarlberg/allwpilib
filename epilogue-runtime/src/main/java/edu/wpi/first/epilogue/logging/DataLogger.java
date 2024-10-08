@@ -6,8 +6,10 @@ package edu.wpi.first.epilogue.logging;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
+import edu.wpi.first.util.protobuf.Protobuf;
 import edu.wpi.first.util.struct.Struct;
 import java.util.Collection;
+import us.hebi.quickbuf.ProtoMessage;
 
 /** A data logger is a generic interface for logging discrete data points. */
 public interface DataLogger {
@@ -158,6 +160,17 @@ public interface DataLogger {
   default void log(String identifier, Collection<String> value) {
     log(identifier, value.toArray(String[]::new));
   }
+
+  /**
+   * Logs a protobuf-serializable object.
+   *
+   * @param identifier the identifier of the data point
+   * @param value the value of the data point
+   * @param proto the protobuf to use to serialize the data
+   * @param <T> the serializable type
+   * @param <Msg> the type of the protobuf message
+   */
+  <T, Msg extends ProtoMessage<Msg>> void log(String identifier, T value, Protobuf<T, Msg> proto);
 
   /**
    * Logs a struct-serializable object.
