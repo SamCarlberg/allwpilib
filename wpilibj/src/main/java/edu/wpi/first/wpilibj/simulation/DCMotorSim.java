@@ -4,22 +4,15 @@
 
 package edu.wpi.first.wpilibj.simulation;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.MutAngularAcceleration;
-import edu.wpi.first.units.measure.MutAngularVelocity;
+import module wpilib.units;
+import module wpilib.math;
+
 import edu.wpi.first.wpilibj.RobotController;
 
 /** Represents a simulated DC motor mechanism. */
@@ -151,7 +144,7 @@ public class DCMotorSim extends LinearSystemSim<N2, N1, N2> {
    * @return The DC motor's position in rotations.
    */
   public double getAngularPositionRotations() {
-    return Units.radiansToRotations(getAngularPositionRad());
+    return Rotations.convertFrom(getAngularPositionRad(), Radians);
   }
 
   /**
@@ -179,7 +172,7 @@ public class DCMotorSim extends LinearSystemSim<N2, N1, N2> {
    * @return The DC motor's velocity in RPM.
    */
   public double getAngularVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(getAngularVelocityRadPerSec());
+    return RPM.convertFrom(getAngularVelocityRadPerSec(), RadiansPerSecond);
   }
 
   /**
