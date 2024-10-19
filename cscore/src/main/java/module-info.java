@@ -1,5 +1,5 @@
 module wpilib.cscore {
-  requires opencv.java;
+  requires wpilib.opencv;
   requires wpilib.util;
 
   exports edu.wpi.first.cscore;

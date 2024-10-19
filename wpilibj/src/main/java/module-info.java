@@ -4,6 +4,10 @@ module wpilib.wpilibj {
   requires transitive wpilib.math;
   requires transitive wpilib.units;
   requires transitive wpilib.util;
+  requires wpilib.hal;
+  requires wpilib.ntcore;
+  requires wpilib.cscore;
+  requires wpilib.cameraserver;
 
   exports edu.wpi.first.wpilibj;
   exports edu.wpi.first.wpilibj.counter;

@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Value;
 
 import module wpilib.units;
+import module wpilib.math;
 
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.util.Color;

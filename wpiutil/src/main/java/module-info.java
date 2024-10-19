@@ -1,6 +1,7 @@
+@SuppressWarnings("requires-transitive-automatic")
 module wpilib.util {
   requires com.fasterxml.jackson.databind;
-  requires us.hebi.quickbuf.runtime;
+  requires transitive us.hebi.quickbuf.runtime;
 
   exports edu.wpi.first.util;
   exports edu.wpi.first.util.cleanup;

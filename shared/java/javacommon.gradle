@@ -2,6 +2,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'org.gradlex.extra-java-module-info'
 
 def baseArtifactId = project.baseId
 def artifactGroupId = project.groupId
@@ -79,7 +80,7 @@ test {
         events "failed"
         exceptionFormat "full"
     }
-    finalizedBy jacocoTestReport
+//    finalizedBy jacocoTestReport
 }
 
 if (project.hasProperty('onlylinuxathena') || project.hasProperty('onlylinuxarm32') || project.hasProperty('onlylinuxarm64') || project.hasProperty('onlywindowsarm64')) {
@@ -104,10 +105,11 @@ configurations {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
         '--release',
-        '17',
+        '24',
         '-encoding',
         'UTF8',
-        "-Werror",
+        "--enable-preview", // for Valhalla
+        // "-Werror",
         "-Xlint:all",
         // ignore AutoCloseable warnings
         "-Xlint:-try",
@@ -115,7 +117,21 @@ tasks.withType(JavaCompile).configureEach {
         "-Xlint:-serial",
         // ignore unclaimed annotation warning from annotation processing
         "-Xlint:-processing",
+        "-Xlint:-preview",
+        // ignore modules requiring automatic library modules
+        "-Xlint:-requires-automatic",
+        "-Xlint:-requires-transitive-automatic",
+        "-Xlint:-exports",
     ]
+}
+
+assert hasProperty('valhallaHome'): "The Valhalla JDK build must be specified using -PvalhallaHome='/path/to/valhalla/jdk/'"
+
+tasks.withType(JavaCompile) {
+    options.with {
+        fork = true
+        forkOptions.javaHome = file(getProperty("valhallaHome"))
+    }
 }
 
 dependencies {
