@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class Translation2d
+public value class Translation2d
     implements Interpolatable<Translation2d>, ProtobufSerializable, StructSerializable {
   /**
    * A preallocated Translation2d representing the origin.

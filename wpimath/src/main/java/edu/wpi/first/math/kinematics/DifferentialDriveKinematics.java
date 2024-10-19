@@ -114,18 +114,6 @@ public class DifferentialDriveKinematics
   }
 
   @Override
-  public DifferentialDriveWheelPositions copy(DifferentialDriveWheelPositions positions) {
-    return new DifferentialDriveWheelPositions(positions.leftMeters, positions.rightMeters);
-  }
-
-  @Override
-  public void copyInto(
-      DifferentialDriveWheelPositions positions, DifferentialDriveWheelPositions output) {
-    output.leftMeters = positions.leftMeters;
-    output.rightMeters = positions.rightMeters;
-  }
-
-  @Override
   public DifferentialDriveWheelPositions interpolate(
       DifferentialDriveWheelPositions startValue,
       DifferentialDriveWheelPositions endValue,

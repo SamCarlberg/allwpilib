@@ -30,15 +30,15 @@ import java.util.Objects;
  * component because it can never move sideways. Holonomic drivetrains such as swerve and mecanum
  * will often have all three components.
  */
-public class ChassisSpeeds implements ProtobufSerializable, StructSerializable {
+public value class ChassisSpeeds implements ProtobufSerializable, StructSerializable {
   /** Velocity along the x-axis. (Fwd is +) */
-  public double vxMetersPerSecond;
+  public final double vxMetersPerSecond;
 
   /** Velocity along the y-axis. (Left is +) */
-  public double vyMetersPerSecond;
+  public final double vyMetersPerSecond;
 
   /** Represents the angular velocity of the robot frame. (CCW is +) */
-  public double omegaRadiansPerSecond;
+  public final double omegaRadiansPerSecond;
 
   /** ChassisSpeeds protobuf for serialization. */
   public static final ChassisSpeedsProto proto = new ChassisSpeedsProto();
@@ -47,7 +47,9 @@ public class ChassisSpeeds implements ProtobufSerializable, StructSerializable {
   public static final ChassisSpeedsStruct struct = new ChassisSpeedsStruct();
 
   /** Constructs a ChassisSpeeds with zeros for dx, dy, and theta. */
-  public ChassisSpeeds() {}
+  public ChassisSpeeds() {
+    this(0, 0, 0);
+  }
 
   /**
    * Constructs a ChassisSpeeds object.

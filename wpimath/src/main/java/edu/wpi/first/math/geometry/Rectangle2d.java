@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * Represents a 2d rectangular space containing translational, rotational, and scaling components.
  */
-public class Rectangle2d implements ProtobufSerializable, StructSerializable {
+public value class Rectangle2d implements ProtobufSerializable, StructSerializable {
   private final Pose2d m_center;
   private final double m_xWidth;
   private final double m_yWidth;

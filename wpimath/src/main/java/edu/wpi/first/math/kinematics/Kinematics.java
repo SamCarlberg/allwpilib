@@ -45,21 +45,4 @@ public interface Kinematics<S, P> extends Interpolator<P> {
    * @return The resulting Twist2d in the robot's movement.
    */
   Twist2d toTwist2d(P start, P end);
-
-  /**
-   * Returns a copy of the wheel positions object.
-   *
-   * @param positions The wheel positions object to copy.
-   * @return A copy.
-   */
-  P copy(P positions);
-
-  /**
-   * Copies the value of the wheel positions object into the output.
-   *
-   * @param positions The wheel positions object to copy. Will not be modified.
-   * @param output The output variable of the copy operation. Will have the same value as the
-   *     positions object after the call.
-   */
-  void copyInto(P positions, P output);
 }

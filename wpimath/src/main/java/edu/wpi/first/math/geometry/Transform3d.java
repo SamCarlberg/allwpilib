@@ -14,7 +14,7 @@ import edu.wpi.first.util.struct.StructSerializable;
 import java.util.Objects;
 
 /** Represents a transformation for a Pose3d in the pose's frame. */
-public class Transform3d implements ProtobufSerializable, StructSerializable {
+public value class Transform3d implements ProtobufSerializable, StructSerializable {
   /**
    * A preallocated Transform3d representing no transformation.
    *

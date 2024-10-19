@@ -30,7 +30,7 @@ import java.util.Objects;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class Rotation2d
+public value class Rotation2d
     implements Interpolatable<Rotation2d>, ProtobufSerializable, StructSerializable {
   /**
    * A preallocated Rotation2d representing no rotation.

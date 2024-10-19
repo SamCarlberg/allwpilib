@@ -14,13 +14,13 @@ import edu.wpi.first.units.measure.Distance;
 import java.util.Objects;
 
 /** Represents the wheel positions for a differential drive drivetrain. */
-public class DifferentialDriveWheelPositions
+public value class DifferentialDriveWheelPositions
     implements Interpolatable<DifferentialDriveWheelPositions> {
   /** Distance measured by the left side. */
-  public double leftMeters;
+  public final double leftMeters;
 
   /** Distance measured by the right side. */
-  public double rightMeters;
+  public final double rightMeters;
 
   /** DifferentialDriveWheelPositions struct for serialization. */
   public static final DifferentialDriveWheelPositionsStruct struct =

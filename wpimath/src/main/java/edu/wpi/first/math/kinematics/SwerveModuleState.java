@@ -15,13 +15,13 @@ import edu.wpi.first.util.struct.StructSerializable;
 import java.util.Objects;
 
 /** Represents the state of one swerve module. */
-public class SwerveModuleState
+public value class SwerveModuleState
     implements Comparable<SwerveModuleState>, ProtobufSerializable, StructSerializable {
   /** Speed of the wheel of the module. */
-  public double speedMetersPerSecond;
+  public final double speedMetersPerSecond;
 
   /** Angle of the module. */
-  public Rotation2d angle = Rotation2d.kZero;
+  public final Rotation2d angle;
 
   /** SwerveModuleState protobuf for serialization. */
   public static final SwerveModuleStateProto proto = new SwerveModuleStateProto();
@@ -30,7 +30,9 @@ public class SwerveModuleState
   public static final SwerveModuleStateStruct struct = new SwerveModuleStateStruct();
 
   /** Constructs a SwerveModuleState with zeros for speed and angle. */
-  public SwerveModuleState() {}
+  public SwerveModuleState() {
+    this(0, Rotation2d.kZero);
+  }
 
   /**
    * Constructs a SwerveModuleState.

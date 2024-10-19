@@ -20,7 +20,7 @@ import java.util.Objects;
 /** Represents a quaternion. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class Quaternion implements ProtobufSerializable, StructSerializable {
+public value class Quaternion implements ProtobufSerializable, StructSerializable {
   // Scalar r in versor form
   private final double m_w;
 

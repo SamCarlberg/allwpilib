@@ -16,21 +16,21 @@ import edu.wpi.first.util.struct.StructSerializable;
 import java.util.Objects;
 
 /** Represents the wheel positions for a mecanum drive drivetrain. */
-public class MecanumDriveWheelPositions
+public value class MecanumDriveWheelPositions
     implements Interpolatable<MecanumDriveWheelPositions>,
         ProtobufSerializable,
         StructSerializable {
   /** Distance measured by the front left wheel. */
-  public double frontLeftMeters;
+  public final double frontLeftMeters;
 
   /** Distance measured by the front right wheel. */
-  public double frontRightMeters;
+  public final double frontRightMeters;
 
   /** Distance measured by the rear left wheel. */
-  public double rearLeftMeters;
+  public final double rearLeftMeters;
 
   /** Distance measured by the rear right wheel. */
-  public double rearRightMeters;
+  public final double rearRightMeters;
 
   /** MecanumDriveWheelPositions protobuf for serialization. */
   public static final MecanumDriveWheelPositionsProto proto = new MecanumDriveWheelPositionsProto();
@@ -40,7 +40,9 @@ public class MecanumDriveWheelPositions
       new MecanumDriveWheelPositionsStruct();
 
   /** Constructs a MecanumDriveWheelPositions with zeros for all member fields. */
-  public MecanumDriveWheelPositions() {}
+  public MecanumDriveWheelPositions() {
+    this(0, 0, 0, 0);
+  }
 
   /**
    * Constructs a MecanumDriveWheelPositions.

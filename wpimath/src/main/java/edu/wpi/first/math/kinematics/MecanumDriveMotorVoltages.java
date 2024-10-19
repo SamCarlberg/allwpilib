@@ -10,21 +10,23 @@ import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import edu.wpi.first.util.struct.StructSerializable;
 
 /** Represents the motor voltages for a mecanum drive drivetrain. */
-public class MecanumDriveMotorVoltages implements ProtobufSerializable, StructSerializable {
+public value class MecanumDriveMotorVoltages implements ProtobufSerializable, StructSerializable {
   /** Voltage of the front left motor. */
-  public double frontLeftVoltage;
+  public final double frontLeftVoltage;
 
   /** Voltage of the front right motor. */
-  public double frontRightVoltage;
+  public final double frontRightVoltage;
 
   /** Voltage of the rear left motor. */
-  public double rearLeftVoltage;
+  public final double rearLeftVoltage;
 
   /** Voltage of the rear right motor. */
-  public double rearRightVoltage;
+  public final double rearRightVoltage;
 
   /** Constructs a MecanumDriveMotorVoltages with zeros for all member fields. */
-  public MecanumDriveMotorVoltages() {}
+  public MecanumDriveMotorVoltages() {
+    this(0, 0, 0, 0);
+  }
 
   /**
    * Constructs a MecanumDriveMotorVoltages.

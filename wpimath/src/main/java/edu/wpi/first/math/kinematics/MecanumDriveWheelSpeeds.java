@@ -13,18 +13,18 @@ import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import edu.wpi.first.util.struct.StructSerializable;
 
 /** Represents the wheel speeds for a mecanum drive drivetrain. */
-public class MecanumDriveWheelSpeeds implements ProtobufSerializable, StructSerializable {
+public value class MecanumDriveWheelSpeeds implements ProtobufSerializable, StructSerializable {
   /** Speed of the front left wheel. */
-  public double frontLeftMetersPerSecond;
+  public final double frontLeftMetersPerSecond;
 
   /** Speed of the front right wheel. */
-  public double frontRightMetersPerSecond;
+  public final double frontRightMetersPerSecond;
 
   /** Speed of the rear left wheel. */
-  public double rearLeftMetersPerSecond;
+  public final double rearLeftMetersPerSecond;
 
   /** Speed of the rear right wheel. */
-  public double rearRightMetersPerSecond;
+  public final double rearRightMetersPerSecond;
 
   /** MecanumDriveWheelSpeeds protobuf for serialization. */
   public static final MecanumDriveWheelSpeedsProto proto = new MecanumDriveWheelSpeedsProto();
@@ -33,7 +33,9 @@ public class MecanumDriveWheelSpeeds implements ProtobufSerializable, StructSeri
   public static final MecanumDriveWheelSpeedsStruct struct = new MecanumDriveWheelSpeedsStruct();
 
   /** Constructs a MecanumDriveWheelSpeeds with zeros for all member fields. */
-  public MecanumDriveWheelSpeeds() {}
+  public MecanumDriveWheelSpeeds() {
+    this(0, 0, 0, 0);
+  }
 
   /**
    * Constructs a MecanumDriveWheelSpeeds.

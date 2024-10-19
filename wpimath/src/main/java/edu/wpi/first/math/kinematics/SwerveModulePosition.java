@@ -17,16 +17,16 @@ import edu.wpi.first.util.struct.StructSerializable;
 import java.util.Objects;
 
 /** Represents the state of one swerve module. */
-public class SwerveModulePosition
+public value class SwerveModulePosition
     implements Comparable<SwerveModulePosition>,
         Interpolatable<SwerveModulePosition>,
         ProtobufSerializable,
         StructSerializable {
   /** Distance measured by the wheel of the module. */
-  public double distanceMeters;
+  public final double distanceMeters;
 
   /** Angle of the module. */
-  public Rotation2d angle = Rotation2d.kZero;
+  public final Rotation2d angle;
 
   /** SwerveModulePosition protobuf for serialization. */
   public static final SwerveModulePositionProto proto = new SwerveModulePositionProto();
@@ -35,7 +35,9 @@ public class SwerveModulePosition
   public static final SwerveModulePositionStruct struct = new SwerveModulePositionStruct();
 
   /** Constructs a SwerveModulePosition with zeros for distance and angle. */
-  public SwerveModulePosition() {}
+  public SwerveModulePosition() {
+    this(0, Rotation2d.kZero);
+  }
 
   /**
    * Constructs a SwerveModulePosition.

@@ -16,7 +16,7 @@ import edu.wpi.first.util.struct.StructSerializable;
 import java.util.Objects;
 
 /** Represents a 2d ellipse space containing translational, rotational, and scaling components. */
-public class Ellipse2d implements ProtobufSerializable, StructSerializable {
+public value class Ellipse2d implements ProtobufSerializable, StructSerializable {
   private final Pose2d m_center;
   private final double m_xSemiAxis;
   private final double m_ySemiAxis;
