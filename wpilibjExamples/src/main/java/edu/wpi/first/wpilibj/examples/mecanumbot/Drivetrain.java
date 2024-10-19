@@ -144,7 +144,7 @@ public class Drivetrain {
                         xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                     : new ChassisSpeeds(xSpeed, ySpeed, rot),
                 periodSeconds));
-    mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
+    mecanumDriveWheelSpeeds = mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
     setSpeeds(mecanumDriveWheelSpeeds);
   }
 

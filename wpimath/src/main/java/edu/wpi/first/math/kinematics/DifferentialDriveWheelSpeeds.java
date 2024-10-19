@@ -64,14 +64,16 @@ public value class DifferentialDriveWheelSpeeds implements ProtobufSerializable,
    *
    * @param attainableMaxSpeedMetersPerSecond The absolute max speed that a wheel can reach.
    */
-  public void desaturate(double attainableMaxSpeedMetersPerSecond) {
+  public DifferentialDriveWheelSpeeds desaturate(double attainableMaxSpeedMetersPerSecond) {
     double realMaxSpeed = Math.max(Math.abs(leftMetersPerSecond), Math.abs(rightMetersPerSecond));
 
-    if (realMaxSpeed > attainableMaxSpeedMetersPerSecond) {
-      leftMetersPerSecond = leftMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond;
-      rightMetersPerSecond =
-          rightMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond;
+    if (realMaxSpeed <= attainableMaxSpeedMetersPerSecond) {
+      return this;
     }
+    return new DifferentialDriveWheelSpeeds(
+        leftMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond,
+        rightMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond
+    );
   }
 
   /**
@@ -84,8 +86,8 @@ public value class DifferentialDriveWheelSpeeds implements ProtobufSerializable,
    *
    * @param attainableMaxSpeed The absolute max speed that a wheel can reach.
    */
-  public void desaturate(LinearVelocity attainableMaxSpeed) {
-    desaturate(attainableMaxSpeed.in(MetersPerSecond));
+  public DifferentialDriveWheelSpeeds desaturate(LinearVelocity attainableMaxSpeed) {
+    return desaturate(attainableMaxSpeed.in(MetersPerSecond));
   }
 
   /**

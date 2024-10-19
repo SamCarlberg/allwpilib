@@ -55,6 +55,14 @@ public value class SwerveModuleState
     this(speed.in(MetersPerSecond), angle);
   }
 
+  public SwerveModuleState withSpeed(double speedMetersPerSecond) {
+    return new SwerveModuleState(speedMetersPerSecond, angle);
+  }
+
+  public SwerveModuleState withAngle(Rotation2d angle) {
+    return new SwerveModuleState(speedMetersPerSecond, angle);
+  }
+
   @Override
   public boolean equals(Object obj) {
     return obj instanceof SwerveModuleState other
@@ -91,12 +99,17 @@ public value class SwerveModuleState
    * functionality, the furthest a wheel will ever rotate is 90 degrees.
    *
    * @param currentAngle The current module angle.
+   * @return the optimized state
    */
-  public void optimize(Rotation2d currentAngle) {
+  public SwerveModuleState optimize(Rotation2d currentAngle) {
     var delta = angle.minus(currentAngle);
     if (Math.abs(delta.getDegrees()) > 90.0) {
-      speedMetersPerSecond *= -1;
-      angle = angle.rotateBy(Rotation2d.kPi);
+      return new SwerveModuleState(
+          speedMetersPerSecond * -1,
+          angle.rotateBy(Rotation2d.kPi)
+      );
+    } else {
+      return this;
     }
   }
 
@@ -129,7 +142,10 @@ public value class SwerveModuleState
    *
    * @param currentAngle The current module angle.
    */
-  public void cosineScale(Rotation2d currentAngle) {
-    speedMetersPerSecond *= angle.minus(currentAngle).getCos();
+  public SwerveModuleState cosineScale(Rotation2d currentAngle) {
+    return new SwerveModuleState(
+        speedMetersPerSecond * angle.minus(currentAngle).getCos(),
+        angle
+    );
   }
 }

@@ -127,12 +127,11 @@ public value class Rotation3d
     double norm = axis.norm();
     if (norm == 0.0) {
       m_q = new Quaternion();
-      return;
+    } else {
+      // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Definition
+      var v = axis.times(1.0 / norm).times(Math.sin(angleRadians / 2.0));
+      m_q = new Quaternion(Math.cos(angleRadians / 2.0), v.get(0, 0), v.get(1, 0), v.get(2, 0));
     }
-
-    // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Definition
-    var v = axis.times(1.0 / norm).times(Math.sin(angleRadians / 2.0));
-    m_q = new Quaternion(Math.cos(angleRadians / 2.0), v.get(0, 0), v.get(1, 0), v.get(2, 0));
   }
 
   /**

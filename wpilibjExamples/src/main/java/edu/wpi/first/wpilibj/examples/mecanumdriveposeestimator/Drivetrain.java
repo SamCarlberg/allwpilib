@@ -156,7 +156,7 @@ public class Drivetrain {
                         xSpeed, ySpeed, rot, m_poseEstimator.getEstimatedPosition().getRotation())
                     : new ChassisSpeeds(xSpeed, ySpeed, rot),
                 periodSeconds));
-    mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
+    mecanumDriveWheelSpeeds = mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
     setSpeeds(mecanumDriveWheelSpeeds);
   }
 

@@ -278,18 +278,26 @@ public class SwerveDriveKinematics
    *     normalized speeds!
    * @param attainableMaxSpeedMetersPerSecond The absolute max speed that a module can reach.
    */
-  public static void desaturateWheelSpeeds(
+  public static SwerveModuleState[] desaturateWheelSpeeds(
       SwerveModuleState[] moduleStates, double attainableMaxSpeedMetersPerSecond) {
     double realMaxSpeed = 0;
     for (SwerveModuleState moduleState : moduleStates) {
       realMaxSpeed = Math.max(realMaxSpeed, Math.abs(moduleState.speedMetersPerSecond));
     }
-    if (realMaxSpeed > attainableMaxSpeedMetersPerSecond) {
-      for (SwerveModuleState moduleState : moduleStates) {
-        moduleState.speedMetersPerSecond =
-            moduleState.speedMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond;
-      }
+
+    if (realMaxSpeed <= attainableMaxSpeedMetersPerSecond) {
+      // Don't need to desaturate
+      return moduleStates;
     }
+
+    SwerveModuleState[] newStates = new SwerveModuleState[moduleStates.length];
+    for (int i = 0; i < moduleStates.length; i++) {
+      var oldState = moduleStates[i];
+      newStates[i] = oldState.withSpeed(
+          oldState.speedMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond
+      );
+    }
+    return newStates;
   }
 
   /**
@@ -304,9 +312,9 @@ public class SwerveDriveKinematics
    *     normalized speeds!
    * @param attainableMaxSpeed The absolute max speed that a module can reach.
    */
-  public static void desaturateWheelSpeeds(
+  public static SwerveModuleState[] desaturateWheelSpeeds(
       SwerveModuleState[] moduleStates, LinearVelocity attainableMaxSpeed) {
-    desaturateWheelSpeeds(moduleStates, attainableMaxSpeed.in(MetersPerSecond));
+    return desaturateWheelSpeeds(moduleStates, attainableMaxSpeed.in(MetersPerSecond));
   }
 
   /**
@@ -327,7 +335,7 @@ public class SwerveDriveKinematics
    * @param attainableMaxRotationalVelocityRadiansPerSecond The absolute max speed the robot can
    *     reach while rotating
    */
-  public static void desaturateWheelSpeeds(
+  public static SwerveModuleState[] desaturateWheelSpeeds(
       SwerveModuleState[] moduleStates,
       ChassisSpeeds desiredChassisSpeed,
       double attainableMaxModuleSpeedMetersPerSecond,
@@ -341,7 +349,7 @@ public class SwerveDriveKinematics
     if (attainableMaxTranslationalSpeedMetersPerSecond == 0
         || attainableMaxRotationalVelocityRadiansPerSecond == 0
         || realMaxSpeed == 0) {
-      return;
+      return moduleStates;
     }
     double translationalK =
         Math.hypot(desiredChassisSpeed.vxMetersPerSecond, desiredChassisSpeed.vyMetersPerSecond)
@@ -351,9 +359,13 @@ public class SwerveDriveKinematics
             / attainableMaxRotationalVelocityRadiansPerSecond;
     double k = Math.max(translationalK, rotationalK);
     double scale = Math.min(k * attainableMaxModuleSpeedMetersPerSecond / realMaxSpeed, 1);
-    for (SwerveModuleState moduleState : moduleStates) {
-      moduleState.speedMetersPerSecond *= scale;
+
+    SwerveModuleState[] newStates = new SwerveModuleState[moduleStates.length];
+    for (int i = 0; i < moduleStates.length; i++) {
+      SwerveModuleState moduleState = moduleStates[i];
+      newStates[i] = moduleState.withSpeed(moduleState.speedMetersPerSecond * scale);
     }
+    return newStates;
   }
 
   /**

@@ -118,7 +118,7 @@ public class Odometry<T> {
     var angle = gyroAngle.plus(m_gyroOffset);
 
     var twist = m_kinematics.toTwist2d(m_previousWheelPositions, wheelPositions);
-    twist.dtheta = angle.minus(m_previousAngle).getRadians();
+    twist = twist.withDtheta(angle.minus(m_previousAngle).getRadians());
 
     var newPose = m_poseMeters.exp(twist);
 

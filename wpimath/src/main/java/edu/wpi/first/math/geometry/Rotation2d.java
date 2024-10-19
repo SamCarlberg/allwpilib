@@ -112,16 +112,19 @@ public value class Rotation2d
    */
   public Rotation2d(double x, double y) {
     double magnitude = Math.hypot(x, y);
+    double sin, cos;
     if (magnitude > 1e-6) {
-      m_sin = y / magnitude;
-      m_cos = x / magnitude;
+      sin = y / magnitude;
+      cos = x / magnitude;
     } else {
-      m_sin = 0.0;
-      m_cos = 1.0;
+      sin = 0.0;
+      cos = 1.0;
       MathSharedStore.reportError(
           "x and y components of Rotation2d are zero\n", Thread.currentThread().getStackTrace());
     }
-    m_value = Math.atan2(m_sin, m_cos);
+    m_sin = sin;
+    m_cos = cos;
+    m_value = Math.atan2(sin, cos);
   }
 
   /**

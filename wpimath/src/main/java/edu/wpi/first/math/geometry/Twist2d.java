@@ -44,6 +44,10 @@ public value class Twist2d implements ProtobufSerializable, StructSerializable {
     this.dtheta = dtheta;
   }
 
+  public Twist2d withDtheta(double dtheta) {
+    return new Twist2d(dx, dy, dtheta);
+  }
+
   @Override
   public String toString() {
     return String.format("Twist2d(dX: %.2f, dY: %.2f, dTheta: %.2f)", dx, dy, dtheta);
