@@ -30,9 +30,8 @@ public class ConfiguredLoggerHandler extends ElementHandler {
     var dataType = dataType(element);
     var loggerType = m_customLoggers.get(dataType);
 
-    return "Epilogue."
-        + StringUtils.lowerCamelCase(loggerType.asElement().getSimpleName())
-        + ".tryUpdate(dataLogger.getSubLogger(\""
+    return loggerType.toString()
+        + ".kInstance.tryUpdate(dataLogger.getSubLogger(\""
         + loggedName(element)
         + "\"), "
         + elementAccess(element)

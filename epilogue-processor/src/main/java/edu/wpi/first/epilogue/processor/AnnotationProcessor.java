@@ -289,6 +289,26 @@ public class AnnotationProcessor extends AbstractProcessor {
         continue;
       }
 
+      boolean hasSingleton =
+          annotatedElement.getEnclosedElements().stream()
+              .anyMatch(
+                  enclosedElement ->
+                      enclosedElement instanceof VariableElement v
+                          && v.getModifiers()
+                              .containsAll(Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL))
+                          && v.getSimpleName().contentEquals("kInstance")
+                          && v.asType().equals(annotatedElement.asType()));
+
+      if (!hasSingleton) {
+        processingEnv
+            .getMessager()
+            .printMessage(
+                Diagnostic.Kind.ERROR,
+                "[EPILOGUE] Logger classes must declare a `public static final kInstance` field",
+                annotatedElement);
+        continue;
+      }
+
       for (AnnotationValue value : targetTypes) {
         var targetType = (DeclaredType) value.getValue();
         var reflectedTarget = targetType.asElement();
@@ -376,7 +396,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     // Sort alphabetically
     mainRobotClasses.sort(Comparator.comparing(c -> c.getSimpleName().toString()));
-    m_epiloguerGenerator.writeEpilogueFile(loggerClassNames, mainRobotClasses);
+    m_epiloguerGenerator.writeEpilogueFile(mainRobotClasses);
   }
 
   private void warnOfNonLoggableElements(TypeElement clazz) {

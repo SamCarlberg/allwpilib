@@ -33,7 +33,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 
-/** Generates logger class files for {@link Logged @Logged}-annotated classes. */
+/**
+ * Generates logger class files for {@link Logged @Logged}-annotated classes. Generated loggers meet
+ * the requirements of {@link edu.wpi.first.epilogue.CustomLoggerFor}.
+ */
 public class LoggerGenerator {
   public static final Predicate<ExecutableElement> kIsBuiltInJavaMethod =
       LoggerGenerator::isBuiltInJavaMethod;
@@ -251,6 +254,15 @@ public class LoggerGenerator {
         out.println("  }");
         out.println();
       }
+
+      // public static final FooLogger kInstance = new FooLogger();
+      out.println(
+          "  public static final "
+              + loggerSimpleClassName
+              + " kInstance = new "
+              + loggerSimpleClassName
+              + "();");
+      out.println();
 
       out.println("  public " + loggerSimpleClassName + "() {");
       out.println("    super(" + simpleClassName + ".class);");

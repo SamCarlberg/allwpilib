@@ -161,9 +161,9 @@ public class LoggableHandler extends ElementHandler {
   }
 
   private String generateLoggerCall(Element element, TypeElement type, String elementReference) {
-    return ("Epilogue.%s.tryUpdate(dataLogger.getSubLogger(\"%s\"), %s, "
+    return ("%s.kInstance.tryUpdate(dataLogger.getSubLogger(\"%s\"), %s, "
             + "Epilogue.getConfig().errorHandler)")
-        .formatted(StringUtils.loggerFieldName(type), loggedName(element), elementReference);
+        .formatted(StringUtils.loggerClassName(type), loggedName(element), elementReference);
   }
 
   /**

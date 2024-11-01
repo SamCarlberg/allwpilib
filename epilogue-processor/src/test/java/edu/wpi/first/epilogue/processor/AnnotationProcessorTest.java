@@ -43,6 +43,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -82,6 +84,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -134,6 +138,8 @@ class AnnotationProcessorTest {
           }
         }
 
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -185,6 +191,8 @@ class AnnotationProcessorTest {
           }
         }
 
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -225,6 +233,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -273,6 +283,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -317,6 +329,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -364,6 +378,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -409,6 +425,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -454,6 +472,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -501,6 +521,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -548,6 +570,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -598,6 +622,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -647,6 +673,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -697,6 +725,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -756,6 +786,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -807,6 +839,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -857,6 +891,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -988,6 +1024,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -1040,6 +1078,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -1047,8 +1087,8 @@ class AnnotationProcessorTest {
         @Override
         public void update(DataLogger dataLogger, Example object) {
           if (Epilogue.shouldLog(Logged.Importance.DEBUG)) {
-            Epilogue.childLogger.tryUpdate(dataLogger.getSubLogger("child"), object.child, Epilogue.getConfig().errorHandler);
-            Epilogue.ioLogger.tryUpdate(dataLogger.getSubLogger("io"), object.io, Epilogue.getConfig().errorHandler);
+            edu.wpi.first.epilogue.ChildLogger.kInstance.tryUpdate(dataLogger.getSubLogger("child"), object.child, Epilogue.getConfig().errorHandler);
+            edu.wpi.first.epilogue.IOLogger.kInstance.tryUpdate(dataLogger.getSubLogger("io"), object.io, Epilogue.getConfig().errorHandler);
           }
         }
       }
@@ -1127,6 +1167,8 @@ class AnnotationProcessorTest {
         import edu.wpi.first.epilogue.logging.DataLogger;
 
         public class ExampleLogger extends ClassSpecificLogger<Example> {
+          public static final ExampleLogger kInstance = new ExampleLogger();
+
           public ExampleLogger() {
             super(Example.class);
           }
@@ -1136,27 +1178,27 @@ class AnnotationProcessorTest {
             if (Epilogue.shouldLog(Logged.Importance.DEBUG)) {
               var $asInterface = object.asInterface;
               if ($asInterface instanceof edu.wpi.first.epilogue.Impl1 edu_wpi_first_epilogue_Impl1) {
-                Epilogue.impl1Logger.tryUpdate(dataLogger.getSubLogger("asInterface"), edu_wpi_first_epilogue_Impl1, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.Impl1Logger.kInstance.tryUpdate(dataLogger.getSubLogger("asInterface"), edu_wpi_first_epilogue_Impl1, Epilogue.getConfig().errorHandler);
               } else if ($asInterface instanceof edu.wpi.first.epilogue.Impl2 edu_wpi_first_epilogue_Impl2) {
-                Epilogue.impl2Logger.tryUpdate(dataLogger.getSubLogger("asInterface"), edu_wpi_first_epilogue_Impl2, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.Impl2Logger.kInstance.tryUpdate(dataLogger.getSubLogger("asInterface"), edu_wpi_first_epilogue_Impl2, Epilogue.getConfig().errorHandler);
               } else {
                 // Base type edu.wpi.first.epilogue.IFace
-                Epilogue.iFaceLogger.tryUpdate(dataLogger.getSubLogger("asInterface"), $asInterface, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.IFaceLogger.kInstance.tryUpdate(dataLogger.getSubLogger("asInterface"), $asInterface, Epilogue.getConfig().errorHandler);
               };
-              Epilogue.impl1Logger.tryUpdate(dataLogger.getSubLogger("firstImpl"), object.firstImpl, Epilogue.getConfig().errorHandler);
-              Epilogue.impl2Logger.tryUpdate(dataLogger.getSubLogger("secondImpl"), object.secondImpl, Epilogue.getConfig().errorHandler);
+              edu.wpi.first.epilogue.Impl1Logger.kInstance.tryUpdate(dataLogger.getSubLogger("firstImpl"), object.firstImpl, Epilogue.getConfig().errorHandler);
+              edu.wpi.first.epilogue.Impl2Logger.kInstance.tryUpdate(dataLogger.getSubLogger("secondImpl"), object.secondImpl, Epilogue.getConfig().errorHandler);
               var $complex = object.complex;
               if ($complex instanceof edu.wpi.first.epilogue.ConcreteLogged edu_wpi_first_epilogue_ConcreteLogged) {
-                Epilogue.concreteLoggedLogger.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_ConcreteLogged, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.ConcreteLoggedLogger.kInstance.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_ConcreteLogged, Epilogue.getConfig().errorHandler);
               } else if ($complex instanceof edu.wpi.first.epilogue.I4 edu_wpi_first_epilogue_I4) {
-                Epilogue.i4Logger.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_I4, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.I4Logger.kInstance.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_I4, Epilogue.getConfig().errorHandler);
               } else if ($complex instanceof edu.wpi.first.epilogue.I2 edu_wpi_first_epilogue_I2) {
-                Epilogue.i2Logger.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_I2, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.I2Logger.kInstance.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_I2, Epilogue.getConfig().errorHandler);
               } else if ($complex instanceof edu.wpi.first.epilogue.I3 edu_wpi_first_epilogue_I3) {
-                Epilogue.i3Logger.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_I3, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.I3Logger.kInstance.tryUpdate(dataLogger.getSubLogger("complex"), edu_wpi_first_epilogue_I3, Epilogue.getConfig().errorHandler);
               } else {
                 // Base type edu.wpi.first.epilogue.I
-                Epilogue.iLogger.tryUpdate(dataLogger.getSubLogger("complex"), $complex, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.ILogger.kInstance.tryUpdate(dataLogger.getSubLogger("complex"), $complex, Epilogue.getConfig().errorHandler);
               };
             }
           }
@@ -1203,6 +1245,8 @@ class AnnotationProcessorTest {
         import edu.wpi.first.epilogue.logging.DataLogger;
 
         public class ExampleLogger extends ClassSpecificLogger<Example> {
+          public static final ExampleLogger kInstance = new ExampleLogger();
+
           public ExampleLogger() {
             super(Example.class);
           }
@@ -1212,12 +1256,12 @@ class AnnotationProcessorTest {
             if (Epilogue.shouldLog(Logged.Importance.DEBUG)) {
               var $theField = object.theField;
               if ($theField instanceof edu.wpi.first.epilogue.Base edu_wpi_first_epilogue_Base) {
-                Epilogue.baseLogger.tryUpdate(dataLogger.getSubLogger("theField"), edu_wpi_first_epilogue_Base, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.BaseLogger.kInstance.tryUpdate(dataLogger.getSubLogger("theField"), edu_wpi_first_epilogue_Base, Epilogue.getConfig().errorHandler);
               } else if ($theField instanceof edu.wpi.first.epilogue.ExtendingInterface edu_wpi_first_epilogue_ExtendingInterface) {
-                Epilogue.extendingInterfaceLogger.tryUpdate(dataLogger.getSubLogger("theField"), edu_wpi_first_epilogue_ExtendingInterface, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.ExtendingInterfaceLogger.kInstance.tryUpdate(dataLogger.getSubLogger("theField"), edu_wpi_first_epilogue_ExtendingInterface, Epilogue.getConfig().errorHandler);
               } else {
                 // Base type edu.wpi.first.epilogue.I
-                Epilogue.iLogger.tryUpdate(dataLogger.getSubLogger("theField"), $theField, Epilogue.getConfig().errorHandler);
+                edu.wpi.first.epilogue.ILogger.kInstance.tryUpdate(dataLogger.getSubLogger("theField"), $theField, Epilogue.getConfig().errorHandler);
               };
             }
           }
@@ -1239,6 +1283,8 @@ class AnnotationProcessorTest {
 
         @CustomLoggerFor(Point.class)
         class CustomPointLogger extends ClassSpecificLogger<Point> {
+           public static final CustomPointLogger kInstance = new CustomPointLogger();
+
           public CustomPointLogger() {
             super(Point.class);
           }
@@ -1265,6 +1311,8 @@ class AnnotationProcessorTest {
       import edu.wpi.first.epilogue.logging.DataLogger;
 
       public class ExampleLogger extends ClassSpecificLogger<Example> {
+        public static final ExampleLogger kInstance = new ExampleLogger();
+
         public ExampleLogger() {
           super(Example.class);
         }
@@ -1272,13 +1320,62 @@ class AnnotationProcessorTest {
         @Override
         public void update(DataLogger dataLogger, Example object) {
           if (Epilogue.shouldLog(Logged.Importance.DEBUG)) {
-            Epilogue.customPointLogger.tryUpdate(dataLogger.getSubLogger("point"), object.point, Epilogue.getConfig().errorHandler);
+            edu.wpi.first.epilogue.CustomPointLogger.kInstance.tryUpdate(dataLogger.getSubLogger("point"), object.point, Epilogue.getConfig().errorHandler);
           }
         }
       }
       """;
 
     assertLoggerGenerates(source, expectedGeneratedSource);
+  }
+
+  @Test
+  void customLoggerWithoutInstanceField() {
+    String source =
+        """
+        package edu.wpi.first.epilogue;
+
+        import edu.wpi.first.epilogue.logging.*;
+
+        record Point(int x, int y) {}
+
+        @CustomLoggerFor(Point.class)
+        class CustomPointLogger extends ClassSpecificLogger<Point> {
+          // Note: this static field needs to be declared, but is commented out
+          // public static final CustomPointLogger kInstance = new CustomPointLogger();
+
+          public CustomPointLogger() {
+            super(Point.class);
+          }
+
+          @Override
+          public void update(DataLogger dataLogger, Point point) {
+            // Implementation is irrelevant
+          }
+        }
+
+        @Logged
+        class Example {
+          Point point;
+        }
+        """;
+
+    Compilation compilation =
+        javac()
+            .withProcessors(new AnnotationProcessor())
+            .compile(JavaFileObjects.forSourceString("edu.wpi.first.epilogue.Example", source));
+
+    assertThat(compilation).failed();
+    assertThat(compilation).hadErrorCount(1);
+
+    List<Diagnostic<? extends JavaFileObject>> errors = compilation.errors();
+    assertAll(
+        () ->
+            assertCompilationError(
+                "[EPILOGUE] Logger classes must declare a `public static final kInstance` field",
+                8,
+                1,
+                errors.get(0)));
   }
 
   @Test
@@ -1328,6 +1425,8 @@ class AnnotationProcessorTest {
         import edu.wpi.first.epilogue.logging.DataLogger;
 
         public class ExampleLogger extends ClassSpecificLogger<Example> {
+          public static final ExampleLogger kInstance = new ExampleLogger();
+
           public ExampleLogger() {
             super(Example.class);
           }
@@ -1416,6 +1515,8 @@ class AnnotationProcessorTest {
         import edu.wpi.first.epilogue.logging.DataLogger;
 
         public class ExampleLogger extends ClassSpecificLogger<Example> {
+          public static final ExampleLogger kInstance = new ExampleLogger();
+
           public ExampleLogger() {
             super(Example.class);
           }
@@ -1468,6 +1569,8 @@ class AnnotationProcessorTest {
         import edu.wpi.first.epilogue.logging.DataLogger;
 
         public class ExampleLogger extends ClassSpecificLogger<Example> {
+          public static final ExampleLogger kInstance = new ExampleLogger();
+
           public ExampleLogger() {
             super(Example.class);
           }
