@@ -135,6 +135,19 @@ public final class PowerUnit extends PerUnit<EnergyUnit, TimeUnit> {
     return new MutPower(initialMagnitude, toBaseUnits(initialMagnitude), this);
   }
 
+  /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<PowerUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
   @Override
   public VelocityUnit<PowerUnit> per(TimeUnit time) {
     return VelocityUnit.combine(this, time);

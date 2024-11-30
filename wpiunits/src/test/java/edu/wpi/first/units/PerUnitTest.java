@@ -34,20 +34,20 @@ class PerUnitTest {
   }
 
   @Test
-  void multSameDenom() {
+  void multDivisorSameDenom() {
     var unit = Degrees.per(Foot);
-    var result = unit.mult(Foot);
+    var result = unit.multDivisor(Foot);
 
     // Multiplying by the same unit as the divisor should return the dividend unit
     assertSame(Degrees, result);
   }
 
   @Test
-  void multOtherDenom() {
+  void multDivisorOtherDenom() {
     var unit = Degrees.per(Foot);
 
     // (Degrees / Foot) x Inches, or 1/12 of a degree
-    var result = unit.mult(Inches);
+    var result = unit.multDivisor(Inches);
     assertInstanceOf(AngleUnit.class, result);
     assertEquals(1 / 12.0, result.of(1).in(Degrees), 1e-9);
     assertEquals("Degree per Foot Inch", result.name());

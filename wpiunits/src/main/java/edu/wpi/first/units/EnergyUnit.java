@@ -37,6 +37,19 @@ public final class EnergyUnit extends Unit {
   }
 
   /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<EnergyUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
+  /**
    * Combines this unit of energy with a unit of time to create a unit of power.
    *
    * @param period the period of the change in energy

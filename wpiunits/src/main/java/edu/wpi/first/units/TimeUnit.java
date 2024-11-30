@@ -37,6 +37,19 @@ public final class TimeUnit extends Unit {
   }
 
   /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<TimeUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
+  /**
    * Creates a dimensionless unit corresponding to the scale factor between this and another unit of
    * time.
    *

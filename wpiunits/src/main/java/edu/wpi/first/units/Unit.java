@@ -118,6 +118,18 @@ public abstract class Unit {
   }
 
   /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed. Subclasses should sharpen the return type to be as specific as possible.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  public <U extends Unit> Unit mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
+  /**
    * Combines this unit with a unit of time. This often - but not always - results in a velocity.
    * Subclasses should sharpen the return type to be unit-specific.
    *

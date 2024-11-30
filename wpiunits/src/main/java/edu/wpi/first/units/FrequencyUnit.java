@@ -85,6 +85,19 @@ public final class FrequencyUnit extends PerUnit<DimensionlessUnit, TimeUnit> {
     return new MutFrequency(initialMagnitude, toBaseUnits(initialMagnitude), this);
   }
 
+  /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<FrequencyUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
   @Override
   public VelocityUnit<FrequencyUnit> per(TimeUnit time) {
     return VelocityUnit.combine(this, time);

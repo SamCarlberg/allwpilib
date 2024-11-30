@@ -75,6 +75,19 @@ public final class AngularMomentumUnit extends MultUnit<LinearMomentumUnit, Dist
     return new MutAngularMomentum(magnitude, toBaseUnits(magnitude), this);
   }
 
+  /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<AngularMomentumUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
   @Override
   public VelocityUnit<AngularMomentumUnit> per(TimeUnit time) {
     return VelocityUnit.combine(this, time);

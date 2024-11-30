@@ -137,12 +137,24 @@ public class PerUnit<N extends Unit, D extends Unit> extends Unit {
   }
 
   /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  public <U extends Unit> MultUnit<? extends PerUnit<N, D>, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
+  /**
    * Multiplies this unit by a unit of its denominator.
    *
    * @param denom the denominator-typed unit to multiply by
    * @return the result
    */
-  public N mult(D denom) {
+  public N multDivisor(D denom) {
     if (denom.equivalent(denominator())) {
       return numerator();
     }

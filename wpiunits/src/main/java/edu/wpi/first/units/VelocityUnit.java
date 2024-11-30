@@ -106,6 +106,19 @@ public final class VelocityUnit<D extends Unit> extends PerUnit<D, TimeUnit> {
   }
 
   /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<VelocityUnit<D>, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
+  /**
    * Combines this velocity unit with a unit of a period of change to create an acceleration unit.
    *
    * @param period the unit of the period of change

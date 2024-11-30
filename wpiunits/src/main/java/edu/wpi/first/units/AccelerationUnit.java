@@ -70,6 +70,19 @@ public final class AccelerationUnit<D extends Unit> extends PerUnit<VelocityUnit
     return new MutAcceleration<>(initialMagnitude, toBaseUnits(initialMagnitude), this);
   }
 
+  /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<AccelerationUnit<D>, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
   @Override
   public VelocityUnit<AccelerationUnit<D>> per(TimeUnit time) {
     return VelocityUnit.combine(this, time);

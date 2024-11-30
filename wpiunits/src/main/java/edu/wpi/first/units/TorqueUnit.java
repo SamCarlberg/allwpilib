@@ -72,6 +72,19 @@ public final class TorqueUnit extends MultUnit<DistanceUnit, ForceUnit> {
     return new MutTorque(initialMagnitude, toBaseUnits(initialMagnitude), this);
   }
 
+  /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<TorqueUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
   @Override
   public VelocityUnit<TorqueUnit> per(TimeUnit time) {
     return VelocityUnit.combine(this, time);

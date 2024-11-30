@@ -87,6 +87,19 @@ public final class DimensionlessUnit extends Unit {
   }
 
   /**
+   * Creates a product unit of this unit and an arbitrary other unit. No dimensional analysis is
+   * performed.
+   *
+   * @param other the other unit
+   * @param <U> the type of the other unit
+   * @return the product unit
+   */
+  @Override
+  public <U extends Unit> MultUnit<DimensionlessUnit, U> mult(U other) {
+    return MultUnit.combine(this, other);
+  }
+
+  /**
    * Creates a ratio unit between this unit and an arbitrary other unit.
    *
    * @param other the other unit
