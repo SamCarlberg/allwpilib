@@ -380,6 +380,16 @@ public final class CommandScheduler implements Sendable, AutoCloseable {
   }
 
   /**
+   * Gets all subsystems that have been registered with the scheduler. The returned set is
+   * read-only.
+   *
+   * @return The currently registered subsystems.
+   */
+  public Set<Subsystem> getSubsystems() {
+    return Set.copyOf(m_subsystems.keySet());
+  }
+
+  /**
    * Sets the default command for a subsystem. Registers that subsystem if it is not already
    * registered. Default commands will run whenever there is no other command currently scheduled
    * that requires the subsystem. Default commands should be written to never end (i.e. their {@link
