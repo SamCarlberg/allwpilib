@@ -2,10 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.simulation;
+package org.wpilib.simulation.servo;
 
-import org.wpilib.Servo;
 import org.wpilib.hardware.hal.SimDouble;
+import org.wpilib.hardware.servo.Servo;
+import org.wpilib.simulation.SimDeviceSim;
 
 /** Class to control a simulated Servo. */
 public class ServoSim {
