@@ -17,9 +17,9 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_HAL.h"
 #include "hal/DriverStation.h"
 #include "hal/Main.h"
+#include "org_wpilib_hardware_hal_HAL.h"
 
 using namespace hal;
 using namespace wpi::java;

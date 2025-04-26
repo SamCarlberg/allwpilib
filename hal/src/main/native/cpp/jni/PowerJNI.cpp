@@ -5,8 +5,8 @@
 #include <jni.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_PowerJNI.h"
 #include "hal/Power.h"
+#include "org_wpilib_hardware_hal_PowerJNI.h"
 
 using namespace hal;
 

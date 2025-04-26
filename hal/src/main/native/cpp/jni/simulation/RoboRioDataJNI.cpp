@@ -7,8 +7,8 @@
 #include <wpi/jni_util.h>
 
 #include "CallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_RoboRioDataJNI.h"
 #include "hal/simulation/RoboRioData.h"
+#include "org_wpilib_hardware_hal_simulation_RoboRioDataJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

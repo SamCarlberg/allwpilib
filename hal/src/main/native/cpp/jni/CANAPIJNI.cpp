@@ -9,10 +9,10 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_CANAPIJNI.h"
 #include "hal/CAN.h"
 #include "hal/CANAPI.h"
 #include "hal/Errors.h"
+#include "org_wpilib_hardware_hal_CANAPIJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

@@ -8,9 +8,9 @@
 #include <wpi/jni_util.h>
 
 #include "CallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_DriverStationDataJNI.h"
 #include "hal/simulation/DriverStationData.h"
 #include "hal/simulation/MockHooks.h"
+#include "org_wpilib_hardware_hal_simulation_DriverStationDataJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

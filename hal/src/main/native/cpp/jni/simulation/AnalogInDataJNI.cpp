@@ -5,8 +5,8 @@
 #include <jni.h>
 
 #include "CallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_AnalogInDataJNI.h"
 #include "hal/simulation/AnalogInData.h"
+#include "org_wpilib_hardware_hal_simulation_AnalogInDataJNI.h"
 
 using namespace hal;
 

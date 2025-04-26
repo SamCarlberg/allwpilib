@@ -10,8 +10,8 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_SimDeviceJNI.h"
 #include "hal/SimDevice.h"
+#include "org_wpilib_hardware_hal_SimDeviceJNI.h"
 
 using namespace wpi::java;
 

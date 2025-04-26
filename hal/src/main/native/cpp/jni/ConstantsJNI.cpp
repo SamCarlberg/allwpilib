@@ -7,8 +7,8 @@
 #include <cassert>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_ConstantsJNI.h"
 #include "hal/Constants.h"
+#include "org_wpilib_hardware_hal_ConstantsJNI.h"
 
 using namespace hal;
 

@@ -8,8 +8,8 @@
 
 #include "CallbackStore.h"
 #include "ConstBufferCallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_AddressableLEDDataJNI.h"
 #include "hal/simulation/AddressableLEDData.h"
+#include "org_wpilib_hardware_hal_simulation_AddressableLEDDataJNI.h"
 
 static_assert(sizeof(jbyte) * 4 == sizeof(HAL_AddressableLEDData));
 

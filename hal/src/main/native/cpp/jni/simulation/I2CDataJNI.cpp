@@ -7,8 +7,8 @@
 #include "BufferCallbackStore.h"
 #include "CallbackStore.h"
 #include "ConstBufferCallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_I2CDataJNI.h"
 #include "hal/simulation/I2CData.h"
+#include "org_wpilib_hardware_hal_simulation_I2CDataJNI.h"
 
 using namespace hal;
 

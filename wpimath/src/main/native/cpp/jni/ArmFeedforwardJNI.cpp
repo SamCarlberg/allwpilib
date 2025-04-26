@@ -6,8 +6,8 @@
 
 #include <wpi/jni_util.h>
 
-#include "org_wpilib_math_jni_ArmFeedforwardJNI.h"
 #include "frc/controller/ArmFeedforward.h"
+#include "org_wpilib_math_jni_ArmFeedforwardJNI.h"
 
 using namespace wpi::java;
 

@@ -7,8 +7,8 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_AddressableLEDJNI.h"
 #include "hal/AddressableLED.h"
+#include "org_wpilib_hardware_hal_AddressableLEDJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

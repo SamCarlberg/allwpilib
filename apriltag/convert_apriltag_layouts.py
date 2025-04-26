@@ -28,7 +28,9 @@ def main():
     # Find AprilTag field layout CSVs
     filenames = [
         os.path.join(dp, f)
-        for dp, dn, fn in os.walk("src/main/native/resources/org/wpilib/vision/apriltag")
+        for dp, dn, fn in os.walk(
+            "src/main/native/resources/org/wpilib/vision/apriltag"
+        )
         for f in fn
         if f.endswith(".csv")
     ]

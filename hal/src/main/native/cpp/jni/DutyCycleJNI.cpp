@@ -7,8 +7,8 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_DutyCycleJNI.h"
 #include "hal/DutyCycle.h"
+#include "org_wpilib_hardware_hal_DutyCycleJNI.h"
 
 using namespace hal;
 

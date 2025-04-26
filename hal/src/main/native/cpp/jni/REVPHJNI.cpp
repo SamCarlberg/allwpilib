@@ -7,10 +7,10 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_REVPHJNI.h"
 #include "hal/Ports.h"
 #include "hal/REVPH.h"
 #include "hal/handles/HandlesInternal.h"
+#include "org_wpilib_hardware_hal_REVPHJNI.h"
 
 static_assert(
     org_wpilib_hardware_hal_REVPHJNI_COMPRESSOR_CONFIG_TYPE_DISABLED ==

@@ -7,10 +7,10 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_CTREPCMJNI.h"
 #include "hal/CTREPCM.h"
 #include "hal/Ports.h"
 #include "hal/handles/HandlesInternal.h"
+#include "org_wpilib_hardware_hal_CTREPCMJNI.h"
 
 using namespace hal;
 

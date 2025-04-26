@@ -7,9 +7,9 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_PowerDistributionJNI.h"
 #include "hal/Ports.h"
 #include "hal/PowerDistribution.h"
+#include "org_wpilib_hardware_hal_PowerDistributionJNI.h"
 
 using namespace hal;
 

@@ -9,8 +9,8 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_I2CJNI.h"
 #include "hal/I2C.h"
+#include "org_wpilib_hardware_hal_I2CJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

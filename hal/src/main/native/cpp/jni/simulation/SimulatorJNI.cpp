@@ -10,10 +10,10 @@
 #include "CallbackStore.h"
 #include "ConstBufferCallbackStore.h"
 #include "SimDeviceDataJNI.h"
-#include "org_wpilib_hardware_hal_simulation_SimulatorJNI.h"
 #include "hal/HAL.h"
 #include "hal/handles/HandlesInternal.h"
 #include "hal/simulation/MockHooks.h"
+#include "org_wpilib_hardware_hal_simulation_SimulatorJNI.h"
 
 using namespace wpi::java;
 

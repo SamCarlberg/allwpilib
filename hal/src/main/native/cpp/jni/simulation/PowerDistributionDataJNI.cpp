@@ -5,8 +5,8 @@
 #include <jni.h>
 
 #include "CallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_PowerDistributionDataJNI.h"
 #include "hal/simulation/PowerDistributionData.h"
+#include "org_wpilib_hardware_hal_simulation_PowerDistributionDataJNI.h"
 
 using namespace hal;
 

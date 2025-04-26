@@ -9,8 +9,8 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_SerialPortJNI.h"
 #include "hal/SerialPort.h"
+#include "org_wpilib_hardware_hal_SerialPortJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

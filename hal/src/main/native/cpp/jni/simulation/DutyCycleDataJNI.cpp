@@ -5,8 +5,8 @@
 #include <jni.h>
 
 #include "CallbackStore.h"
-#include "org_wpilib_hardware_hal_simulation_DutyCycleDataJNI.h"
 #include "hal/simulation/DutyCycleData.h"
+#include "org_wpilib_hardware_hal_simulation_DutyCycleDataJNI.h"
 
 using namespace hal;
 

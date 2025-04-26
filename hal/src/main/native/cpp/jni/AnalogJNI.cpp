@@ -9,10 +9,10 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_AnalogJNI.h"
 #include "hal/AnalogInput.h"
 #include "hal/Ports.h"
 #include "hal/handles/HandlesInternal.h"
+#include "org_wpilib_hardware_hal_AnalogJNI.h"
 
 using namespace hal;
 

@@ -6,8 +6,8 @@
 
 #include <wpi/jni_util.h>
 
-#include "org_wpilib_math_jni_Pose3dJNI.h"
 #include "frc/geometry/Pose3d.h"
+#include "org_wpilib_math_jni_Pose3dJNI.h"
 
 using namespace wpi::java;
 

@@ -7,9 +7,9 @@
 #include <cassert>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_EncoderJNI.h"
 #include "hal/Encoder.h"
 #include "hal/Errors.h"
+#include "org_wpilib_hardware_hal_EncoderJNI.h"
 
 using namespace hal;
 

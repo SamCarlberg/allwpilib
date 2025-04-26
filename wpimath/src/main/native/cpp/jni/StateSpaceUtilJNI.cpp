@@ -7,8 +7,8 @@
 #include <Eigen/Core>
 #include <wpi/jni_util.h>
 
-#include "org_wpilib_math_jni_StateSpaceUtilJNI.h"
 #include "frc/StateSpaceUtil.h"
+#include "org_wpilib_math_jni_StateSpaceUtilJNI.h"
 
 using namespace wpi::java;
 

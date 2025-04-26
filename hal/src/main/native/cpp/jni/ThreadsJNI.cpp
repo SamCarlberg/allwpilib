@@ -7,8 +7,8 @@
 #include <cassert>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_ThreadsJNI.h"
 #include "hal/Threads.h"
+#include "org_wpilib_hardware_hal_ThreadsJNI.h"
 
 using namespace hal;
 

@@ -7,8 +7,8 @@
 #include <wpi/array.h>
 #include <wpi/jni_util.h>
 
-#include "org_wpilib_math_jni_Ellipse2dJNI.h"
 #include "frc/geometry/Ellipse2d.h"
+#include "org_wpilib_math_jni_Ellipse2dJNI.h"
 
 using namespace wpi::java;
 

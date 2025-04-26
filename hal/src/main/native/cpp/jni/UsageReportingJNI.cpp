@@ -9,8 +9,8 @@
 #include <wpi/jni_util.h>
 #include <wpi/string.h>
 
-#include "org_wpilib_hardware_hal_UsageReportingJNI.h"
 #include "hal/UsageReporting.h"
+#include "org_wpilib_hardware_hal_UsageReportingJNI.h"
 
 using namespace wpi::java;
 

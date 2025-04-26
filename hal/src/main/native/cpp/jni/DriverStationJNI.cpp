@@ -10,12 +10,13 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_DriverStationJNI.h"
 #include "hal/DriverStation.h"
 #include "hal/HALBase.h"
+#include "org_wpilib_hardware_hal_DriverStationJNI.h"
 
-static_assert(org_wpilib_hardware_hal_DriverStationJNI_kUnknownAllianceStation ==
-              HAL_AllianceStationID_kUnknown);
+static_assert(
+    org_wpilib_hardware_hal_DriverStationJNI_kUnknownAllianceStation ==
+    HAL_AllianceStationID_kUnknown);
 static_assert(org_wpilib_hardware_hal_DriverStationJNI_kRed1AllianceStation ==
               HAL_AllianceStationID_kRed1);
 static_assert(org_wpilib_hardware_hal_DriverStationJNI_kRed2AllianceStation ==

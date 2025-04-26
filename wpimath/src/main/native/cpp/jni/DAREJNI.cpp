@@ -10,9 +10,9 @@
 #include <wpi/jni_util.h>
 
 #include "Exceptions.h"
-#include "org_wpilib_math_jni_DAREJNI.h"
 #include "frc/DARE.h"
 #include "frc/fmt/Eigen.h"
+#include "org_wpilib_math_jni_DAREJNI.h"
 
 using namespace wpi::java;
 

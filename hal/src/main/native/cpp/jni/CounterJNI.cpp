@@ -9,9 +9,9 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_CounterJNI.h"
 #include "hal/Counter.h"
 #include "hal/Errors.h"
+#include "org_wpilib_hardware_hal_CounterJNI.h"
 
 using namespace hal;
 

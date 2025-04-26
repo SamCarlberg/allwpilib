@@ -10,8 +10,8 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_NotifierJNI.h"
 #include "hal/Notifier.h"
+#include "org_wpilib_hardware_hal_NotifierJNI.h"
 
 using namespace hal;
 

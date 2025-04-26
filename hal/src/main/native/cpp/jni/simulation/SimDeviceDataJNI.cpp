@@ -15,9 +15,9 @@
 #include <wpi/jni_util.h>
 
 #include "SimulatorJNI.h"
-#include "org_wpilib_hardware_hal_simulation_SimDeviceDataJNI.h"
 #include "hal/handles/UnlimitedHandleResource.h"
 #include "hal/simulation/SimDeviceData.h"
+#include "org_wpilib_hardware_hal_simulation_SimDeviceDataJNI.h"
 
 using namespace hal;
 using namespace wpi::java;
@@ -317,8 +317,8 @@ bool InitializeSimDeviceDataJNI(JNIEnv* env) {
     return false;
   }
 
-  simValueInfoCls =
-      JClass(env, "org/wpilib/hardware/hal/simulation/SimDeviceDataJNI$SimValueInfo");
+  simValueInfoCls = JClass(
+      env, "org/wpilib/hardware/hal/simulation/SimDeviceDataJNI$SimValueInfo");
   if (!simValueInfoCls) {
     return false;
   }

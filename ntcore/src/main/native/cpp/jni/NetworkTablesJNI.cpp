@@ -14,9 +14,9 @@
 #include <wpi/jni_util.h>
 #include <wpi/json.h>
 
-#include "org_wpilib_networktables_NetworkTablesJNI.h"
 #include "ntcore.h"
 #include "ntcore_cpp.h"
+#include "org_wpilib_networktables_NetworkTablesJNI.h"
 
 using namespace wpi::java;
 

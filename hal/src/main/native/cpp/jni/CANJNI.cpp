@@ -9,9 +9,9 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_can_CANJNI.h"
 #include "hal/CAN.h"
 #include "hal/Errors.h"
+#include "org_wpilib_hardware_hal_can_CANJNI.h"
 
 using namespace hal;
 using namespace wpi::java;

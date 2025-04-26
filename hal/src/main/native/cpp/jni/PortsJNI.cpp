@@ -7,8 +7,8 @@
 #include <cassert>
 
 #include "HALUtil.h"
-#include "org_wpilib_hardware_hal_PortsJNI.h"
 #include "hal/Ports.h"
+#include "org_wpilib_hardware_hal_PortsJNI.h"
 
 using namespace hal;
 
