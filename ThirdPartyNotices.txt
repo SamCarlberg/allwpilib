@@ -33,8 +33,8 @@ jQuery                wpinet/src/main/native/resources/jquery-*
 popper.js             wpinet/src/main/native/resources/popper-*
 units                 wpimath/src/main/native/include/units/
 Eigen                 wpimath/src/main/native/thirdparty/eigen/include/
-Team 254 Library      wpimath/src/main/java/edu/wpi/first/math/spline/SplineParameterizer.java
-                      wpimath/src/main/java/edu/wpi/first/math/trajectory/TrajectoryParameterizer.java
+Team 254 Library      wpimath/src/main/java/org/wpilib/math/spline/SplineParameterizer.java
+                      wpimath/src/main/java/org/wpilib/math/trajectory/TrajectoryParameterizer.java
                       wpimath/src/main/native/include/frc/spline/SplineParameterizer.h
                       wpimath/src/main/native/include/frc/trajectory/TrajectoryParameterizer.h
                       wpimath/src/main/native/cpp/trajectory/TrajectoryParameterizer.cpp

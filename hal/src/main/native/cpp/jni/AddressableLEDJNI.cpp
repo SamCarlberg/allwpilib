@@ -7,7 +7,7 @@
 #include <wpi/jni_util.h>
 
 #include "HALUtil.h"
-#include "edu_wpi_first_hal_AddressableLEDJNI.h"
+#include "org_wpilib_hardware_hal_AddressableLEDJNI.h"
 #include "hal/AddressableLED.h"
 
 using namespace hal;
@@ -15,27 +15,27 @@ using namespace wpi::java;
 
 static_assert(sizeof(jbyte) * 4 == sizeof(HAL_AddressableLEDData));
 
-static_assert(edu_wpi_first_hal_AddressableLEDJNI_COLOR_ORDER_RGB ==
+static_assert(org_wpilib_hardware_hal_AddressableLEDJNI_COLOR_ORDER_RGB ==
               HAL_ALED_RGB);
-static_assert(edu_wpi_first_hal_AddressableLEDJNI_COLOR_ORDER_RBG ==
+static_assert(org_wpilib_hardware_hal_AddressableLEDJNI_COLOR_ORDER_RBG ==
               HAL_ALED_RBG);
-static_assert(edu_wpi_first_hal_AddressableLEDJNI_COLOR_ORDER_BGR ==
+static_assert(org_wpilib_hardware_hal_AddressableLEDJNI_COLOR_ORDER_BGR ==
               HAL_ALED_BGR);
-static_assert(edu_wpi_first_hal_AddressableLEDJNI_COLOR_ORDER_BRG ==
+static_assert(org_wpilib_hardware_hal_AddressableLEDJNI_COLOR_ORDER_BRG ==
               HAL_ALED_BRG);
-static_assert(edu_wpi_first_hal_AddressableLEDJNI_COLOR_ORDER_GBR ==
+static_assert(org_wpilib_hardware_hal_AddressableLEDJNI_COLOR_ORDER_GBR ==
               HAL_ALED_GBR);
-static_assert(edu_wpi_first_hal_AddressableLEDJNI_COLOR_ORDER_GRB ==
+static_assert(org_wpilib_hardware_hal_AddressableLEDJNI_COLOR_ORDER_GRB ==
               HAL_ALED_GRB);
 
 extern "C" {
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    initialize
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_initialize
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_initialize
   (JNIEnv* env, jclass, jint handle)
 {
   int32_t status = 0;
@@ -46,12 +46,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_initialize
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    free
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_free
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_free
   (JNIEnv* env, jclass, jint handle)
 {
   if (handle != HAL_kInvalidHandle) {
@@ -60,12 +60,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_free
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    setColorOrder
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_setColorOrder
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_setColorOrder
   (JNIEnv* env, jclass, jint handle, jint colorOrder)
 {
   int32_t status = 0;
@@ -76,12 +76,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_setColorOrder
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    setLength
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_setLength
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_setLength
   (JNIEnv* env, jclass, jint handle, jint length)
 {
   int32_t status = 0;
@@ -91,12 +91,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_setLength
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    setData
  * Signature: (I[B)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_setData
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_setData
   (JNIEnv* env, jclass, jint handle, jbyteArray arr)
 {
   int32_t status = 0;
@@ -109,12 +109,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_setData
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    setBitTiming
  * Signature: (IIIII)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_setBitTiming
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_setBitTiming
   (JNIEnv* env, jclass, jint handle, jint highTime0, jint lowTime0,
    jint highTime1, jint lowTime1)
 {
@@ -126,12 +126,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_setBitTiming
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    setSyncTime
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_setSyncTime
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_setSyncTime
   (JNIEnv* env, jclass, jint handle, jint syncTime)
 {
   int32_t status = 0;
@@ -141,12 +141,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_setSyncTime
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    start
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_start
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_start
   (JNIEnv* env, jclass, jint handle)
 {
   int32_t status = 0;
@@ -156,12 +156,12 @@ Java_edu_wpi_first_hal_AddressableLEDJNI_start
 }
 
 /*
- * Class:     edu_wpi_first_hal_AddressableLEDJNI
+ * Class:     org_wpilib_hardware_hal_AddressableLEDJNI
  * Method:    stop
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL
-Java_edu_wpi_first_hal_AddressableLEDJNI_stop
+Java_org_wpilib_hardware_hal_AddressableLEDJNI_stop
   (JNIEnv* env, jclass, jint handle)
 {
   int32_t status = 0;

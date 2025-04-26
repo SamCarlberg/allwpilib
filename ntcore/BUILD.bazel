@@ -114,7 +114,7 @@ cc_binary(
 
 java_binary(
     name = "DevMain-Java",
-    srcs = ["src/dev/java/edu/wpi/first/ntcore/DevMain.java"],
+    srcs = ["src/dev/java/org/wpilib/ntcore/DevMain.java"],
     main_class = "edu.wpi.first.ntcore.DevMain",
     deps = [
         "networktables-java",

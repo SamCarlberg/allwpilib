@@ -10,14 +10,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.VideoSource;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.vision.camera.VideoSource;
+import org.wpilib.vision.stream.CameraServer;
 
 /*
   JSON format:

@@ -15,7 +15,7 @@ java_library(
 
 java_plugin(
     name = "plugin",
-    processor_class = "edu.wpi.first.epilogue.processor.AnnotationProcessor",
+    processor_class = "org.wpilib.epilogue.processor.AnnotationProcessor",
     visibility = ["//visibility:public"],
     deps = [
         ":processor",

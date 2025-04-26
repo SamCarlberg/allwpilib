@@ -2,7 +2,7 @@
 
 """
 This script converts all AprilTag field layout CSV files in
-src/main/native/resources/edu/wpi/first/apriltag to the JSON format
+src/main/native/resources/org/wpilib/vision/apriltag to the JSON format
 AprilTagFields expects.
 
 The input CSV has the following format:
@@ -28,7 +28,7 @@ def main():
     # Find AprilTag field layout CSVs
     filenames = [
         os.path.join(dp, f)
-        for dp, dn, fn in os.walk("src/main/native/resources/edu/wpi/first/apriltag")
+        for dp, dn, fn in os.walk("src/main/native/resources/org/wpilib/vision/apriltag")
         for f in fn
         if f.endswith(".csv")
     ]

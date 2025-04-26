@@ -4,7 +4,7 @@
 
 ### Adding field JSON
 
-1. Add a field layout CSV file to `src/main/native/resources/edu/wpi/first/apriltag`
+1. Add a field layout CSV file to `src/main/native/resources/org/wpilib/vision/apriltag`
     1. See docstring in `convert_apriltag_layouts.py` for more
 2. Run `convert_apriltag_layouts.py` in the same directory as this readme to generate the JSON
 3. That script overwrites all generated JSONs, so undo undesired changes if necessary
@@ -14,7 +14,7 @@
 
 ### Java updates
 
-1. Update `src/main/java/edu/wpi/first/apriltag/AprilTagFields.java`
+1. Update `src/main/java/org/wpilib/vision/apriltag/AprilTagFields.java`
     1. Add enum value for new field to `AprilTagFields`
     2. Update `AprilTagFields.kDefaultField` if necessary
 

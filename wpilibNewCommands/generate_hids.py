@@ -22,7 +22,7 @@ def generate_hids(output_directory: Path, template_directory: Path, schema_file:
         controllers = json.load(f)
 
     # Java files
-    java_subdirectory = "main/java/edu/wpi/first/wpilibj2/command/button"
+    java_subdirectory = "main/java/org/wpilib/commands2/button"
     env = Environment(
         loader=FileSystemLoader(template_directory / "main/java"),
         autoescape=False,

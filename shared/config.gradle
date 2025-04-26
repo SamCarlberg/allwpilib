@@ -1,5 +1,3 @@
-import org.gradle.internal.os.OperatingSystem
-
 nativeUtils.skipInstallPdb = project.hasProperty('buildServer')
 
 if (project.hasProperty('ciDebugOnly')) {

@@ -4,7 +4,7 @@
       "aql": {
         "items.find": {
           "repo": "wpilib-mvn-development-local",
-          "path": { "$nmatch":"*edu/wpi/first/thirdparty*" },
+          "path": { "$nmatch":"*org/wpilib/thirdparty*" },
           "$or":[
             {
                 "artifact.module.build.name": { "$eq":"allwpilib" }

@@ -25,7 +25,7 @@ def generate_topics(
         loader=FileSystemLoader(java_template_directory), autoescape=False
     )
 
-    generated_output_dir = output_directory / "main/java/edu/wpi/first/networktables"
+    generated_output_dir = output_directory / "main/java/org/wpilib/networktables"
     for fn in java_template_directory.glob("*.jinja"):
         template = env.get_template(fn.name)
         outfn = fn.stem
