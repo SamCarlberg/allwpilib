@@ -7,11 +7,11 @@ package org.wpilib.math.geometry;
 import static org.wpilib.units.Units.Meters;
 
 import java.util.Objects;
-import org.wpilib.math.MatBuilder;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.geometry.proto.Transform3dProto;
 import org.wpilib.math.geometry.struct.Transform3dStruct;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N4;
 import org.wpilib.units.measure.Distance;
 import org.wpilib.util.protobuf.ProtobufSerializable;

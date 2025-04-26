@@ -8,7 +8,6 @@ import org.wpilib.AnalogGyro;
 import org.wpilib.Timer;
 import org.wpilib.hardware.motor.PWMSparkMax;
 import org.wpilib.hardware.rotation.Encoder;
-import org.wpilib.math.VecBuilder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 import org.wpilib.math.estimator.MecanumDrivePoseEstimator;
@@ -18,6 +17,7 @@ import org.wpilib.math.kinematics.ChassisSpeeds;
 import org.wpilib.math.kinematics.MecanumDriveKinematics;
 import org.wpilib.math.kinematics.MecanumDriveWheelPositions;
 import org.wpilib.math.kinematics.MecanumDriveWheelSpeeds;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.util.Units;
 
 /** Represents a mecanum drive style drivetrain. */

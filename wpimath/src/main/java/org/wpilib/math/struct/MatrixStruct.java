@@ -5,10 +5,10 @@
 package org.wpilib.math.struct;
 
 import java.nio.ByteBuffer;
-import org.wpilib.math.MatBuilder;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.Num;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.util.struct.Struct;
 
 public final class MatrixStruct<R extends Num, C extends Num> implements Struct<Matrix<R, C>> {

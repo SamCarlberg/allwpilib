@@ -7,7 +7,7 @@ package org.wpilib.math.proto;
 import org.ejml.simple.SimpleMatrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.Num;
-import org.wpilib.math.Vector;
+import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.proto.Wpimath.ProtobufVector;
 import org.wpilib.util.protobuf.Protobuf;
 import us.hebi.quickbuf.Descriptors.Descriptor;

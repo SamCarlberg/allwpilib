@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.wpilib.math.MathUtil;
-import org.wpilib.math.VecBuilder;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.trajectory.TrajectoryConfig;
 import org.wpilib.math.trajectory.TrajectoryGenerator;
 

@@ -4,8 +4,8 @@
 
 package org.wpilib.math.geometry;
 
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
+import org.wpilib.math.linalg.Matrix;
 
 /** A helper class that converts Pose3d objects between different standard coordinate frames. */
 public class CoordinateSystem {

@@ -5,8 +5,8 @@
 package org.wpilib.math.controller;
 
 import org.ejml.simple.SimpleMatrix;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Num;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.system.LinearSystem;
 

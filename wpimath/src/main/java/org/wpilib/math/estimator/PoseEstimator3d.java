@@ -9,9 +9,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import org.wpilib.math.MathSharedStore;
 import org.wpilib.math.MathUtil;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
-import org.wpilib.math.VecBuilder;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
@@ -22,6 +20,8 @@ import org.wpilib.math.geometry.Twist3d;
 import org.wpilib.math.interpolation.TimeInterpolatableBuffer;
 import org.wpilib.math.kinematics.Kinematics;
 import org.wpilib.math.kinematics.Odometry3d;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N4;
 import org.wpilib.math.numbers.N6;
@@ -255,9 +255,8 @@ public class PoseEstimator3d<T> {
    *     your own time source by calling {@link
    *     PoseEstimator3d#updateWithTime(double,Rotation3d,Object)} then you must use a timestamp
    *     with an epoch since FPGA startup (i.e., the epoch of this timestamp is the same epoch as
-   *     {@link org.wpilib.Timer#getFPGATimestamp()}.) This means that you should use
-   *     {@link org.wpilib.Timer#getFPGATimestamp()} as your time source or sync the
-   *     epochs.
+   *     {@link org.wpilib.Timer#getFPGATimestamp()}.) This means that you should use {@link
+   *     org.wpilib.Timer#getFPGATimestamp()} as your time source or sync the epochs.
    */
   public void addVisionMeasurement(Pose3d visionRobotPose, double timestamp) {
     // Step 0: If this measurement is old enough to be outside the pose buffer's timespan, skip.

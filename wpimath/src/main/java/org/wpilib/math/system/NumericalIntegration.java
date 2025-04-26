@@ -8,8 +8,8 @@ import java.util.function.BiFunction;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.UnaryOperator;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Num;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N1;
 
 /** Numerical integration utilities. */

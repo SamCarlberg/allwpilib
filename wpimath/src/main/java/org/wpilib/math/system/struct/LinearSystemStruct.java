@@ -5,9 +5,9 @@
 package org.wpilib.math.system.struct;
 
 import java.nio.ByteBuffer;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.Num;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.struct.MatrixStruct;
 import org.wpilib.math.system.LinearSystem;
 import org.wpilib.util.struct.Struct;

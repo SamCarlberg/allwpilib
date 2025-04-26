@@ -5,9 +5,9 @@
 package org.wpilib.math.estimator;
 
 import org.ejml.simple.SimpleMatrix;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.Num;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N1;
 
 /**

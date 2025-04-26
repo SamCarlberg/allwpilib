@@ -7,12 +7,12 @@ package org.wpilib.math.system;
 import java.util.function.Function;
 import org.ejml.MatrixDimensionException;
 import org.ejml.simple.SimpleMatrix;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Num;
 import org.wpilib.math.StateSpaceUtil;
 import org.wpilib.math.controller.LinearPlantInversionFeedforward;
 import org.wpilib.math.controller.LinearQuadraticRegulator;
 import org.wpilib.math.estimator.KalmanFilter;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N1;
 
 /**

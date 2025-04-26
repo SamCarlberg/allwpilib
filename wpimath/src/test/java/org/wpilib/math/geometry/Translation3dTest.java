@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.wpilib.units.Units.Inches;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.math.VecBuilder;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.util.Units;
 
 class Translation3dTest {

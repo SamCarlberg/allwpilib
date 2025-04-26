@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.math;
+package org.wpilib.math.linalg;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.ejml.simple.SimpleMatrix;
 import org.junit.jupiter.api.Test;
 import org.wpilib.UtilityClassTest;
+import org.wpilib.math.Nat;
+import org.wpilib.math.Num;
 
 class DARETest extends UtilityClassTest<DARE> {
   DARETest() {

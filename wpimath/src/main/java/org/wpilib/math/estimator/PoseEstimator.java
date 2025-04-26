@@ -9,9 +9,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import org.wpilib.math.MathSharedStore;
 import org.wpilib.math.MathUtil;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
-import org.wpilib.math.VecBuilder;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
@@ -19,6 +17,8 @@ import org.wpilib.math.geometry.Twist2d;
 import org.wpilib.math.interpolation.TimeInterpolatableBuffer;
 import org.wpilib.math.kinematics.Kinematics;
 import org.wpilib.math.kinematics.Odometry;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
 

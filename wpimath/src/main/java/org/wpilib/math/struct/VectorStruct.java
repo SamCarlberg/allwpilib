@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import org.ejml.simple.SimpleMatrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.Num;
-import org.wpilib.math.Vector;
+import org.wpilib.math.linalg.Vector;
 import org.wpilib.util.struct.Struct;
 
 public final class VectorStruct<R extends Num> implements Struct<Vector<R>> {

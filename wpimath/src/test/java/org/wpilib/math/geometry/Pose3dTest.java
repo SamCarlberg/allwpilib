@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.wpilib.math.VecBuilder;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.util.Units;
 
 class Pose3dTest {

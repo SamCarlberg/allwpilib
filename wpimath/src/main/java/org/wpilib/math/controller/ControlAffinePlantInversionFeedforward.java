@@ -6,9 +6,9 @@ package org.wpilib.math.controller;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import org.wpilib.math.Matrix;
 import org.wpilib.math.Nat;
 import org.wpilib.math.Num;
+import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.system.NumericalJacobian;
 

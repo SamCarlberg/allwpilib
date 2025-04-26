@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.wpilib.math.VecBuilder;
+import org.wpilib.math.linalg.VecBuilder;
 
 class Translation2dTest {
   private static final double kEpsilon = 1E-9;

@@ -1675,7 +1675,7 @@ class AnnotationProcessorTest {
         import org.wpilib.epilogue.logging.*;
         import org.wpilib.math.numbers.*;
         import org.wpilib.math.Num;
-        import org.wpilib.math.Vector;
+        import org.wpilib.math.linalg.Vector;
 
         @CustomLoggerFor(Vector.class)
         class VectorLogger extends ClassSpecificLogger<Vector<?>> {

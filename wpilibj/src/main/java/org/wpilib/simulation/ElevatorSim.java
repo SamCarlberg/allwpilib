@@ -6,8 +6,8 @@ package org.wpilib.simulation;
 
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.math.MathUtil;
-import org.wpilib.math.Matrix;
-import org.wpilib.math.VecBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N2;
 import org.wpilib.math.system.LinearSystem;

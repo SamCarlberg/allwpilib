@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.math;
+package org.wpilib.math.linalg;
 
 import java.util.Objects;
 import org.ejml.MatrixDimensionException;
@@ -13,6 +13,8 @@ import org.ejml.dense.row.NormOps_DDRM;
 import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
 import org.ejml.interfaces.decomposition.CholeskyDecomposition_F64;
 import org.ejml.simple.SimpleMatrix;
+import org.wpilib.math.Nat;
+import org.wpilib.math.Num;
 import org.wpilib.math.jni.EigenJNI;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.proto.MatrixProto;

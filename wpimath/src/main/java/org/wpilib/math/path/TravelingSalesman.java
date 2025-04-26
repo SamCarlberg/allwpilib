@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.ToDoubleBiFunction;
 import org.wpilib.math.Num;
-import org.wpilib.math.Vector;
 import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.optimization.SimulatedAnnealing;
 
 /**

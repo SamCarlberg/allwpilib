@@ -5,6 +5,7 @@
 package org.wpilib.math;
 
 import java.util.TreeMap;
+import org.wpilib.math.linalg.Matrix;
 
 /**
  * Interpolating Tree Maps are used to get values at points that are not defined by making a guess
