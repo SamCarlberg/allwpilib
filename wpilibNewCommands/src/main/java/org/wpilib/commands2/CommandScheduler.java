@@ -650,12 +650,12 @@ public final class CommandScheduler implements Sendable, AutoCloseable {
    *
    * @param stacktrace the original stacktrace
    * @return the stacktrace stripped of leading elements so there is at max one leading element from
-   *     the edu.wpi.first.wpilibj2.command package.
+   *     the org.wpilib.commands2 package.
    */
   private StackTraceElement[] stripFrameworkStackElements(StackTraceElement[] stacktrace) {
     int i = stacktrace.length - 1;
     for (; i > 0; i--) {
-      if (stacktrace[i].getClassName().startsWith("edu.wpi.first.wpilibj2.command.")) {
+      if (stacktrace[i].getClassName().startsWith("org.wpilib.commands2.")) {
         break;
       }
     }

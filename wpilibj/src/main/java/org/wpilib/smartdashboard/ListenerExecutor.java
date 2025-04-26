@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.concurrent.Executor;
 
 /**
- * An executor for running listener tasks posted by {@link edu.wpi.first.wpilibj.Sendable} listeners
- * synchronously from the main application thread.
+ * An executor for running listener tasks posted by {@link org.wpilib.util.sendable.Sendable}
+ * listeners synchronously from the main application thread.
  */
 class ListenerExecutor implements Executor {
   private final Collection<Runnable> m_tasks = new ArrayList<>();

@@ -36,7 +36,7 @@ public interface Subsystem {
   /**
    * This method is called periodically by the {@link CommandScheduler}. Useful for updating
    * subsystem-specific state that needs to be maintained for simulations, such as for updating
-   * {@link edu.wpi.first.wpilibj.simulation} classes and setting simulated sensor readings.
+   * {@link org.wpilib.simulation} classes and setting simulated sensor readings.
    */
   default void simulationPeriodic() {}
 

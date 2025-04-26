@@ -8,12 +8,12 @@ package org.wpilib.hardware.hal;
  * A wrapper around a simulator device handle.
  *
  * <p>Teams: if you are using this class, you are likely confusing it for {@link
- * edu.wpi.first.wpilibj.simulation.SimDeviceSim}.
+ * org.wpilib.simulation.SimDeviceSim}.
  *
  * <p>Vendors: This class should be used from inside the device class to define the
  * properties/fields of the device. Use {@link #create} to get a SimDevice object, then use {@link
  * #createDouble(String, Direction, double)} or similar to define the device's fields. See {@link
- * edu.wpi.first.wpilibj.ADXRS450_Gyro} for an example implementation.
+ * org.wpilib.hardware.accelerometer.ADXRS450_I2C} for an example implementation.
  */
 public class SimDevice implements AutoCloseable {
   /** Sim device direction. */

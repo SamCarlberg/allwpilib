@@ -512,7 +512,7 @@ public final class DriverStation {
         String loc = stackTrace[i].toString();
         traceString.append("\tat ").append(loc).append('\n');
         // get first user function
-        if (!haveLoc && !loc.startsWith("edu.wpi.first")) {
+        if (!haveLoc && !loc.startsWith("org.wpilib")) {
           locString = loc;
           haveLoc = true;
         }

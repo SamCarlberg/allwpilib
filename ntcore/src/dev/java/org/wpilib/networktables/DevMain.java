@@ -2,19 +2,16 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package edu.wpi.first.wpilibj2.commands;
+package org.wpilib.networktables;
 
-import org.wpilib.hardware.hal.HALUtil;
-import org.wpilib.networktables.NetworkTablesJNI;
 import org.wpilib.util.CombinedRuntimeLoader;
 
 public final class DevMain {
-  /** Main entry point. */
+  /** Main method. */
   public static void main(String[] args) {
     System.out.println("Hello World!");
     System.out.println(CombinedRuntimeLoader.getPlatformPath());
-    System.out.println(NetworkTablesJNI.now());
-    System.out.println(HALUtil.getHALRuntimeType());
+    NetworkTablesJNI.flush(NetworkTablesJNI.getDefaultInstance());
   }
 
   private DevMain() {}

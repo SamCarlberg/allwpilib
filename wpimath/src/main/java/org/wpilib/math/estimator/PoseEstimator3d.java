@@ -255,8 +255,8 @@ public class PoseEstimator3d<T> {
    *     your own time source by calling {@link
    *     PoseEstimator3d#updateWithTime(double,Rotation3d,Object)} then you must use a timestamp
    *     with an epoch since FPGA startup (i.e., the epoch of this timestamp is the same epoch as
-   *     {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()}.) This means that you should use
-   *     {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()} as your time source or sync the
+   *     {@link org.wpilib.Timer#getFPGATimestamp()}.) This means that you should use
+   *     {@link org.wpilib.Timer#getFPGATimestamp()} as your time source or sync the
    *     epochs.
    */
   public void addVisionMeasurement(Pose3d visionRobotPose, double timestamp) {
@@ -334,8 +334,8 @@ public class PoseEstimator3d<T> {
    * @param timestamp The timestamp of the vision measurement in seconds. Note that if you don't use
    *     your own time source by calling {@link #updateWithTime}, then you must use a timestamp with
    *     an epoch since FPGA startup (i.e., the epoch of this timestamp is the same epoch as {@link
-   *     edu.wpi.first.wpilibj.Timer#getFPGATimestamp()}). This means that you should use {@link
-   *     edu.wpi.first.wpilibj.Timer#getFPGATimestamp()} as your time source in this case.
+   *     org.wpilib.Timer#getFPGATimestamp()}). This means that you should use {@link
+   *     org.wpilib.Timer#getFPGATimestamp()} as your time source in this case.
    * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement (x position
    *     in meters, y position in meters, z position in meters, and angle in radians). Increase
    *     these numbers to trust the vision pose measurement less.
