@@ -2,12 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.simulation;
+package org.wpilib.simulation.pneumatic;
 
-import org.wpilib.PneumaticsBase;
-import org.wpilib.PneumaticsModuleType;
-import org.wpilib.Solenoid;
+import org.wpilib.hardware.pneumatic.PneumaticsBase;
+import org.wpilib.hardware.pneumatic.PneumaticsModuleType;
+import org.wpilib.hardware.pneumatic.Solenoid;
 import org.wpilib.hardware.hal.simulation.NotifyCallback;
+import org.wpilib.simulation.CallbackStore;
 
 /** Class to control a simulated {@link Solenoid}. */
 public class SolenoidSim {

@@ -4,11 +4,11 @@
 
 package org.wpilib.examples.solenoid;
 
-import org.wpilib.Compressor;
-import org.wpilib.DoubleSolenoid;
-import org.wpilib.PneumaticsModuleType;
-import org.wpilib.Solenoid;
 import org.wpilib.control.Joystick;
+import org.wpilib.hardware.pneumatic.Compressor;
+import org.wpilib.hardware.pneumatic.DoubleSolenoid;
+import org.wpilib.hardware.pneumatic.PneumaticsModuleType;
+import org.wpilib.hardware.pneumatic.Solenoid;
 import org.wpilib.opmode.TimedRobot;
 import org.wpilib.smartdashboard.SmartDashboard;
 

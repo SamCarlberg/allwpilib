@@ -2,8 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib;
+package org.wpilib.hardware.pneumatic;
 
+import org.wpilib.CompressorConfigType;
 import org.wpilib.hardware.hal.util.AllocationException;
 import org.wpilib.util.sendable.Sendable;
 import org.wpilib.util.sendable.SendableBuilder;

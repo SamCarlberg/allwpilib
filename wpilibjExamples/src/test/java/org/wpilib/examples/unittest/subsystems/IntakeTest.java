@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.wpilib.DoubleSolenoid;
-import org.wpilib.PneumaticsModuleType;
 import org.wpilib.examples.unittest.Constants.IntakeConstants;
 import org.wpilib.hardware.hal.HAL;
-import org.wpilib.simulation.DoubleSolenoidSim;
+import org.wpilib.hardware.pneumatic.DoubleSolenoid;
+import org.wpilib.hardware.pneumatic.PneumaticsModuleType;
 import org.wpilib.simulation.PWMMotorControllerSim;
+import org.wpilib.simulation.pneumatic.DoubleSolenoidSim;
 
 class IntakeTest {
   static final double DELTA = 1e-2; // acceptable deviation range

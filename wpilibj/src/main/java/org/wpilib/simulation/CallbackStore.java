@@ -7,17 +7,17 @@ package org.wpilib.simulation;
 /** Manages simulation callbacks; each object is associated with a callback. */
 public class CallbackStore implements AutoCloseable {
   /** <b>Note: This interface is for simulation classes only. It should not be used by teams!</b> */
-  interface CancelCallbackFunc {
+  public interface CancelCallbackFunc {
     void cancel(int index, int uid);
   }
 
   /** <b>Note: This interface is for simulation classes only. It should not be used by teams!</b> */
-  interface CancelCallbackChannelFunc {
+  public interface CancelCallbackChannelFunc {
     void cancel(int index, int channel, int uid);
   }
 
   /** <b>Note: This interface is for simulation classes only. It should not be used by teams!</b> */
-  interface CancelCallbackNoIndexFunc {
+  public interface CancelCallbackNoIndexFunc {
     void cancel(int uid);
   }
 
