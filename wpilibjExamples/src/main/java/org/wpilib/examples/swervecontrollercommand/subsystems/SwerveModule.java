@@ -4,9 +4,9 @@
 
 package org.wpilib.examples.swervecontrollercommand.subsystems;
 
-import org.wpilib.Encoder;
 import org.wpilib.examples.swervecontrollercommand.Constants.ModuleConstants;
 import org.wpilib.hardware.motor.Spark;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.ProfiledPIDController;
 import org.wpilib.math.geometry.Rotation2d;

@@ -9,7 +9,6 @@ import static org.wpilib.units.Units.MetersPerSecond;
 import static org.wpilib.units.Units.Volts;
 
 import java.util.function.DoubleSupplier;
-import org.wpilib.Encoder;
 import org.wpilib.commands2.Command;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.commands2.sysid.SysIdRoutine;
@@ -17,6 +16,7 @@ import org.wpilib.drive.DifferentialDrive;
 import org.wpilib.examples.sysidroutine.Constants.DriveConstants;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.units.measure.MutDistance;
 import org.wpilib.units.measure.MutLinearVelocity;
 import org.wpilib.units.measure.MutVoltage;

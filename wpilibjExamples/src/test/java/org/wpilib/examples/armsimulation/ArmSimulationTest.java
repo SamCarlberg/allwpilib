@@ -16,11 +16,11 @@ import org.wpilib.Preferences;
 import org.wpilib.hardware.hal.HAL;
 import org.wpilib.math.util.Units;
 import org.wpilib.simulation.DriverStationSim;
-import org.wpilib.simulation.EncoderSim;
 import org.wpilib.simulation.JoystickSim;
 import org.wpilib.simulation.PWMMotorControllerSim;
 import org.wpilib.simulation.RoboRioSim;
 import org.wpilib.simulation.SimHooks;
+import org.wpilib.simulation.rotation.EncoderSim;
 
 @ResourceLock("timing")
 class ArmSimulationTest {

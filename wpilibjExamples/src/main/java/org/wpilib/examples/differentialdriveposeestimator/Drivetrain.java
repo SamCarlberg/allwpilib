@@ -5,10 +5,10 @@
 package org.wpilib.examples.differentialdriveposeestimator;
 
 import org.wpilib.AnalogGyro;
-import org.wpilib.Encoder;
 import org.wpilib.Timer;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.ComputerVisionUtil;
 import org.wpilib.math.VecBuilder;
 import org.wpilib.math.controller.PIDController;
@@ -31,7 +31,7 @@ import org.wpilib.math.util.Units;
 import org.wpilib.networktables.DoubleArrayEntry;
 import org.wpilib.networktables.DoubleArrayTopic;
 import org.wpilib.simulation.DifferentialDrivetrainSim;
-import org.wpilib.simulation.EncoderSim;
+import org.wpilib.simulation.rotation.EncoderSim;
 import org.wpilib.smartdashboard.Field2d;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.vision.apriltag.AprilTagFieldLayout;

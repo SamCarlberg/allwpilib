@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.wpilib.hardware.hal.HAL;
+import org.wpilib.hardware.rotation.AnalogPotentiometer;
 import org.wpilib.simulation.AnalogInputSim;
 import org.wpilib.simulation.RoboRioSim;
 

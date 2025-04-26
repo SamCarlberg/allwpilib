@@ -6,7 +6,6 @@ package org.wpilib.examples.rapidreactcommandbot.subsystems;
 
 import java.util.function.DoubleSupplier;
 import org.wpilib.AnalogGyro;
-import org.wpilib.Encoder;
 import org.wpilib.commands2.Command;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.drive.DifferentialDrive;
@@ -15,6 +14,7 @@ import org.wpilib.epilogue.NotLogged;
 import org.wpilib.examples.rapidreactcommandbot.Constants.DriveConstants;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.ProfiledPIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 import org.wpilib.math.trajectory.TrapezoidProfile;

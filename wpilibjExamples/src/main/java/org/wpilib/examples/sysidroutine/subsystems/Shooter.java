@@ -11,13 +11,13 @@ import static org.wpilib.units.Units.RotationsPerSecond;
 import static org.wpilib.units.Units.Volts;
 
 import java.util.function.DoubleSupplier;
-import org.wpilib.Encoder;
 import org.wpilib.commands2.Command;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.commands2.sysid.SysIdRoutine;
 import org.wpilib.examples.sysidroutine.Constants.ShooterConstants;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 import org.wpilib.units.measure.MutAngle;

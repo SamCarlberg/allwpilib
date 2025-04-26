@@ -5,11 +5,11 @@
 package org.wpilib.examples.mecanumcontrollercommand.subsystems;
 
 import org.wpilib.AnalogGyro;
-import org.wpilib.Encoder;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.drive.MecanumDrive;
 import org.wpilib.examples.mecanumcontrollercommand.Constants.DriveConstants;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.kinematics.MecanumDriveOdometry;
 import org.wpilib.math.kinematics.MecanumDriveWheelPositions;

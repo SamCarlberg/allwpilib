@@ -8,14 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.Encoder;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMVictorSPX;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.VecBuilder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.system.plant.DCMotor;
 import org.wpilib.math.system.plant.LinearSystemId;
 import org.wpilib.math.util.Units;
+import org.wpilib.simulation.rotation.EncoderSim;
 
 class ElevatorSimTest {
   @Test

@@ -9,8 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.DutyCycleEncoder;
 import org.wpilib.hardware.hal.HAL;
+import org.wpilib.hardware.rotation.DutyCycleEncoder;
+import org.wpilib.simulation.rotation.DutyCycleEncoderSim;
 
 class DutyCycleEncoderSimTest {
   @Test

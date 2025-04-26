@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.wpilib.CompressorConfigType;
+import org.wpilib.hardware.hal.HAL;
 import org.wpilib.hardware.pneumatic.DoubleSolenoid;
 import org.wpilib.hardware.pneumatic.PneumaticHub;
 import org.wpilib.hardware.pneumatic.PneumaticsModuleType;
-import org.wpilib.hardware.hal.HAL;
 import org.wpilib.simulation.pneumatic.REVPHSim;
 import org.wpilib.simulation.testutils.BooleanCallback;
 import org.wpilib.simulation.testutils.DoubleCallback;

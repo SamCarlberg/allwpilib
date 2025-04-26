@@ -5,8 +5,8 @@
 package org.wpilib.examples.differentialdrivebot;
 
 import org.wpilib.AnalogGyro;
-import org.wpilib.Encoder;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 import org.wpilib.math.kinematics.ChassisSpeeds;

@@ -4,7 +4,7 @@
 
 package org.wpilib.examples.dutycycleinput;
 
-import org.wpilib.DutyCycle;
+import org.wpilib.hardware.rotation.DutyCycle;
 import org.wpilib.opmode.TimedRobot;
 import org.wpilib.smartdashboard.SmartDashboard;
 

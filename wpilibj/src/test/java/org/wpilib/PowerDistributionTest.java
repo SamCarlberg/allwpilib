@@ -7,9 +7,9 @@ package org.wpilib;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.wpilib.hardware.hal.HAL;
 import org.wpilib.hardware.power.PowerDistribution;
 import org.wpilib.hardware.power.PowerDistribution.ModuleType;
-import org.wpilib.hardware.hal.HAL;
 import org.wpilib.simulation.power.PDPSim;
 
 class PowerDistributionTest {

@@ -5,9 +5,9 @@
 package org.wpilib.examples.mecanumdriveposeestimator;
 
 import org.wpilib.AnalogGyro;
-import org.wpilib.Encoder;
 import org.wpilib.Timer;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.VecBuilder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;

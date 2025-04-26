@@ -4,19 +4,19 @@
 
 package org.wpilib.examples.elevatorsimulation.subsystems;
 
-import org.wpilib.Encoder;
 import org.wpilib.examples.elevatorsimulation.Constants;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.ElevatorFeedforward;
 import org.wpilib.math.controller.ProfiledPIDController;
 import org.wpilib.math.system.plant.DCMotor;
 import org.wpilib.math.trajectory.TrapezoidProfile;
 import org.wpilib.simulation.BatterySim;
 import org.wpilib.simulation.ElevatorSim;
-import org.wpilib.simulation.EncoderSim;
 import org.wpilib.simulation.PWMMotorControllerSim;
 import org.wpilib.simulation.RoboRioSim;
+import org.wpilib.simulation.rotation.EncoderSim;
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;

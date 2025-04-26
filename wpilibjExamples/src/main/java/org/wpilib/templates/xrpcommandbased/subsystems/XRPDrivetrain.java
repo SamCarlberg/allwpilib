@@ -4,9 +4,9 @@
 
 package org.wpilib.templates.xrpcommandbased.subsystems;
 
-import org.wpilib.Encoder;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.drive.DifferentialDrive;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.xrp.XRPMotor;
 
 public class XRPDrivetrain extends SubsystemBase {

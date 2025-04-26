@@ -5,7 +5,7 @@
 package org.wpilib.examples.encoder;
 
 import org.wpilib.CounterBase;
-import org.wpilib.Encoder;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.opmode.TimedRobot;
 import org.wpilib.smartdashboard.SmartDashboard;
 

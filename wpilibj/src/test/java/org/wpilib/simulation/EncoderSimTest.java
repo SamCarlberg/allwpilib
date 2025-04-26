@@ -8,8 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.wpilib.Encoder;
 import org.wpilib.hardware.hal.HAL;
+import org.wpilib.hardware.rotation.Encoder;
+import org.wpilib.simulation.rotation.EncoderSim;
 import org.wpilib.simulation.testutils.DoubleCallback;
 import org.wpilib.simulation.testutils.IntCallback;
 

@@ -4,10 +4,10 @@
 
 package org.wpilib.simulation.pneumatic;
 
-import org.wpilib.hardware.pneumatic.PneumaticsControlModule;
 import org.wpilib.SensorUtil;
 import org.wpilib.hardware.hal.simulation.CTREPCMDataJNI;
 import org.wpilib.hardware.hal.simulation.NotifyCallback;
+import org.wpilib.hardware.pneumatic.PneumaticsControlModule;
 import org.wpilib.simulation.CallbackStore;
 
 /** Class to control a simulated Pneumatic Control Module (PCM). */

@@ -4,11 +4,11 @@
 
 package org.wpilib.examples.eventloop;
 
-import org.wpilib.Encoder;
 import org.wpilib.control.Joystick;
 import org.wpilib.event.BooleanEvent;
 import org.wpilib.event.EventLoop;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 import org.wpilib.opmode.TimedRobot;

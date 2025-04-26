@@ -4,10 +4,10 @@
 
 package org.wpilib.simulation.pneumatic;
 
+import org.wpilib.hardware.hal.simulation.NotifyCallback;
 import org.wpilib.hardware.pneumatic.PneumaticsBase;
 import org.wpilib.hardware.pneumatic.PneumaticsModuleType;
 import org.wpilib.hardware.pneumatic.Solenoid;
-import org.wpilib.hardware.hal.simulation.NotifyCallback;
 import org.wpilib.simulation.CallbackStore;
 
 /** Class to control a simulated {@link Solenoid}. */

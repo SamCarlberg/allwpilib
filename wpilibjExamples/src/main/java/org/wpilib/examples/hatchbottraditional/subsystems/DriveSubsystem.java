@@ -4,11 +4,11 @@
 
 package org.wpilib.examples.hatchbottraditional.subsystems;
 
-import org.wpilib.Encoder;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.drive.DifferentialDrive;
 import org.wpilib.examples.hatchbottraditional.Constants.DriveConstants;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.util.sendable.SendableBuilder;
 import org.wpilib.util.sendable.SendableRegistry;
 

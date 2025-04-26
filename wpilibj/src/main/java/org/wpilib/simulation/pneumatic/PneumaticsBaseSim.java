@@ -4,9 +4,9 @@
 
 package org.wpilib.simulation.pneumatic;
 
+import org.wpilib.hardware.hal.simulation.NotifyCallback;
 import org.wpilib.hardware.pneumatic.PneumaticsBase;
 import org.wpilib.hardware.pneumatic.PneumaticsModuleType;
-import org.wpilib.hardware.hal.simulation.NotifyCallback;
 import org.wpilib.simulation.CallbackStore;
 
 /** Common base class for pneumatics module simulation classes. */

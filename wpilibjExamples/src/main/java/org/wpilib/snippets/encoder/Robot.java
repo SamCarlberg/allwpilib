@@ -4,7 +4,7 @@
 
 package org.wpilib.snippets.encoder;
 
-import org.wpilib.Encoder;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.opmode.TimedRobot;
 
 /**

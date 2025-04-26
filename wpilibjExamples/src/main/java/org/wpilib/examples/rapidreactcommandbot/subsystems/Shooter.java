@@ -7,12 +7,12 @@ package org.wpilib.examples.rapidreactcommandbot.subsystems;
 import static org.wpilib.commands2.Commands.parallel;
 import static org.wpilib.commands2.Commands.waitUntil;
 
-import org.wpilib.Encoder;
 import org.wpilib.commands2.Command;
 import org.wpilib.commands2.SubsystemBase;
 import org.wpilib.epilogue.Logged;
 import org.wpilib.examples.rapidreactcommandbot.Constants.ShooterConstants;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 

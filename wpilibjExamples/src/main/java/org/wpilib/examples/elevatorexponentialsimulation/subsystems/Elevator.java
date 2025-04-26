@@ -4,10 +4,10 @@
 
 package org.wpilib.examples.elevatorexponentialsimulation.subsystems;
 
-import org.wpilib.Encoder;
 import org.wpilib.examples.elevatorexponentialsimulation.Constants;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.ElevatorFeedforward;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.system.plant.DCMotor;
@@ -15,9 +15,9 @@ import org.wpilib.math.trajectory.ExponentialProfile;
 import org.wpilib.math.util.Units;
 import org.wpilib.simulation.BatterySim;
 import org.wpilib.simulation.ElevatorSim;
-import org.wpilib.simulation.EncoderSim;
 import org.wpilib.simulation.PWMMotorControllerSim;
 import org.wpilib.simulation.RoboRioSim;
+import org.wpilib.simulation.rotation.EncoderSim;
 import org.wpilib.smartdashboard.Mechanism2d;
 import org.wpilib.smartdashboard.MechanismLigament2d;
 import org.wpilib.smartdashboard.MechanismRoot2d;

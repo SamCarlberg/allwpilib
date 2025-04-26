@@ -2,8 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib;
+package org.wpilib.hardware.rotation;
 
+import org.wpilib.AnalogInput;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.util.sendable.Sendable;
 import org.wpilib.util.sendable.SendableBuilder;

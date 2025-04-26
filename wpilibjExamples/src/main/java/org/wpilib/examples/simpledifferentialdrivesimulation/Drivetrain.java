@@ -5,9 +5,9 @@
 package org.wpilib.examples.simpledifferentialdrivesimulation;
 
 import org.wpilib.AnalogGyro;
-import org.wpilib.Encoder;
 import org.wpilib.hardware.controller.RobotController;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;
 import org.wpilib.math.geometry.Pose2d;
@@ -20,7 +20,7 @@ import org.wpilib.math.system.LinearSystem;
 import org.wpilib.math.system.plant.DCMotor;
 import org.wpilib.math.system.plant.LinearSystemId;
 import org.wpilib.simulation.DifferentialDrivetrainSim;
-import org.wpilib.simulation.EncoderSim;
+import org.wpilib.simulation.rotation.EncoderSim;
 import org.wpilib.smartdashboard.Field2d;
 import org.wpilib.smartdashboard.SmartDashboard;
 

@@ -4,8 +4,8 @@
 
 package org.wpilib.examples.swervedriveposeestimator;
 
-import org.wpilib.Encoder;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.controller.ProfiledPIDController;
 import org.wpilib.math.controller.SimpleMotorFeedforward;

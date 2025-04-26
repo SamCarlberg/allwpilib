@@ -4,9 +4,9 @@
 
 package org.wpilib.examples.statespacearm;
 
-import org.wpilib.Encoder;
 import org.wpilib.control.Joystick;
 import org.wpilib.hardware.motor.PWMSparkMax;
+import org.wpilib.hardware.rotation.Encoder;
 import org.wpilib.math.Nat;
 import org.wpilib.math.VecBuilder;
 import org.wpilib.math.controller.LinearQuadraticRegulator;

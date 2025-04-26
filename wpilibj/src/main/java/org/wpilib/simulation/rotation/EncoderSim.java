@@ -2,12 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.simulation;
+package org.wpilib.simulation.rotation;
 
 import java.util.NoSuchElementException;
-import org.wpilib.Encoder;
 import org.wpilib.hardware.hal.simulation.EncoderDataJNI;
 import org.wpilib.hardware.hal.simulation.NotifyCallback;
+import org.wpilib.hardware.rotation.Encoder;
+import org.wpilib.simulation.CallbackStore;
 
 /** Class to control a simulated encoder. */
 public class EncoderSim {
