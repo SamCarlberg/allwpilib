@@ -12,7 +12,7 @@ import java.util.EnumSet;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.wpilib.datalog.DataLog;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 
 /** NetworkTables JNI. */
 public final class NetworkTablesJNI {

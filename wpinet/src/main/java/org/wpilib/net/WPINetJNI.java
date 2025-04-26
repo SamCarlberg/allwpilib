@@ -6,7 +6,7 @@ package org.wpilib.net;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 
 /** WPINet JNI. */
 public class WPINetJNI {

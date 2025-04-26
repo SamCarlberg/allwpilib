@@ -7,7 +7,7 @@ package org.wpilib.datalog;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 
 /**
  * DataLog JNI Functions.

@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import org.wpilib.util.RawFrame;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 
 /** CameraServer JNI. */
 public class CameraServerJNI {

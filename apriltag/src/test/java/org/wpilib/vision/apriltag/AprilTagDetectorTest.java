@@ -22,7 +22,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.util.Units;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 
 @SuppressWarnings("PMD.MutableStaticState")
 class AprilTagDetectorTest {

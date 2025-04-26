@@ -6,7 +6,7 @@ package org.wpilib.commands2;
 
 import org.wpilib.hardware.hal.HALUtil;
 import org.wpilib.networktables.NetworkTablesJNI;
-import org.wpilib.util.CombinedRuntimeLoader;
+import org.wpilib.util.runtime.CombinedRuntimeLoader;
 
 public final class DevMain {
   /** Main entry point. */

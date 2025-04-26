@@ -7,7 +7,7 @@ package org.wpilib.vision.camera;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.opencv.core.Core;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 
 /** OpenCV Native Loader. */
 public final class OpenCvLoader {

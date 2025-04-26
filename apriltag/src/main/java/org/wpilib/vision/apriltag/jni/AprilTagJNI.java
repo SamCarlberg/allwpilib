@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.util.RawFrame;
-import org.wpilib.util.RuntimeLoader;
+import org.wpilib.util.runtime.RuntimeLoader;
 import org.wpilib.vision.apriltag.AprilTagDetection;
 import org.wpilib.vision.apriltag.AprilTagDetector;
 import org.wpilib.vision.apriltag.AprilTagPoseEstimate;
