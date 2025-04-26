@@ -2,11 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.simulation;
+package org.wpilib.simulation.power;
 
-import org.wpilib.PowerDistribution;
 import org.wpilib.hardware.hal.simulation.NotifyCallback;
 import org.wpilib.hardware.hal.simulation.PowerDistributionDataJNI;
+import org.wpilib.hardware.power.PowerDistribution;
+import org.wpilib.simulation.CallbackStore;
 
 /** Class to control a simulated Power Distribution Panel (PDP). */
 public class PDPSim {

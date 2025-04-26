@@ -4,7 +4,7 @@
 
 package org.wpilib.examples.canpdp;
 
-import org.wpilib.PowerDistribution;
+import org.wpilib.hardware.power.PowerDistribution;
 import org.wpilib.opmode.TimedRobot;
 import org.wpilib.smartdashboard.SmartDashboard;
 
