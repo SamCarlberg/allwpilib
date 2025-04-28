@@ -42,7 +42,7 @@ public class Shooter extends RequireableResource {
           m_feederMotor.disable();
           coroutine.park();
         })
-        .named("Idle"));
+        .make("Idle"));
   }
 
   public void ramp(AngularVelocity setpoint) {

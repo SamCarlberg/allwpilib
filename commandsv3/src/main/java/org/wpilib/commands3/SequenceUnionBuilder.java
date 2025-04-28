@@ -4,32 +4,24 @@
 
 package org.wpilib.commands3;
 
-import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 /**
- * A builder class to configure and then create a {@link Sequence}. Like {@link CommandBuilder},
- * the final command is created by calling the terminal {@link #named(String)} method, or with
- * an automatically generated name using {@link #withAutomaticName()}.
+ * A builder class to configure and then create a {@link SequenceUnion}. Like {@link CommandBuilder},
+ * the final command is created by calling the terminal {@link #make(String)} method, or with
+ * an automatically generated name using {@link #make()}.
  */
-public class SequenceBuilder {
+public class SequenceUnionBuilder {
   private final List<Command> steps = new ArrayList<>();
   private BooleanSupplier endCondition = null;
 
-  /**
-   * Adds a command to the sequence.
-   *
-   * @param next The next command in the sequence
-   * @return The builder object, for chaining
-   */
-  public SequenceBuilder andThen(Command next) {
-    requireNonNullParam(next, "next", "Sequence.Builder.andThen");
-
-    steps.add(next);
+  public SequenceUnionBuilder andThen(Command first, Command... others) {
+    steps.add(first);
+    steps.addAll(Arrays.asList(others));
     return this;
   }
 
@@ -39,10 +31,10 @@ public class SequenceBuilder {
    * (e.g. {@code .until(() -> conditionA()).until(() -> conditionB())}), then the last end
    * condition added will be used and any previously configured condition will be overridden.
    *
-   * @param condition The end condition for the group
+   * @param endCondition The end condition for the group
    * @return The builder object, for chaining
    */
-  public SequenceBuilder until(BooleanSupplier endCondition) {
+  public SequenceUnionBuilder until(BooleanSupplier endCondition) {
     this.endCondition = endCondition;
     return this;
   }
@@ -53,17 +45,17 @@ public class SequenceBuilder {
    * @param name The name of the sequence command
    * @return The built command
    */
-  public Command named(String name) {
-    var seq = new Sequence(name, steps);
+  public Command make(String name) {
+    var seq = new SequenceUnion(name, steps);
     if (endCondition != null) {
       // No custom end condition, return the group as is
       return seq;
     }
 
     // We have a custom end condition, so we need to wrap the group in a race
-    return ParallelGroup.builder()
-               .optional(seq, Command.waitingFor(endCondition).named("Until Condition"))
-               .named(name);
+    return ParallelUnion.builder()
+               .optional(seq, Command.waitUntil(endCondition).make("Until Condition"))
+               .make(name);
   }
 
   /**
@@ -72,7 +64,7 @@ public class SequenceBuilder {
    *
    * @return The built command
    */
-  public Command withAutomaticName() {
-    return named(steps.stream().map(Command::name).collect(Collectors.joining(" -> ")));
+  public Command make() {
+    return make(steps.stream().map(Command::name).collect(Collectors.joining(" -> ")));
   }
 }

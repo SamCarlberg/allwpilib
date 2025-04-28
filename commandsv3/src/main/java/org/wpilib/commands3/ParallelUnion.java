@@ -17,7 +17,7 @@ import java.util.Set;
  * group will end after any command in the group finishes. Any commands still running when the group
  * has reached its completion condition will be cancelled.
  */
-public class ParallelGroup implements Command {
+public class ParallelUnion implements Command {
   private final Collection<Command> commands = new LinkedHashSet<>();
   private final Collection<Command> requiredCommands = new HashSet<>();
   private final Set<RequireableResource> requirements = new HashSet<>();
@@ -33,7 +33,7 @@ public class ParallelGroup implements Command {
    * @param requiredCommands The commands that are required to completed for the group to finish. If
    *     this is empty, then the group will finish when <i>any</i> command in it has completed.
    */
-  public ParallelGroup(
+  public ParallelUnion(
       String name, Collection<Command> allCommands, Collection<Command> requiredCommands) {
     requireNonNullParam(name, "name", "ParallelGroup");
     requireNonNullParam(allCommands, "allCommands", "ParallelGroup");
@@ -89,27 +89,6 @@ public class ParallelGroup implements Command {
     }
   }
 
-  /**
-   * Creates a parallel group that runs all the given commands until any of them finish.
-   *
-   * @param commands the commands to run in parallel
-   * @return the group
-   */
-  public static ParallelGroupBuilder race(Command... commands) {
-    return builder().optional(commands);
-  }
-
-  /**
-   * Creates a parallel group that runs all the given commands until they all finish. If a command
-   * finishes early, its required resources will be idle (uncommanded) until the group completes.
-   *
-   * @param commands the commands to run in parallel
-   * @return the group
-   */
-  public static ParallelGroupBuilder all(Command... commands) {
-    return builder().requiring(commands);
-  }
-
   @Override
   public void run(Coroutine coroutine) {
     if (requiredCommands.isEmpty()) {
@@ -150,7 +129,7 @@ public class ParallelGroup implements Command {
     return "ParallelGroup[name=" + name + "]";
   }
 
-  public static ParallelGroupBuilder builder() {
-    return new ParallelGroupBuilder();
+  public static ParallelUnionBuilder builder() {
+    return new ParallelUnionBuilder();
   }
 }

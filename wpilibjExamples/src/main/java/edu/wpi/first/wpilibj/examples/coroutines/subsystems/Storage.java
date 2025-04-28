@@ -29,7 +29,7 @@ public class Storage extends RequireableResource {
     setDefaultCommand(run((coroutine) -> {
       m_motor.disable();
       coroutine.park();
-    }).named("Idle"));
+    }).make("Idle"));
   }
 
   public void run() {
@@ -42,6 +42,6 @@ public class Storage extends RequireableResource {
       while (coroutine.yield()) {
         run();
       }
-    }).named("Run");
+    }).make("Run");
   }
 }

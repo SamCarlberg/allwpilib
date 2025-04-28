@@ -19,9 +19,9 @@ import java.util.function.Consumer;
  */
 public class CommandBuilder {
   private final Set<RequireableResource> requirements = new HashSet<>();
-  private Consumer<Coroutine> impl;
+  private Consumer<Coroutine> toRun;
   private Runnable onCancel = () -> {};
-  private String name;
+  private Runnable onDone = () -> {};
   private int priority = Command.DEFAULT_PRIORITY;
   private Command.RobotDisabledBehavior disabledBehavior =
       Command.RobotDisabledBehavior.CancelWhileDisabled;
@@ -82,33 +82,6 @@ public class CommandBuilder {
   }
 
   /**
-   * Sets the name of the command.
-   *
-   * @param name The command's name
-   * @return The builder object, for chaining
-   * @see Command#name()
-   */
-  public CommandBuilder withName(String name) {
-    requireNonNullParam(name, "name", "CommandBuilder.withName");
-
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Creates the command based on what's been configured in the builder.
-   *
-   * @param name The name of the command
-   * @return The built command
-   * @throws NullPointerException if {@code name} is null or if the command body was not set using
-   *     {@link #executing(Consumer)}.
-   * @see Command#name()
-   */
-  public Command named(String name) {
-    return withName(name).make();
-  }
-
-  /**
    * Sets the priority of the command. If not set, {@link Command#DEFAULT_PRIORITY} will be used.
    *
    * @param priority The priority of the command
@@ -148,14 +121,14 @@ public class CommandBuilder {
   /**
    * Sets the code that the command will execute when it's being run by the scheduler.
    *
-   * @param impl The command implementation
+   * @param toRun The command implementation
    * @return The builder object, for chaining
    * @see Command#run(Coroutine)
    */
-  public CommandBuilder executing(Consumer<Coroutine> impl) {
-    requireNonNullParam(impl, "impl", "CommandBuilder.executing");
+  public CommandBuilder executing(Consumer<Coroutine> toRun) {
+    requireNonNullParam(toRun, "toRun", "CommandBuilder.executing");
 
-    this.impl = impl;
+    this.toRun = toRun;
     return this;
   }
 
@@ -174,25 +147,41 @@ public class CommandBuilder {
   }
 
   /**
+   * Sets the code that the command will always execute after finishing -
+   * regardless of if the command itself was cancelled or not.
+   *
+   * @param onDone The finish callback
+   * @return The builder object, for chaining.
+   */
+  public CommandBuilder whenDone(Runnable onDone) {
+    requireNonNullParam(onDone, "onDone", "CommandBuilder.whenDone");
+
+    this.onDone = onDone;
+    return this;
+  }
+
+  /**
    * Creates the command.
    *
    * @return The built command
-   * @throws NullPointerException An NPE if either the command {@link #named(String) name} or {@link
+   * @throws NullPointerException An NPE if either the command {@link #make(String) name} or {@link
    *     #executing(Consumer) implementation} were not configured before calling this method.
    */
-  public Command make() {
-    Objects.requireNonNull(name, "Name was not specified");
-    Objects.requireNonNull(impl, "Command logic was not specified");
+  public Command make(String name) {
+    requireNonNullParam(name, "name", "CommandBuilder.withName");
+    Objects.requireNonNull(toRun, "Command logic was not specified");
 
     return new Command() {
       @Override
       public void run(Coroutine coroutine) {
-        impl.accept(coroutine);
+        toRun.accept(coroutine);
+        onDone.run();
       }
 
       @Override
       public void onCancel() {
         onCancel.run();
+        onDone.run();
       }
 
       @Override
