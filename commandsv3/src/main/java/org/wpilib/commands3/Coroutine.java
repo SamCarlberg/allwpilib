@@ -215,7 +215,7 @@ public final class Coroutine {
    * @param duration the duration of time to wait
    */
   public void wait(Time duration) {
-    await(new WaitCommand(duration));
+    await(Command.waitFor(duration));
   }
 
   /**

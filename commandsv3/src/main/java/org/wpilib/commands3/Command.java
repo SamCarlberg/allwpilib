@@ -5,10 +5,14 @@
 package org.wpilib.commands3;
 
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * Performs some task using one or more {@link RequireableResource resources} using the
@@ -228,7 +232,7 @@ public interface Command {
    * @return the timed out command.
    */
   default Command withTimeout(Time timeout) {
-    return race(this, new WaitCommand(timeout))
+    return race(this, waitFor(timeout))
             .make(name() + " [" + timeout.toLongString() + " timeout]");
   }
 
@@ -286,6 +290,19 @@ public interface Command {
             coroutine.yield();
           }
         });
+  }
+
+  static Command waitFor(Time duration, RequireableResource... resources) {
+    return new CommandBuilder()
+            .requiring(resources)
+            .executing(coroutine -> {
+              var timer = new Timer();
+              timer.start();
+              while (!timer.hasElapsed(duration.in(Seconds))) {
+                coroutine.yield();
+              }
+            })
+            .make("Wait " + duration.in(Seconds) + " Seconds");
   }
 
   default ParallelUnionBuilder until(BooleanSupplier endCondition) {

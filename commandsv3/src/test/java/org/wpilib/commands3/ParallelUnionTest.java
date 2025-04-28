@@ -159,8 +159,8 @@ class ParallelUnionTest {
                 })
             .make("Command");
 
-    var inner = ParallelUnion.all(command).make("Inner");
-    var outer = ParallelUnion.all(inner).make("Outer");
+    var inner = Command.parallel(command).make("Inner");
+    var outer = Command.parallel(inner).make("Outer");
 
     // Scheduling: Outer group should be on deck
     scheduler.schedule(outer);
