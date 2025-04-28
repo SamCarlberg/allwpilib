@@ -19,7 +19,7 @@ import java.util.Set;
  * entire duration of the sequence. This means that a resource owned by one command in the sequence,
  * but not by a later one, will be <i>uncommanded</i> while that later command executes.
  */
-public class Sequence implements Command {
+public class SequenceUnion implements Command {
   private final String name;
   private final List<Command> commands = new ArrayList<>();
   private final Set<RequireableResource> requirements = new HashSet<>();
@@ -32,7 +32,7 @@ public class Sequence implements Command {
    * @param name the name of the sequence
    * @param commands the commands to execute within the sequence
    */
-  public Sequence(String name, List<Command> commands) {
+  public SequenceUnion(String name, List<Command> commands) {
     this.name = name;
     this.commands.addAll(commands);
 
@@ -79,19 +79,7 @@ public class Sequence implements Command {
     return robotDisabledBehavior;
   }
 
-  public static SequenceBuilder builder() {
-    return new SequenceBuilder();
-  }
-
-  public static SequenceBuilder sequence(Command... commands) {
-    var builder = new SequenceBuilder();
-    for (var command : commands) {
-      builder.andThen(command);
-    }
-    return builder;
-  }
-
-  public static Command of(Command... commands) {
-    return sequence(commands).withAutomaticName();
+  public static SequenceUnionBuilder builder() {
+    return new SequenceUnionBuilder();
   }
 }

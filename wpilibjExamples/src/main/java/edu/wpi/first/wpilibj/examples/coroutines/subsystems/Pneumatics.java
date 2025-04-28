@@ -53,7 +53,7 @@ public class Pneumatics extends RequireableResource {
     return run((coroutine) -> {
       m_compressor.disable();
       coroutine.park();
-    }).named("Disable Compressor");
+    }).make("Disable Compressor");
   }
 
   /**
@@ -66,6 +66,6 @@ public class Pneumatics extends RequireableResource {
     return run((coroutine) -> {
       m_compressor.enableDigital();
       coroutine.park();
-    }).named("Enable Compressor");
+    }).make("Enable Compressor");
   }
 }

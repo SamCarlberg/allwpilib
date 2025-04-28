@@ -56,15 +56,15 @@ public final class Coroutine {
    * <p>
    * {@snippet lang = java:
    * Command example() {
-   *   return Command.noRequirements((coroutine) -> {
+   *   return Command.noReqs((coroutine) -> {
    *     Command inner = ...;
    *     coroutine.fork(inner);
    *     // ... do more things
    *     // then sync back up with the inner command
    *     coroutine.await(inner);
-   *   }).named("Example");
+   *   }).make("Example");
    * }
-   * }
+   *}
    *
    * @param commands The commands to fork.
    */

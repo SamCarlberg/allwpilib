@@ -36,14 +36,14 @@ class SchedulerTest {
     var enabled = new AtomicBoolean(false);
     var ran = new AtomicBoolean(false);
     var command =
-        Command.noRequirements(
+        Command.noReqs(
                 (coroutine) -> {
                   do {
                     coroutine.yield();
                   } while (!enabled.get());
                   ran.set(true);
                 })
-            .named("Basic Command");
+            .make("Basic Command");
 
     scheduler.schedule(command);
     scheduler.run();
@@ -129,14 +129,14 @@ class SchedulerTest {
 
     for (int cmdCount = 0; cmdCount < numCommands; cmdCount++) {
       var command =
-          Command.noRequirements(
+          Command.noReqs(
                   (coroutine) -> {
                     for (int i = 0; i < iterations; i++) {
                       coroutine.yield();
                       resource.x++;
                     }
                   })
-              .named("CountCommand[" + cmdCount + "]");
+              .make("CountCommand[" + cmdCount + "]");
 
       scheduler.schedule(command);
     }
@@ -159,7 +159,7 @@ class SchedulerTest {
                 (coroutine) -> {
                   throw new RuntimeException("The exception");
                 })
-            .named("Bad Behavior");
+            .make("Bad Behavior");
 
     scheduler.schedule(command);
 
@@ -191,7 +191,7 @@ class SchedulerTest {
                     example.x++;
                   }
                 })
-            .named("Count To Ten");
+            .make("Count To Ten");
 
     scheduler.schedule(countToTen);
     for (int i = 0; i < 10; i++) {
@@ -209,13 +209,13 @@ class SchedulerTest {
     var resource = new RequireableResource("Resource", scheduler);
 
     var interrupter =
-        Command.requiring(resource)
+        Command.withReqs(resource)
             .executing((coroutine) -> {})
             .withPriority(2)
-            .named("Interrupter");
+            .make("Interrupter");
 
     var canceledCommand =
-        Command.requiring(resource)
+        Command.withReqs(resource)
             .executing(
                 (coroutine) -> {
                   count.set(1);
@@ -223,7 +223,7 @@ class SchedulerTest {
                   count.set(2);
                 })
             .withPriority(1)
-            .named("Cancel By Default");
+            .make("Cancel By Default");
 
     scheduler.schedule(canceledCommand);
     scheduler.run();
@@ -248,9 +248,9 @@ class SchedulerTest {
                   }
                 })
             .withPriority(-1)
-            .named("Default Command");
+            .make("Default Command");
 
-    var newerCmd = resource.run((coroutine) -> {}).named("Newer Command");
+    var newerCmd = resource.run((coroutine) -> {}).make("Newer Command");
     resource.setDefaultCommand(defaultCmd);
     scheduler.run();
     assertTrue(scheduler.isRunning(defaultCmd), "Default command should be running");
@@ -268,7 +268,7 @@ class SchedulerTest {
   void cancelAllCancelsAll() {
     var commands = new ArrayList<Command>(10);
     for (int i = 1; i <= 10; i++) {
-      commands.add(Command.noRequirements(Coroutine::yield).named("Command " + i));
+      commands.add(Command.noReqs(Coroutine::yield).make("Command " + i));
     }
     commands.forEach(scheduler::schedule);
     scheduler.run();
@@ -288,7 +288,7 @@ class SchedulerTest {
     }
 
     var command =
-        new CommandBuilder().requiring(resources).executing(Coroutine::yield).named("Big Command");
+        new CommandBuilder().requiring(resources).executing(Coroutine::yield).make("Big Command");
 
     // Scheduling the command should evict the on-deck default commands
     scheduler.schedule(command);
@@ -326,23 +326,23 @@ class SchedulerTest {
   @Test
   void cancelDeeplyNestedCompositions() {
     Command root =
-        Command.noRequirements(
+        Command.noReqs(
                 (co) -> {
                   co.await(
-                      Command.noRequirements(
+                      Command.noReqs(
                               (co2) -> {
                                 co2.await(
-                                    Command.noRequirements(
+                                    Command.noReqs(
                                             (co3) -> {
                                               co3.await(
-                                                  Command.noRequirements(Coroutine::park)
-                                                      .named("Park"));
+                                                  Command.noReqs(Coroutine::park)
+                                                      .make("Park"));
                                             })
-                                        .named("C3"));
+                                        .make("C3"));
                               })
-                          .named("C2"));
+                          .make("C2"));
                 })
-            .named("Root");
+            .make("Root");
 
     scheduler.schedule(root);
 
@@ -365,13 +365,13 @@ class SchedulerTest {
                                 co2.await(
                                     res.run(
                                             (co3) -> {
-                                              co3.await(res.run(Coroutine::park).named("Park"));
+                                              co3.await(res.run(Coroutine::park).make("Park"));
                                             })
-                                        .named("C3"));
+                                        .make("C3"));
                               })
-                          .named("C2"));
+                          .make("C2"));
                 })
-            .named("Group");
+            .make("Group");
 
     scheduler.schedule(group);
     scheduler.run();
@@ -386,13 +386,13 @@ class SchedulerTest {
 
     // the group has no requirements, but can schedule child commands that do
     var group =
-        Command.noRequirements(
+        Command.noReqs(
                 (co) -> {
                   co.awaitAll(
-                      r1.run(Coroutine::park).named("R1 Command"),
-                      r2.run(Coroutine::park).named("R2 Command"));
+                      r1.run(Coroutine::park).make("R1 Command"),
+                      r2.run(Coroutine::park).make("R2 Command"));
                 })
-            .named("Composition");
+            .make("Composition");
 
     scheduler.schedule(group);
     scheduler.run(); // start r1 and r2 commands
@@ -404,13 +404,13 @@ class SchedulerTest {
     var res = new RequireableResource("The Resource", scheduler);
 
     var group =
-        Command.noRequirements(
+        Command.noReqs(
                 (co) -> {
                   co.awaitAll(
-                      res.run(Coroutine::park).named("First"),
-                      res.run(Coroutine::park).named("Second"));
+                      res.run(Coroutine::park).make("First"),
+                      res.run(Coroutine::park).make("Second"));
                 })
-            .named("Group");
+            .make("Group");
 
     scheduler.schedule(group);
 
@@ -432,8 +432,8 @@ class SchedulerTest {
     var ran = new AtomicBoolean(false);
 
     var resource = new RequireableResource("The Resource", scheduler);
-    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).named("cmd");
-    var interrupter = resource.run(Coroutine::yield).named("Interrupter");
+    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).make("cmd");
+    var interrupter = resource.run(Coroutine::yield).make("Interrupter");
     scheduler.schedule(cmd);
     scheduler.schedule(interrupter);
     scheduler.run();
@@ -446,7 +446,7 @@ class SchedulerTest {
     var ran = new AtomicBoolean(false);
 
     var resource = new RequireableResource("The Resource", scheduler);
-    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).named("cmd");
+    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).make("cmd");
     scheduler.schedule(cmd);
     // cancelling before calling .run()
     scheduler.cancel(cmd);
@@ -460,8 +460,8 @@ class SchedulerTest {
     var ran = new AtomicBoolean(false);
 
     var resource = new RequireableResource("The Resource", scheduler);
-    var cmd = resource.run(Coroutine::park).whenCanceled(() -> ran.set(true)).named("cmd");
-    var interrupter = resource.run(Coroutine::park).named("Interrupter");
+    var cmd = resource.run(Coroutine::park).whenCanceled(() -> ran.set(true)).make("cmd");
+    var interrupter = resource.run(Coroutine::park).make("Interrupter");
     scheduler.schedule(cmd);
     scheduler.run();
     scheduler.schedule(interrupter);
@@ -475,7 +475,7 @@ class SchedulerTest {
     var ran = new AtomicBoolean(false);
 
     var resource = new RequireableResource("The Resource", scheduler);
-    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).named("cmd");
+    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).make("cmd");
     scheduler.schedule(cmd);
     scheduler.run();
     scheduler.run();
@@ -489,7 +489,7 @@ class SchedulerTest {
     var ran = new AtomicBoolean(false);
 
     var resource = new RequireableResource("The Resource", scheduler);
-    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).named("cmd");
+    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).make("cmd");
     scheduler.schedule(cmd);
     scheduler.run();
     scheduler.cancel(cmd);
@@ -502,9 +502,9 @@ class SchedulerTest {
     var ran = new AtomicBoolean(false);
 
     var resource = new RequireableResource("The Resource", scheduler);
-    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).named("cmd");
+    var cmd = resource.run(Coroutine::yield).whenCanceled(() -> ran.set(true)).make("cmd");
 
-    var group = new Sequence("Seq", Collections.singletonList(cmd));
+    var group = new SequenceUnion("Seq", Collections.singletonList(cmd));
     scheduler.schedule(group);
     scheduler.run();
     scheduler.cancel(group);
@@ -533,10 +533,10 @@ class SchedulerTest {
 
           public Command superCommand() {
             return run(co -> {
-                  co.await(elevator.run(Coroutine::park).named("Elevator Subcommand"));
-                  co.await(arm.run(Coroutine::park).named("Arm Subcommand"));
+                  co.await(elevator.run(Coroutine::park).make("Elevator Subcommand"));
+                  co.await(arm.run(Coroutine::park).make("Arm Subcommand"));
                 })
-                .named("Super Command");
+                .make("Super Command");
           }
         };
 
@@ -548,7 +548,7 @@ class SchedulerTest {
         "Arm should only be running its default command");
 
     // Scheduling something that requires an in-use inner resource cancels the outer command
-    scheduler.schedule(superstructure.elevator.run(Coroutine::park).named("Conflict"));
+    scheduler.schedule(superstructure.elevator.run(Coroutine::park).make("Conflict"));
 
     scheduler.run(); // schedules the default superstructure command
     scheduler.run(); // starts running the default superstructure command
@@ -558,16 +558,16 @@ class SchedulerTest {
   @Test
   void protobuf() {
     var res = new RequireableResource("The Resource", scheduler);
-    var parkCommand = res.run(Coroutine::park).named("Park");
-    var c3Command = res.run((co) -> co.await(parkCommand)).named("C3");
-    var c2Command = res.run((co) -> co.await(c3Command)).named("C2");
-    var group = res.run((co) -> co.await(c2Command)).named("Group");
+    var parkCommand = res.run(Coroutine::park).make("Park");
+    var c3Command = res.run((co) -> co.await(parkCommand)).make("C3");
+    var c2Command = res.run((co) -> co.await(c3Command)).make("C2");
+    var group = res.run((co) -> co.await(c2Command)).make("Group");
 
     scheduler.schedule(group);
     scheduler.run();
 
-    var scheduledCommand1 = Command.noRequirements(Coroutine::park).named("Command 1");
-    var scheduledCommand2 = Command.noRequirements(Coroutine::park).named("Command 2");
+    var scheduledCommand1 = Command.noReqs(Coroutine::park).make("Command 1");
+    var scheduledCommand2 = Command.noReqs(Coroutine::park).make("Command 2");
     scheduler.schedule(scheduledCommand1);
     scheduler.schedule(scheduledCommand2);
 
@@ -642,18 +642,18 @@ class SchedulerTest {
     var first = resource.run(c -> {
       firstRan.set(true);
       c.park();
-    }).named("First");
+    }).make("First");
 
     var second = resource.run(c -> {
       secondRan.set(true);
       c.park();
-    }).named("Second");
+    }).make("Second");
 
-    var group = Command.noRequirements(co -> {
+    var group = Command.noReqs(co -> {
       co.fork(first);
       co.fork(second);
       co.park();
-    }).named("Group");
+    }).make("Group");
 
     scheduler.schedule(group);
     scheduler.run();
@@ -668,20 +668,20 @@ class SchedulerTest {
   @Test
   void nestedOneShotCompositionsAllRunInOneCycle() {
     var runs = new AtomicInteger(0);
-    Supplier<Command> makeOneShot = () -> Command.noRequirements(_c -> runs.incrementAndGet()).named("One Shot");
-    var command = Command.noRequirements(co -> {
+    Supplier<Command> makeOneShot = () -> Command.noReqs(_c -> runs.incrementAndGet()).make("One Shot");
+    var command = Command.noReqs(co -> {
       co.fork(makeOneShot.get());
       co.fork(makeOneShot.get());
-      co.fork(Command.noRequirements(inner -> inner.fork(makeOneShot.get())).named("Inner"));
+      co.fork(Command.noReqs(inner -> inner.fork(makeOneShot.get())).make("Inner"));
       co.fork(
-          Command.noRequirements(co2 -> {
+          Command.noReqs(co2 -> {
             co2.fork(makeOneShot.get());
             co2.fork(
-                Command.noRequirements(co3 -> {
+                Command.noReqs(co3 -> {
                   co3.fork(makeOneShot.get());
-                }).named("3"));
-          }).named("2"));
-    }).named("Command");
+                }).make("3"));
+          }).make("2"));
+    }).make("Command");
 
     scheduler.schedule(command);
     scheduler.run();

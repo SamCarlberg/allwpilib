@@ -72,7 +72,7 @@ public class AsyncCommandBot {
 
   private Command loadAndShoot() {
     return Command
-               .requiring(m_shooter, m_storage)
+               .withReqs(m_shooter, m_storage)
                .executing((coroutine) -> {
                  while (coroutine.yield()) {
                    m_storage.run();
@@ -85,7 +85,7 @@ public class AsyncCommandBot {
                    }
                  }
                })
-               .named("Shoot");
+               .make("Shoot");
   }
 
   /**
