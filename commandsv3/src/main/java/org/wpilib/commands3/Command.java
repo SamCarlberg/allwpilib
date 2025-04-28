@@ -232,7 +232,7 @@ public interface Command {
    * @return the timed out command.
    */
   default Command withTimeout(Time timeout) {
-    return race(this, waitFor(timeout))
+    return race(this, wait(timeout))
             .make(name() + " [" + timeout.toLongString() + " timeout]");
   }
 
@@ -292,7 +292,7 @@ public interface Command {
         });
   }
 
-  static Command waitFor(Time duration, RequireableResource... resources) {
+  static Command wait(Time duration, RequireableResource... resources) {
     return new CommandBuilder()
             .requiring(resources)
             .executing(coroutine -> {
