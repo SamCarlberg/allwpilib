@@ -39,7 +39,7 @@ public class SequenceBuilder {
    * (e.g. {@code .until(() -> conditionA()).until(() -> conditionB())}), then the last end
    * condition added will be used and any previously configured condition will be overridden.
    *
-   * @param condition The end condition for the group
+   * @param endCondition The end condition for the group
    * @return The builder object, for chaining
    */
   public SequenceBuilder until(BooleanSupplier endCondition) {
@@ -62,7 +62,7 @@ public class SequenceBuilder {
 
     // We have a custom end condition, so we need to wrap the group in a race
     return ParallelGroup.builder()
-               .optional(seq, Command.waitingFor(endCondition).named("Until Condition"))
+               .optional(seq, Command.waitUntil(endCondition).named("Until Condition"))
                .named(name);
   }
 
