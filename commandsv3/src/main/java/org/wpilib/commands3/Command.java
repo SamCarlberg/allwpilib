@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 /**
  * Performs some task using one or more {@link RequireableResource resources} using the
  * collaborative concurrency tools added in Java 21; namely, continuations. Continuations allow
@@ -268,26 +270,27 @@ public interface Command {
     return Sequence.sequence(commands);
   }
 
+  static Command wait(Time duration, RequireableResource... requirements) {
+    return noRequirements(coroutine -> coroutine.wait(duration))
+      .requiring(requirements)
+      .named("Wait " + duration.in(Seconds) + " Seconds");
+  }
+
   /**
    * Starts creating a command that simply waits for some condition to be met. The command will
    * start without any requirements, but some may be added (if necessary) using {@link
    * CommandBuilder#requiring(RequireableResource)}.
    *
-   * @param condition The condition to wait for
+   * @param isDone The condition to wait for
    * @return A command builder
    */
-  static CommandBuilder waitingFor(BooleanSupplier condition) {
-    return noRequirements(
-        coroutine -> {
-          while (!condition.getAsBoolean()) {
-            coroutine.yield();
-          }
-        });
+  static CommandBuilder waitUntil(BooleanSupplier isDone) {
+    return noRequirements(coroutine -> coroutine.waitUntil(isDone));
   }
 
   default ParallelGroupBuilder until(BooleanSupplier endCondition) {
     return ParallelGroup.builder()
-        .optional(this, Command.waitingFor(endCondition).named("Until Condition"));
+        .optional(this, Command.waitUntil(endCondition).named("Until Condition"));
   }
 
   /**

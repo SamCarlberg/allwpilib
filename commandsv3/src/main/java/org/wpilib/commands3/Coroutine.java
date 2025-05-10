@@ -5,11 +5,15 @@
 package org.wpilib.commands3;
 
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * A coroutine object is injected into command's {@link Command#run(Coroutine)} method to allow
@@ -39,30 +43,30 @@ public final class Coroutine {
    * This method acts as an alternative to calling ```coroutine.yield()```
    * within while loops.
    */
-  public void loop(BooleanSupplier toRun) {
-    while (toRun.getAsBoolean()) {
-      this.yield();
-    }
-  }
-
-  /**
-   * Runs the action periodically until the command itself is cancelled.
-   */
   @SuppressWarnings("InfiniteLoopStatement")
-  public void loopForever(Runnable toRun) {
+  public void loop(Runnable toRun) {
     while (true) {
       toRun.run();
       this.yield();
     }
   }
 
-  /**
-   * Parks the current command. No code in a command declared after calling {@code park()} will be
-   * executed. A parked command will never complete naturally and must be interrupted or cancelled.
-   */
-  @SuppressWarnings("InfiniteLoopStatement")
-  public void park() {
-    while (true) {
+  public void loop(Time duration, Runnable toRun) {
+    var timer = new Timer();
+    timer.start();
+    while (!timer.hasElapsed(duration.in(Seconds))) {
+      if (toRun != null) {
+        toRun.run();
+      }
+      this.yield();
+    }
+  }
+
+  public void loopUntil(BooleanSupplier done, Runnable toRun) {
+    while (!done.getAsBoolean()) {
+      if (toRun != null) {
+        toRun.run();
+      }
       this.yield();
     }
   }
@@ -233,7 +237,11 @@ public final class Coroutine {
    * @param duration the duration of time to wait
    */
   public void wait(Time duration) {
-    await(new WaitCommand(duration));
+    loop(duration, null);
+  }
+
+  public void waitUntil(BooleanSupplier isDone) {
+    loopUntil(isDone, null);
   }
 
   /**
