@@ -207,7 +207,7 @@ public interface Command {
    * @return the timed out command.
    */
   default Command withTimeout(Time timeout) {
-    return ParallelGroup.race(this, new WaitCommand(timeout))
+    return ParallelGroup.race(this, Command.wait(timeout))
         .named(name() + " [" + timeout.toLongString() + " timeout]");
   }
 
