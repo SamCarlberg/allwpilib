@@ -244,6 +244,10 @@ public final class Coroutine {
     loopUntil(isDone, null);
   }
 
+  public void park() {
+    loop(() -> {});
+  }
+
   /**
    * Advanced users only: this permits access to the backing command scheduler to run custom logic
    * not provided by the standard coroutine methods. Any commands manually scheduled through this
