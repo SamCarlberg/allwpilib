@@ -33,7 +33,7 @@ public class Intake extends RequireableResource {
       while (coroutine.yield()) {
         m_motor.set(1);
       }
-    }).named("Intake");
+    }).make("Intake");
   }
 
   /** Returns a command that turns off and retracts the intake. */
@@ -41,6 +41,6 @@ public class Intake extends RequireableResource {
     return run((coroutine) -> {
       m_motor.disable();
       m_pistons.set(DoubleSolenoid.Value.kReverse);
-    }).named("Retract");
+    }).make("Retract");
   }
 }

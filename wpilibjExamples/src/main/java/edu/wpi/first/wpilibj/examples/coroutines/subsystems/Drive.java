@@ -76,7 +76,7 @@ public class Drive extends RequireableResource {
       while (coroutine.yield()) {
         m_drive.arcadeDrive(fwd.getAsDouble(), rot.getAsDouble());
       }
-    }).named("arcadeDrive");
+    }).make("arcadeDrive");
   }
 
   /**
@@ -98,6 +98,6 @@ public class Drive extends RequireableResource {
       }
 
       m_drive.stopMotor();
-    }).named("DriveDistance[" + distance.toLongString() + ", @" + speed + "]");
+    }).make("DriveDistance[" + distance.toLongString() + ", @" + speed + "]");
   }
 }

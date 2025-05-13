@@ -26,10 +26,10 @@ class CoroutineTest {
     var b = new NullCommand();
     var c = new NullCommand();
 
-    var all = Command.noRequirements(co -> {
+    var all = Command.noReqs(co -> {
       co.fork(a, b, c);
       co.park();
-    }).named("Fork Many");
+    }).make("Fork Many");
 
     scheduler.schedule(all);
     scheduler.run();

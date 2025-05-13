@@ -20,7 +20,7 @@ public final class IdleCommand implements Command {
   /**
    * @param resource the resource to idle.
    */
-  public IdleCommand(RequireableResource resource) {
+  IdleCommand(RequireableResource resource) {
     this.resource = requireNonNullParam(resource, "resource", "IdleCommand");
   }
 

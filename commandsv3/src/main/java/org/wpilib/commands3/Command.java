@@ -5,10 +5,14 @@
 package org.wpilib.commands3;
 
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * Performs some task using one or more {@link RequireableResource resources} using the
@@ -20,7 +24,6 @@ import java.util.function.Consumer;
  * <p><strong>Note:</strong> Because coroutines are <i>opt-in</i> collaborate constructs, every
  * command implementation <strong>must</strong> call {@link Coroutine#yield()} within any periodic
  * loop. Failure to do so may result in an unrecoverable infinite loop.
- *
  * {@snippet lang = java:
  * // A 2013-style class-based command definition
  * class ClassBasedCommand extends Command {
@@ -64,7 +67,7 @@ import java.util.function.Consumer;
  *     execute();
  *   }
  *   end();
- * }).named("The Command");
+ * }).make("The Command");
  * }
  */
 public interface Command {
@@ -194,32 +197,16 @@ public interface Command {
   }
 
   /**
-   * Creates a new command that runs this one for a maximum duration, after which it is forcibly
-   * canceled. This is particularly useful for autonomous routines where you want to prevent your
-   * entire autonomous period spent stuck on a single action because a mechanism doesn't quite reach
-   * its setpoint (for example, spinning up a flywheel or driving to a particular location on the
-   * field). The resulting command will have the same name as this one.
-   *
-   * @param timeout the maximum duration that the command is permitted to run. Negative or zero
-   *     values will result in the command running only once before being canceled.
-   * @return the timed out command.
-   */
-  default Command withTimeout(Time timeout) {
-    return ParallelGroup.race(this, new WaitCommand(timeout))
-        .named(name() + " [" + timeout.toLongString() + " timeout]");
-  }
-
-  /**
    * Creates a command that does not require any hardware; that is, it does not affect the state of
    * any physical objects. This is useful for commands that do some house cleaning work like
    * resetting odometry and sensors that you don't want to interrupt a command that's controlling
    * the resources it affects.
    *
-   * @param impl the implementation of the command logic
+   * @param toRun the implementation of the command logic
    * @return a builder that can be used to configure the resulting command
    */
-  static CommandBuilder noRequirements(Consumer<Coroutine> impl) {
-    return new CommandBuilder().executing(impl);
+  static CommandBuilder noReqs(Consumer<Coroutine> toRun) {
+    return new CommandBuilder().executing(toRun);
   }
 
   /**
@@ -229,8 +216,24 @@ public interface Command {
    * @param rest Any other required resources
    * @return A command builder
    */
-  static CommandBuilder requiring(RequireableResource requirement, RequireableResource... rest) {
-    return new CommandBuilder().requiring(requirement).requiring(rest);
+  static CommandBuilder withReqs(Consumer<Coroutine> toRun, RequireableResource requirement, RequireableResource... rest) {
+    return noReqs(toRun).requiring(requirement).requiring(rest);
+  }
+
+  /**
+   * Creates a new command that runs this one for a maximum duration, after which it is forcibly
+   * canceled.
+   * <p>
+   * Unlike other Command instance methods, withTimeout does not return a builder, as the name
+   * of the command can be automatically determined.
+   * </p>
+   * @param timeout the maximum duration that the command is permitted to run. Negative or zero
+   *     values will result in the command running only once before being canceled.
+   * @return the timed out command.
+   */
+  default Command withTimeout(Time timeout) {
+    return race(this, wait(timeout))
+            .make(name() + " [" + timeout.toLongString() + " timeout]");
   }
 
   /**
@@ -240,8 +243,8 @@ public interface Command {
    * @param commands The commands to run in parallel
    * @return A command builder
    */
-  static ParallelGroupBuilder parallel(Command... commands) {
-    return ParallelGroup.all(commands);
+  static ParallelUnionBuilder parallel(Command... commands) {
+    return ParallelUnion.builder().requiring(commands);
   }
 
   /**
@@ -252,8 +255,8 @@ public interface Command {
    * @param commands The commands to run in parallel
    * @return A command builder
    */
-  static ParallelGroupBuilder race(Command... commands) {
-    return ParallelGroup.race(commands);
+  static ParallelUnionBuilder race(Command... commands) {
+    return ParallelUnion.builder().optional(commands);
   }
 
   /**
@@ -264,8 +267,12 @@ public interface Command {
    * @param commands The commands to run in sequence.
    * @return A command builder
    */
-  static SequenceBuilder sequence(Command... commands) {
-    return Sequence.sequence(commands);
+  static SequenceUnionBuilder sequence(Command... commands) {
+    var builder = new SequenceUnionBuilder();
+    for (var command : commands) {
+      builder.andThen(command);
+    }
+    return builder;
   }
 
   /**
@@ -276,8 +283,8 @@ public interface Command {
    * @param condition The condition to wait for
    * @return A command builder
    */
-  static CommandBuilder waitingFor(BooleanSupplier condition) {
-    return noRequirements(
+  static CommandBuilder waitUntil(BooleanSupplier condition) {
+    return noReqs(
         coroutine -> {
           while (!condition.getAsBoolean()) {
             coroutine.yield();
@@ -285,9 +292,22 @@ public interface Command {
         });
   }
 
-  default ParallelGroupBuilder until(BooleanSupplier endCondition) {
-    return ParallelGroup.builder()
-        .optional(this, Command.waitingFor(endCondition).named("Until Condition"));
+  static Command wait(Time duration, RequireableResource... resources) {
+    return new CommandBuilder()
+            .requiring(resources)
+            .executing(coroutine -> {
+              var timer = new Timer();
+              timer.start();
+              while (!timer.hasElapsed(duration.in(Seconds))) {
+                coroutine.yield();
+              }
+            })
+            .make("Wait " + duration.in(Seconds) + " Seconds");
+  }
+
+  default ParallelUnionBuilder until(BooleanSupplier endCondition) {
+    return ParallelUnion.builder()
+        .optional(this, Command.waitUntil(endCondition).make("Until Condition"));
   }
 
   /**
@@ -296,19 +316,18 @@ public interface Command {
    *
    * <p>
    *
-   * {@snippet lang="java" :
-   * Sequence aThenBThenC =
+   * {@snippet lang = "java":
+   * SequenceUnion aThenBThenC =
    *   commandA()
-   *     .andThen(commandB())
-   *     .andThen(commandC())
-   *     .withAutomaticName();
-   * }
+   *     .andThen(commandB(), commandC())
+   *     .make();
+   *}
    *
-   * @param next The command to run after this one in the sequence
-   * @return A sequence builder
+   * @param commands the commands to run in sequence with this
+   * @return A command
    */
-  default SequenceBuilder andThen(Command next) {
-    return Sequence.builder().andThen(this).andThen(next);
+  default SequenceUnionBuilder andThen(Command... commands) {
+    return SequenceUnion.builder().andThen(this, commands);
   }
 
   /**
@@ -317,18 +336,18 @@ public interface Command {
    *
    * <p>
    *
-   * {@snippet lang="java" :
-   * ParallelGroup abc =
+   * {@snippet lang = "java":
+   * ParallelUnion abc =
    *   commandA()
    *     .alongWith(commandB(), commandC())
    *     .withAutomaticName();
-   * }
+   *}
    *
    * @param parallel The commands to run in parallel with this one
    * @return A parallel group builder
    */
-  default ParallelGroupBuilder alongWith(Command... parallel) {
-    return ParallelGroup.builder().requiring(this).requiring(parallel);
+  default Command alongWith(Command... parallel) {
+    return ParallelUnion.builder().requiring(this).requiring(parallel).make();
   }
 
   /**
@@ -338,7 +357,7 @@ public interface Command {
    * @param parallel The commands to run in parallel with this one
    * @return A parallel group builder
    */
-  default ParallelGroupBuilder raceWith(Command... parallel) {
-    return ParallelGroup.builder().optional(this).optional(parallel);
+  default Command raceWith(Command... parallel) {
+    return ParallelUnion.builder().optional(this).optional(parallel).make();
   }
 }

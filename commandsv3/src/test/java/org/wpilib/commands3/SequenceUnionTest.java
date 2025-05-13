@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class SequenceTest {
+class SequenceUnionTest {
   private Scheduler scheduler;
 
   @BeforeEach
@@ -21,9 +21,9 @@ class SequenceTest {
 
   @Test
   void single() {
-    var command = Command.noRequirements(Coroutine::yield).named("The Command");
+    var command = Command.noReqs(Coroutine::yield).make("The Command");
 
-    var sequence = new Sequence("The Sequence", List.of(command));
+    var sequence = new SequenceUnion("The Sequence", List.of(command));
     scheduler.schedule(sequence);
 
     // First run - the composed command is scheduled and starts
@@ -44,10 +44,10 @@ class SequenceTest {
 
   @Test
   void twoCommands() {
-    var c1 = Command.noRequirements(Coroutine::yield).named("C1");
-    var c2 = Command.noRequirements(Coroutine::yield).named("C2");
+    var c1 = Command.noReqs(Coroutine::yield).make("C1");
+    var c2 = Command.noReqs(Coroutine::yield).make("C2");
 
-    var sequence = new Sequence("C1 > C2", List.of(c1, c2));
+    var sequence = new SequenceUnion("C1 > C2", List.of(c1, c2));
     scheduler.schedule(sequence);
 
     // First run - c1 is scheduled and starts

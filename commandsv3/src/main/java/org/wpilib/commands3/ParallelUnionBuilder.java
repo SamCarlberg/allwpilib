@@ -11,12 +11,12 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 /**
- * A builder class to configure and then create a {@link ParallelGroup}. Like
+ * A builder class to configure and then create a {@link ParallelUnion}. Like
  * {@link CommandBuilder}, the final command is created by calling the terminal
- * {@link #named(String)} method, or with an automatically generated name using
- * {@link #withAutomaticName()}.
+ * {@link #make(String)} method, or with an automatically generated name using
+ * {@link #make()}.
  */
-public class ParallelGroupBuilder {
+public class ParallelUnionBuilder {
   private final Set<Command> commands = new LinkedHashSet<>();
   private final Set<Command> requiredCommands = new LinkedHashSet<>();
   private BooleanSupplier endCondition = null;
@@ -28,7 +28,7 @@ public class ParallelGroupBuilder {
    * @param commands The optional commands to add to the group
    * @return The builder object, for chaining
    */
-  public ParallelGroupBuilder optional(Command... commands) {
+  public ParallelUnionBuilder optional(Command... commands) {
     this.commands.addAll(Arrays.asList(commands));
     return this;
   }
@@ -40,7 +40,7 @@ public class ParallelGroupBuilder {
    * @param commands The required commands to add to the group
    * @return The builder object, for chaining
    */
-  public ParallelGroupBuilder requiring(Command... commands) {
+  public ParallelUnionBuilder requiring(Command... commands) {
     requiredCommands.addAll(Arrays.asList(commands));
     this.commands.addAll(requiredCommands);
     return this;
@@ -52,7 +52,7 @@ public class ParallelGroupBuilder {
    *
    * @return The builder object, for chaining
    */
-  public ParallelGroupBuilder racing() {
+  public ParallelUnionBuilder racing() {
     requiredCommands.clear();
     return this;
   }
@@ -63,7 +63,7 @@ public class ParallelGroupBuilder {
    *
    * @return The builder object, for chaining
    */
-  public ParallelGroupBuilder requireAll() {
+  public ParallelUnionBuilder requireAll() {
     requiredCommands.clear();
     requiredCommands.addAll(commands);
     return this;
@@ -78,7 +78,7 @@ public class ParallelGroupBuilder {
    * @param condition The end condition for the group
    * @return The builder object, for chaining
    */
-  public ParallelGroupBuilder until(BooleanSupplier condition) {
+  public ParallelUnionBuilder until(BooleanSupplier condition) {
     endCondition = condition;
     return this;
   }
@@ -91,17 +91,17 @@ public class ParallelGroupBuilder {
    * @param name The name of the parallel group
    * @return The built group
    */
-  public ParallelGroup named(String name) {
-    var group = new ParallelGroup(name, commands, requiredCommands);
+  public ParallelUnion make(String name) {
+    var group = new ParallelUnion(name, commands, requiredCommands);
     if (endCondition == null) {
       // No custom end condition, return the group as is
       return group;
     }
 
     // We have a custom end condition, so we need to wrap the group in a race
-    return ParallelGroup.builder()
-               .optional(group, Command.waitingFor(endCondition).named("Until Condition"))
-               .named(name);
+    return ParallelUnion.builder()
+               .optional(group, Command.waitUntil(endCondition).make("Until Condition"))
+               .make(name);
   }
 
   /**
@@ -109,7 +109,7 @@ public class ParallelGroupBuilder {
    *
    * @return The built group
    */
-  public ParallelGroup withAutomaticName() {
+  public ParallelUnion make() {
     // eg "(CommandA & CommandB & CommandC)"
     String required =
         requiredCommands.stream().map(Command::name).collect(Collectors.joining(" & ", "(", ")"));
@@ -122,15 +122,15 @@ public class ParallelGroupBuilder {
 
     if (requiredCommands.isEmpty()) {
       // No required commands, pure race
-      return named(optional);
+      return make(optional);
     } else if (optionalCommands.isEmpty()) {
       // Everything required
-      return named(required);
+      return make(required);
     } else {
       // Some form of deadline
       // eg "[(CommandA & CommandB) * (CommandX | CommandY | ...)]"
       String name = "[%s * %s]".formatted(required, optional);
-      return named(name);
+      return make(name);
     }
   }
 }

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ParallelGroupTest {
+class ParallelUnionTest {
   private Scheduler scheduler;
 
   @BeforeEach
@@ -35,7 +35,7 @@ class ParallelGroupTest {
                     c1Count.incrementAndGet();
                   }
                 })
-            .named("C1");
+            .make("C1");
     var c2 =
         r2.run(
                 (coroutine) -> {
@@ -44,9 +44,9 @@ class ParallelGroupTest {
                     c2Count.incrementAndGet();
                   }
                 })
-            .named("C2");
+            .make("C2");
 
-    var parallel = new ParallelGroup("Parallel", List.of(c1, c2), List.of(c1, c2));
+    var parallel = new ParallelUnion("Parallel", List.of(c1, c2), List.of(c1, c2));
     scheduler.schedule(parallel);
 
     // First call to run() should schedule and start the commands
@@ -101,7 +101,7 @@ class ParallelGroupTest {
                     c1Count.incrementAndGet();
                   }
                 })
-            .named("C1");
+            .make("C1");
     var c2 =
         r2.run(
                 (coroutine) -> {
@@ -110,9 +110,9 @@ class ParallelGroupTest {
                     c2Count.incrementAndGet();
                   }
                 })
-            .named("C2");
+            .make("C2");
 
-    var race = new ParallelGroup("Race", List.of(c1, c2), List.of());
+    var race = new ParallelUnion("Race", List.of(c1, c2), List.of());
     scheduler.schedule(race);
 
     // First call to run() should schedule the commands
@@ -157,10 +157,10 @@ class ParallelGroupTest {
                     count.incrementAndGet();
                   }
                 })
-            .named("Command");
+            .make("Command");
 
-    var inner = ParallelGroup.all(command).named("Inner");
-    var outer = ParallelGroup.all(inner).named("Outer");
+    var inner = Command.parallel(command).make("Inner");
+    var outer = Command.parallel(inner).make("Outer");
 
     // Scheduling: Outer group should be on deck
     scheduler.schedule(outer);
@@ -205,31 +205,31 @@ class ParallelGroupTest {
 
   @Test
   void automaticNameRace() {
-    var a = Command.noRequirements((coroutine) -> {}).named("A");
-    var b = Command.noRequirements((coroutine) -> {}).named("B");
-    var c = Command.noRequirements((coroutine) -> {}).named("C");
+    var a = Command.noReqs((coroutine) -> {}).make("A");
+    var b = Command.noReqs((coroutine) -> {}).make("B");
+    var c = Command.noReqs((coroutine) -> {}).make("C");
 
-    var group = ParallelGroup.builder().optional(a, b, c).withAutomaticName();
+    var group = ParallelUnion.builder().optional(a, b, c).make();
     assertEquals("(A | B | C)", group.name());
   }
 
   @Test
   void automaticNameAll() {
-    var a = Command.noRequirements((coroutine) -> {}).named("A");
-    var b = Command.noRequirements((coroutine) -> {}).named("B");
-    var c = Command.noRequirements((coroutine) -> {}).named("C");
+    var a = Command.noReqs((coroutine) -> {}).make("A");
+    var b = Command.noReqs((coroutine) -> {}).make("B");
+    var c = Command.noReqs((coroutine) -> {}).make("C");
 
-    var group = ParallelGroup.builder().requiring(a, b, c).withAutomaticName();
+    var group = ParallelUnion.builder().requiring(a, b, c).make();
     assertEquals("(A & B & C)", group.name());
   }
 
   @Test
   void automaticNameDeadline() {
-    var a = Command.noRequirements((coroutine) -> {}).named("A");
-    var b = Command.noRequirements((coroutine) -> {}).named("B");
-    var c = Command.noRequirements((coroutine) -> {}).named("C");
+    var a = Command.noReqs((coroutine) -> {}).make("A");
+    var b = Command.noReqs((coroutine) -> {}).make("B");
+    var c = Command.noReqs((coroutine) -> {}).make("C");
 
-    var group = ParallelGroup.builder().requiring(a).optional(b, c).withAutomaticName();
+    var group = ParallelUnion.builder().requiring(a).optional(b, c).make();
     assertEquals("[(A) * (B | C)]", group.name());
   }
 }

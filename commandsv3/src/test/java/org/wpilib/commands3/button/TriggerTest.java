@@ -26,7 +26,7 @@ class TriggerTest {
   void onTrue() {
     var signal = new AtomicBoolean(false);
     var trigger = new Trigger(scheduler, signal::get);
-    var command = Command.noRequirements(Coroutine::park).named("Command");
+    var command = Command.noReqs(Coroutine::park).make("Command");
     trigger.onTrue(command);
 
     signal.set(true);
@@ -43,7 +43,7 @@ class TriggerTest {
   void onFalse() {
     var signal = new AtomicBoolean(false);
     var trigger = new Trigger(scheduler, signal::get);
-    var command = Command.noRequirements(Coroutine::park).named("Command");
+    var command = Command.noReqs(Coroutine::park).make("Command");
     trigger.onFalse(command);
 
     scheduler.run();
@@ -58,7 +58,7 @@ class TriggerTest {
   void whileTrue() {
     var signal = new AtomicBoolean(false);
     var trigger = new Trigger(scheduler, signal::get);
-    var command = Command.noRequirements(Coroutine::park).named("Command");
+    var command = Command.noReqs(Coroutine::park).make("Command");
     trigger.whileTrue(command);
 
     signal.set(true);
@@ -75,7 +75,7 @@ class TriggerTest {
   void whileFalse() {
     var signal = new AtomicBoolean(false);
     var trigger = new Trigger(scheduler, signal::get);
-    var command = Command.noRequirements(Coroutine::park).named("Command");
+    var command = Command.noReqs(Coroutine::park).make("Command");
     trigger.whileFalse(command);
 
     scheduler.run();
@@ -90,7 +90,7 @@ class TriggerTest {
   void toggleOnTrue() {
     var signal = new AtomicBoolean(false);
     var trigger = new Trigger(scheduler, signal::get);
-    var command = Command.noRequirements(Coroutine::park).named("Command");
+    var command = Command.noReqs(Coroutine::park).make("Command");
     trigger.toggleOnTrue(command);
 
     scheduler.run();
@@ -113,7 +113,7 @@ class TriggerTest {
   void toggleOnFalse() {
     var signal = new AtomicBoolean(false);
     var trigger = new Trigger(scheduler, signal::get);
-    var command = Command.noRequirements(Coroutine::park).named("Command");
+    var command = Command.noReqs(Coroutine::park).make("Command");
     trigger.toggleOnFalse(command);
 
     scheduler.run();
