@@ -4,15 +4,14 @@
 
 package edu.wpi.first.wpilibj.examples.hatchbotinlined.subsystems;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.examples.hatchbotinlined.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.commands3.Mechanism;
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends Mechanism {
   // The motors on the left side of the drive.
   private final PWMSparkMax m_leftLeader = new PWMSparkMax(DriveConstants.kLeftMotor1Port);
   private final PWMSparkMax m_leftFollower = new PWMSparkMax(DriveConstants.kLeftMotor2Port);
@@ -91,11 +90,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive.setMaxOutput(maxOutput);
   }
 
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    // Publish encoder distances to telemetry.
-    builder.addDoubleProperty("leftDistance", m_leftEncoder::getDistance, null);
-    builder.addDoubleProperty("rightDistance", m_rightEncoder::getDistance, null);
-  }
+  //  @Override
+  //  public void initSendable(SendableBuilder builder) {
+  //    super.initSendable(builder);
+  //    // Publish encoder distances to telemetry.
+  //    builder.addDoubleProperty("leftDistance", m_leftEncoder::getDistance, null);
+  //    builder.addDoubleProperty("rightDistance", m_rightEncoder::getDistance, null);
+  //  }
 }
