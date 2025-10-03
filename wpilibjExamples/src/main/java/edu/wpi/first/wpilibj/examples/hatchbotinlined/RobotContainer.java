@@ -11,9 +11,8 @@ import edu.wpi.first.wpilibj.examples.hatchbotinlined.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.examples.hatchbotinlined.subsystems.HatchSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import org.wpilib.commands3.Command;
+import org.wpilib.commands3.button.CommandPS4Controller;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,11 +50,13 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         // A split-stick arcade command, with forward/backward controlled by the left
         // hand, and turning controlled by the right.
-        Commands.run(
-            () ->
-                m_robotDrive.arcadeDrive(
-                    -m_driverController.getLeftY(), -m_driverController.getRightX()),
-            m_robotDrive));
+        m_robotDrive
+            .runRepeatedly(
+                () ->
+                    m_robotDrive.arcadeDrive(
+                        -m_driverController.getLeftY(), -m_driverController.getRightX()))
+            .withPriority(Command.LOWEST_PRIORITY)
+            .named("Split-Stick Arcade Drive (Default Command)"));
 
     // Add commands to the autonomous command chooser
     m_chooser.setDefaultOption("Simple Auto", m_simpleAuto);
@@ -63,10 +64,6 @@ public class RobotContainer {
 
     // Put the chooser on the dashboard
     SmartDashboard.putData("Autonomous", m_chooser);
-
-    // Put subsystems to dashboard.
-    SmartDashboard.putData("Drivetrain", m_robotDrive);
-    SmartDashboard.putData("HatchSubsystem", m_hatchSubsystem);
   }
 
   /**
@@ -83,8 +80,14 @@ public class RobotContainer {
     // While holding R1, drive at half speed
     m_driverController
         .R1()
-        .onTrue(Commands.runOnce(() -> m_robotDrive.setMaxOutput(0.5)))
-        .onFalse(Commands.runOnce(() -> m_robotDrive.setMaxOutput(1)));
+        .onTrue(
+            Command.noRequirements()
+                .executing(coro -> m_robotDrive.setMaxOutput(0.5))
+                .named("Set half speed"))
+        .onFalse(
+            Command.noRequirements()
+                .executing(coro -> m_robotDrive.setMaxOutput(1))
+                .named("Set full speed"));
   }
 
   /**
