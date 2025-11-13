@@ -1359,9 +1359,10 @@ class JavadocParser {
     while (pos < input.length()) {
       char c = peek();
       // '<' means start of an HTML tag like `<p>`
-      // '{' means start of a Javadoc command like `{@code }`
+      // '{@' means start of a Javadoc command like `{@code }`
       // '@' means the start of a Javadoc tag like `@param`
-      if (c == '<' || c == '{' || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
+      boolean startsInlineTag = c == '{' && (pos + 1) < input.length() && input.charAt(pos + 1) == '@';
+      if (c == '<' || startsInlineTag || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
         break;
       }
       sb.append(consume());
@@ -1373,7 +1374,8 @@ class JavadocParser {
     StringBuilder sb = new StringBuilder();
     while (pos < input.length()) {
       char c = peek();
-      if (c == '<' || c == '{' || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
+      boolean startsInlineTag = c == '{' && (pos + 1) < input.length() && input.charAt(pos + 1) == '@';
+      if (c == '<' || startsInlineTag || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
         break;
       }
       sb.append(consume());
