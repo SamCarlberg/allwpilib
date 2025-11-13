@@ -131,6 +131,26 @@ class JavadocToMarkdown {
 
 class MarkdownGenerator {
   private StringBuilder output;
+  
+  // Escapes square brackets for Markdown, e.g., "[" -> "\[" and "]" -> "\]".
+  // Should be used for normal text, but NOT for code blocks or inline code.
+  private String escapeSquareBrackets(String text) {
+    if (text == null || text.isEmpty()) return text;
+    // Fast path: if no brackets, return as-is
+    boolean hasOpen = text.indexOf('[') >= 0;
+    boolean hasClose = text.indexOf(']') >= 0;
+    if (!hasOpen && !hasClose) return text;
+    StringBuilder sb = new StringBuilder(text.length() + 8);
+    for (int i = 0; i < text.length(); i++) {
+      char c = text.charAt(i);
+      if (c == '[' || c == ']') {
+        sb.append('\\').append(c);
+      } else {
+        sb.append(c);
+      }
+    }
+    return sb.toString();
+  }
 
   public String generate(DocNode node) {
     output = new StringBuilder();
@@ -340,7 +360,7 @@ class MarkdownGenerator {
   private void generateNode(DocNode node) {
     switch (node) {
       case DocNode.Root root -> generateRoot(root);
-      case DocNode.TextNode text -> emit(text.content());
+      case DocNode.TextNode text -> emit(escapeSquareBrackets(text.content()));
       case DocNode.Sequence seq -> {
         for (DocNode child : seq.children()) {
           generateNode(child);
@@ -351,52 +371,61 @@ class MarkdownGenerator {
       case DocNode.ParamTag param -> {
         emit("@param " + param.paramName() + " ");
         generateNode(param.description());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.ReturnTag ret -> {
         emit("@return ");
         generateNode(ret.description());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.ThrowsTag throws_ -> {
         emit("@throws " + throws_.exceptionType() + " ");
         generateNode(throws_.description());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.SeeTag see -> {
         emit("@see " + see.reference());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.SinceTag since -> {
         emit("@since " + since.version());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.DeprecatedTag deprecated -> {
         emit("@deprecated ");
         generateNode(deprecated.description());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.AuthorTag author -> {
         emit("@author " + author.author());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.VersionTag version -> {
         emit("@version " + version.version());
+        ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.GenericBlockTag generic -> {
         emit("@" + generic.tagName() + " " + generic.content());
+        ensureLineEndsWithPeriod();
         newline();
       }
 
       // Inline tags
       case DocNode.LinkTag link -> {
         String labelText = extractText(link.label());
-        if (labelText.equals(link.reference())) {
-          emit("[" + link.reference() + "]");
-        } else {
-          emit("[" + labelText + "](" + link.reference() + ")");
-        }
+        // Escape brackets inside the label text so the link syntax remains valid
+        String escapedLabel = escapeSquareBrackets(labelText);
+        String escapedReference = escapeSquareBrackets(link.reference());
+        // Emit reference-style links: [label][reference]
+        emit("[" + escapedLabel + "][" + escapedReference + "]");
       }
       case DocNode.CodeInline code -> {
         emit("`");
@@ -404,7 +433,7 @@ class MarkdownGenerator {
         emit(extractRawText(code.content()));
         emit("`");
       }
-      case DocNode.LiteralTag literal -> emit(literal.text());
+      case DocNode.LiteralTag literal -> emit(escapeSquareBrackets(literal.text()));
       case DocNode.ValueTag value -> emit("{@value " + value.reference() + "}");
       case DocNode.DocRootTag docRoot -> emit("{@docRoot}");
       case DocNode.InheritDocTag inheritDoc -> emit("{@inheritDoc}");
@@ -676,15 +705,15 @@ class MarkdownGenerator {
     if (row.content() instanceof DocNode.Sequence seq) {
       for (DocNode child : seq.children()) {
         if (child instanceof DocNode.TableData td) {
-          cells.add(extractText(td.content()).strip());
+          cells.add(escapeSquareBrackets(extractText(td.content()).strip()));
         } else if (child instanceof DocNode.TableHeader th) {
-          cells.add(extractText(th.content()).strip());
+          cells.add(escapeSquareBrackets(extractText(th.content()).strip()));
         }
       }
     } else if (row.content() instanceof DocNode.TableData td) {
-      cells.add(extractText(td.content()).strip());
+      cells.add(escapeSquareBrackets(extractText(td.content()).strip()));
     } else if (row.content() instanceof DocNode.TableHeader th) {
-      cells.add(extractText(th.content()).strip());
+      cells.add(escapeSquareBrackets(extractText(th.content()).strip()));
     }
     return cells;
   }
@@ -735,11 +764,8 @@ class MarkdownGenerator {
       }
       case DocNode.LinkTag link -> {
         String labelText = extractText(link.label());
-        if (labelText.equals(link.reference())) {
-          sb.append("[").append(link.reference()).append("]").append(' ');
-        } else {
-          sb.append("[").append(labelText).append("](").append(link.reference()).append(")").append(' ');
-        }
+        // Reference-style link in extracted text as well
+        sb.append("[").append(labelText).append("][").append(link.reference()).append("]").append(' ');
       }
       default -> {
         // Try to extract content from nodes with content
@@ -762,6 +788,44 @@ class MarkdownGenerator {
 
   private void newline() {
     output.append("\n");
+  }
+
+  // For block tags: if the current line (content accumulated so far)
+  // ends with a closing bracket ']', append a single '.' before any trailing newline.
+  // Otherwise, leave the line as-is. Trims trailing spaces/tabs for the check only.
+  private void ensureLineEndsWithPeriod() {
+    int len = output.length();
+    if (len == 0) return;
+
+    // Find index of last non-space/tab character; keep track if there's a trailing newline
+    int i = len - 1;
+    boolean endsWithNewline = false;
+    if (output.charAt(i) == '\n') {
+      endsWithNewline = true;
+      i--; // check character before the newline
+    }
+    // Skip trailing spaces/tabs before the potential period or bracket
+    while (i >= 0) {
+      char c = output.charAt(i);
+      if (c == ' ' || c == '\t') {
+        i--;
+      } else {
+        break;
+      }
+    }
+    if (i < 0) return; // nothing meaningful to modify
+
+    char lastContentChar = output.charAt(i);
+
+    // Only add a period if the line currently ends with ']' (ignoring spaces/tabs and an optional trailing newline)
+    if (lastContentChar == ']') {
+      if (endsWithNewline) {
+        // insert before the newline
+        output.insert(len - 1, '.');
+      } else {
+        output.append('.');
+      }
+    }
   }
 
   // Trim trailing spaces/tabs and at most a single newline from the output buffer.
@@ -1010,7 +1074,8 @@ class JavadocParser {
 
     while (pos < input.length()) {
       // Check if we've hit a new block tag at the start of a line
-      if (peek() == '@' && (pos == 0 || input.charAt(pos - 1) == '\n')) {
+      // Allow optional leading spaces/tabs before '@'
+      if (isAtLineStartFollowedByAt()) {
         break;
       }
 
@@ -1041,7 +1106,7 @@ class JavadocParser {
     }
 
     // Stop at block tags
-    if (peek() == '@' && (pos == 0 || input.charAt(pos - 1) == '\n')) {
+    if (isAtLineStartFollowedByAt()) {
       return null;
     }
 
@@ -1074,6 +1139,15 @@ class JavadocParser {
     return parseTextUntilSpecial();
   }
 
+  // Returns true if current position is at start of a line (or start of input),
+  // followed by optional spaces/tabs and an '@' character.
+  private boolean isAtLineStartFollowedByAt() {
+    if (!(pos == 0 || input.charAt(pos - 1) == '\n')) return false;
+    int i = pos;
+    while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+    return i < input.length() && input.charAt(i) == '@';
+  }
+
   /// Determines if an opening tag should implicitly close the parent tag.
   /// For example, `<li>` implicitly closes a previous `<li>`,
   /// and `<p>` implicitly closes a previous `<p>`.
@@ -1101,9 +1175,6 @@ class JavadocParser {
     int savedPos = pos;
     try {
       consume('<');
-      if (peek() == '/') {
-//        return null; // It's a closing tag
-      }
       return readIdentifier().toLowerCase();
     } catch (Exception e) {
       return null;
@@ -1122,15 +1193,15 @@ class JavadocParser {
       case "link", "linkplain" -> {
         String reference = readUntil("}").strip();
         consume('}');
-        // Parse reference which might be "ClassName#method" or "ClassName#method label"
-        int spaceIdx = reference.indexOf(' ');
-        if (spaceIdx > 0) {
-          String ref = reference.substring(0, spaceIdx);
-          String label = reference.substring(spaceIdx + 1).strip();
+        // Parse reference which might be "Class#method(params)" optionally followed by a label.
+        // We must NOT split on spaces that occur inside (), [], or <> (e.g., method(int, int)).
+        int split = findFirstTopLevelWhitespace(reference);
+        if (split > 0) {
+          String ref = reference.substring(0, split);
+          String label = reference.substring(split).strip();
           yield new DocNode.LinkTag(ref, new DocNode.TextNode(label));
-        } else {
-          yield new DocNode.LinkTag(reference, new DocNode.TextNode(reference));
         }
+        yield new DocNode.LinkTag(reference, new DocNode.TextNode(reference));
       }
       case "code" -> {
         String code = readUntil("}");
@@ -1164,6 +1235,31 @@ class JavadocParser {
         yield new DocNode.GenericInlineTag(tagName, content);
       }
     };
+  }
+
+  // Finds the index of the first whitespace that is not inside (), [], or <>.
+  // Returns -1 if there is no such whitespace.
+  private int findFirstTopLevelWhitespace(String s) {
+    int paren = 0, bracket = 0, angle = 0;
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      switch (c) {
+        case '(': paren++; break;
+        case ')': if (paren > 0) paren--; break;
+        case '[': bracket++; break;
+        case ']': if (bracket > 0) bracket--; break;
+        case '<': angle++; break;
+        case '>': if (angle > 0) angle--; break;
+        default:
+          if (paren == 0 && bracket == 0 && angle == 0) {
+            if (Character.isWhitespace(c)) {
+              // consume any leading spaces as split start
+              return i;
+            }
+          }
+      }
+    }
+    return -1;
   }
 
   private DocNode parseHtmlTag() {
@@ -1507,23 +1603,6 @@ class JavadocParser {
     return sb.toString();
   }
 
-  private String readUntilAny(char... delimiters) {
-    StringBuilder sb = new StringBuilder();
-    while (pos < input.length()) {
-      char c = peek();
-      boolean found = false;
-      for (char d : delimiters) {
-        if (c == d) {
-          found = true;
-          break;
-        }
-      }
-      if (found) break;
-      sb.append(consume());
-    }
-    return sb.toString();
-  }
-
   // Reads an HTML attribute name: letters, digits, '-', ':', '_'
   private String readAttrName() {
     StringBuilder sb = new StringBuilder();
@@ -1562,8 +1641,6 @@ class JavadocParser {
       return sb.toString();
     }
   }
-
-  // no-op
 }
 
 sealed interface DocNode {
@@ -1640,7 +1717,4 @@ sealed interface DocNode {
 
   // Compound constructs
   record CodeBlock(DocNode content) implements DocNode {}
-
-  // Removed duplicate declarations:
-  // record Link(DocNode display, DocNode resource) implements DocNode {}
 }
