@@ -7,6 +7,7 @@ package org.wpilib.util.runtime;
 import java.io.IOException;
 
 /** Loads a native library at runtime. */
+@SuppressWarnings("restricted")
 public final class RuntimeLoader {
   /**
    * Returns a load error message given the information in the provided UnsatisfiedLinkError.

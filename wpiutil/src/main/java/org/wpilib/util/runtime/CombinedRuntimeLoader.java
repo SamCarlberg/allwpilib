@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /** Loads dynamic libraries for all platforms. */
+@SuppressWarnings("restricted")
 public final class CombinedRuntimeLoader {
   private CombinedRuntimeLoader() {}
 
