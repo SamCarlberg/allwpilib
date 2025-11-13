@@ -424,8 +424,13 @@ class MarkdownGenerator {
         // Escape brackets inside the label text so the link syntax remains valid
         String escapedLabel = escapeSquareBrackets(labelText);
         String escapedReference = escapeSquareBrackets(link.reference());
-        // Emit reference-style links: [label][reference]
-        emit("[" + escapedLabel + "][" + escapedReference + "]");
+        if (escapedLabel.equals(escapedReference)) {
+          // If the label text is identical to the reference, use a shorter syntax
+          emit("[" + escapedLabel + "]");
+        } else {
+          // Emit reference-style links: [label][reference]
+          emit("[" + escapedLabel + "][" + escapedReference + "]");
+        }
       }
       case DocNode.CodeInline code -> {
         emit("`");
