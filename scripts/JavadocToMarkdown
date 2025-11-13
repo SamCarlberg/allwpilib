@@ -1,0 +1,1584 @@
+#!/usr/bin/env java --source 21
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+class JavadocToMarkdown {
+  /// Main entry point.
+  ///
+  /// @param args A list of the file paths to convert
+  public static void main(String... args) throws Exception {
+    boolean debug = false;
+    boolean dryRun = false;
+
+    Deque<String> a = new ArrayDeque<>(List.of(args));
+    if (a.contains("--help") || a.contains("-h") || a.isEmpty()) {
+      System.out.println(
+          """
+              Usage: ./scripts/JavadocToMarkdown [--help|-h|--dry] file_paths
+              --help, -h: Print this help message
+              --dry: Run without converting files. Output will be printed to stdout but no files will be modified.
+              file_paths: A list of file paths to convert to markdown. Accepts globs
+              """.stripIndent().trim()
+      );
+      System.exit(0);
+    }
+
+    if (a.contains("--dry")) {
+      dryRun = true;
+      a.remove("--dry");
+    }
+    if (a.contains("--debug")) {
+      debug = true;
+      a.remove("--debug");
+    }
+
+    String[] paths = a.toArray(new String[0]);
+
+    for (String fileToUpdate : paths) {
+      Path path = Paths.get(fileToUpdate);
+      System.out.println("Processing: " + fileToUpdate);
+      var fileContent = Files.readString(path);
+      var updatedFileContent = fileContent;
+      var parser = new FileParser(fileContent);
+      var comments = parser.extractJavadocComments();
+
+      // Process comments from end to beginning to maintain correct offsets
+      for (int i = comments.size() - 1; i >= 0; i--) {
+        CommentBlock comment = comments.get(i);
+        if (debug) {
+          System.out.println("\nOriginal comment at " + comment.start() + "-" + comment.end() + ":");
+          System.out.println(comment.content());
+        }
+
+        // Determine the indentation of the original comment
+        String indentation = extractIndentation(comment.content());
+
+        DocNode ast = new DocAST().parse(comment);
+        if (debug) {
+          System.out.println("\nAST:");
+          System.out.println(ast);
+        }
+
+        String markdown = new MarkdownGenerator().generate(ast);
+
+        // Apply indentation to the markdown
+        String indentedMarkdown = applyIndentation(markdown, indentation);
+
+        if (debug) {
+          System.out.println("\nMarkdown output:");
+          System.out.println(indentedMarkdown);
+        }
+
+        // Replace the comment block in the file content
+        updatedFileContent = updatedFileContent.substring(0, comment.start())
+            + indentedMarkdown
+            + updatedFileContent.substring(comment.end());
+      }
+
+      // Write the modified content back to the file
+      if (dryRun) {
+        System.out.println("Converted output for " + fileToUpdate + ":");
+        System.out.println(updatedFileContent);
+      } else {
+        Files.writeString(path, updatedFileContent);
+        System.out.println("✓ File updated: " + fileToUpdate);
+      }
+    }
+  }
+
+  private static String extractIndentation(String commentBlockContent) {
+    int lineStart = 0;
+
+    while (commentBlockContent.charAt(lineStart) == ' ') {
+      lineStart++;
+    }
+
+    return commentBlockContent.substring(0, lineStart);
+  }
+
+  private static String applyIndentation(String markdown, String indentation) {
+    if (indentation.isEmpty()) {
+      return markdown;
+    }
+
+    String[] lines = markdown.split("\n", -1);
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < lines.length; i++) {
+      result.append(indentation).append(lines[i]);
+      if (i < lines.length - 1) {
+        result.append("\n");
+      }
+    }
+
+    return result.toString();
+  }
+}
+
+class MarkdownGenerator {
+  private StringBuilder output;
+
+  public String generate(DocNode node) {
+    output = new StringBuilder();
+
+    if (node instanceof DocNode.Root root) {
+      generateRoot(root);
+    } else {
+      generateNode(node);
+    }
+
+    // Ensure all lines start with "/// "
+    return prefixAllLines(output.toString());
+  }
+
+  private String prefixAllLines(String text) {
+    // Trim excessive trailing blank lines from the generated markdown text
+    text = trimTrailingBlankLines(text);
+    if (text.isEmpty()) {
+      return "///";
+    }
+
+    String[] lines = text.split("\n", -1);
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < lines.length; i++) {
+      // Ensure we don't double up on spaces after the triple slash, eg "///  start of a line"
+      result.append("///");
+      String line = lines[i];
+      if (!line.startsWith(" ")) {
+        result.append(' ');
+      }
+      result.append(line);
+      if (i < lines.length - 1) {
+        result.append("\n");
+      }
+    }
+
+    return result.toString();
+  }
+
+  // Removes trailing blank lines (lines that are empty or whitespace only)
+  private String trimTrailingBlankLines(String text) {
+    int end = text.length();
+    // Remove trailing whitespace characters, but stop when we remove up to first non-newline content
+    // We specifically want to remove complete blank lines at the end.
+    // Strategy: while text ends with a newline, trim whitespace-only suffix lines.
+    // Find index of last non-whitespace character that is not part of a required newline between content.
+    while (end > 0) {
+      int lineStart = text.lastIndexOf('\n', end - 1) + 1; // start of last line (after previous \n or 0)
+      boolean onlyWhitespace = true;
+      for (int i = lineStart; i < end; i++) {
+        if (!Character.isWhitespace(text.charAt(i))) { onlyWhitespace = false; break; }
+      }
+      if (onlyWhitespace) {
+        // drop this trailing whitespace-only line
+        end = lineStart == 0 ? 0 : lineStart - 0; // move to before this line
+        // Also drop the newline before it if present
+        if (end > 0 && text.charAt(end - 1) == '\n') {
+          end--; // remove the newline
+        }
+      } else {
+        break;
+      }
+    }
+    return text.substring(0, end);
+  }
+
+  private void generateRoot(DocNode.Root root) {
+    boolean previousWasBlockTag = false;
+    DocNode previousNonWhitespace = null;
+
+    for (int i = 0; i < root.children().size(); i++) {
+      DocNode child = root.children().get(i);
+
+      // Handle whitespace-only text nodes at the root:
+      // - If they contain a newline, skip them (spacing between blocks handled below)
+      // - If they are only spaces/tabs, emit a single space to preserve inline separation
+      if (child instanceof DocNode.TextNode t && t.content().trim().isEmpty()) {
+        String ws = t.content();
+        if (ws.indexOf('\n') >= 0) {
+          // skip newline-only whitespace; block spacing is normalized separately
+          continue;
+        } else if (!ws.isEmpty()) {
+          // preserve a single inline space between adjacent inline elements
+          emit(" ");
+          // Do not update previousNonWhitespace or previousWasBlockTag here,
+          // since this is just a separator between inline content
+          continue;
+        } else {
+          continue;
+        }
+      }
+
+      boolean currentIsBlockTag = isJavadocBlockTag(child);
+
+      // Add spacing between block-level elements, but not between successive @param/@throws tags
+      if (previousNonWhitespace != null) {
+        DocNode previous = previousNonWhitespace;
+        if (isBlockElement(previous) && !currentIsBlockTag) {
+          // Transitioning from block element to non-block-tag
+          ensureSingleEmptyLine();
+        } else if (!previousWasBlockTag && isBlockElement(child)) {
+          // Transitioning to a block element (but not a block tag)
+          ensureSingleEmptyLine();
+        } else if (!previousWasBlockTag && currentIsBlockTag) {
+          // Transitioning to block tags from non-block-tag
+          ensureSingleEmptyLine();
+        } else if (previousWasBlockTag && !currentIsBlockTag && !isJavadocBlockTag(child)) {
+          // Transitioning from block tags to non-block-tag
+          ensureSingleEmptyLine();
+        }
+        // Otherwise, no extra spacing (e.g., between successive @param tags)
+      }
+
+      generateNode(child);
+      previousWasBlockTag = currentIsBlockTag;
+      previousNonWhitespace = child;
+    }
+  }
+
+  private boolean isWhitespaceNode(DocNode node) {
+    return (node instanceof DocNode.TextNode t) && t.content().trim().isEmpty();
+  }
+
+  // Ensures there is exactly one empty line (i.e., exactly two trailing '\n' characters)
+  // between block-level elements. If there are fewer, append; if there are more, trim to two.
+  private void ensureSingleEmptyLine() {
+    // Trim trailing spaces/tabs to avoid counting a whitespace-only tail as a content line
+    trimTrailingSpacesTabs();
+    int n = countTrailingNewlines();
+    if (n < 2) {
+      // append the missing newlines to make it exactly two
+      for (int i = 0; i < 2 - n; i++) {
+        newline();
+      }
+    } else if (n > 2) {
+      // trim extra newlines to leave exactly two
+      int toTrim = n - 2;
+      int len = output.length();
+      output.setLength(len - toTrim);
+    }
+  }
+
+  private int countTrailingNewlines() {
+    int count = 0;
+    for (int i = output.length() - 1; i >= 0; i--) {
+      if (output.charAt(i) == '\n') count++; else break;
+    }
+    return count;
+  }
+
+  private void trimTrailingSpacesTabs() {
+    int i = output.length() - 1;
+    while (i >= 0) {
+      char c = output.charAt(i);
+      if (c == ' ' || c == '\t') {
+        i--;
+      } else {
+        break;
+      }
+    }
+    output.setLength(i + 1);
+  }
+
+  private boolean isJavadocBlockTag(DocNode node) {
+    return node instanceof DocNode.ParamTag ||
+        node instanceof DocNode.ReturnTag ||
+        node instanceof DocNode.ThrowsTag ||
+        node instanceof DocNode.SeeTag ||
+        node instanceof DocNode.SinceTag ||
+        node instanceof DocNode.DeprecatedTag ||
+        node instanceof DocNode.AuthorTag ||
+        node instanceof DocNode.VersionTag ||
+        node instanceof DocNode.GenericBlockTag;
+  }
+
+  private boolean isBlockElement(DocNode node) {
+    return isJavadocBlockTag(node) ||
+        node instanceof DocNode.Paragraph ||
+        node instanceof DocNode.CodeBlock ||
+        node instanceof DocNode.Pre ||
+        node instanceof DocNode.Table ||
+        node instanceof DocNode.UnorderedList ||
+        node instanceof DocNode.OrderedList ||
+        node instanceof DocNode.BlockQuote ||
+        node instanceof DocNode.H1 ||
+        node instanceof DocNode.H2 ||
+        node instanceof DocNode.H3 ||
+        node instanceof DocNode.H4 ||
+        node instanceof DocNode.H5 ||
+        node instanceof DocNode.H6 ||
+        node instanceof DocNode.HorizontalRule;
+  }
+
+  private void generateNode(DocNode node) {
+    switch (node) {
+      case DocNode.Root root -> generateRoot(root);
+      case DocNode.TextNode text -> emit(text.content());
+      case DocNode.Sequence seq -> {
+        for (DocNode child : seq.children()) {
+          generateNode(child);
+        }
+      }
+
+      // Block tags
+      case DocNode.ParamTag param -> {
+        emit("@param " + param.paramName() + " ");
+        generateNode(param.description());
+        newline();
+      }
+      case DocNode.ReturnTag ret -> {
+        emit("@return ");
+        generateNode(ret.description());
+        newline();
+      }
+      case DocNode.ThrowsTag throws_ -> {
+        emit("@throws " + throws_.exceptionType() + " ");
+        generateNode(throws_.description());
+        newline();
+      }
+      case DocNode.SeeTag see -> {
+        emit("@see " + see.reference());
+        newline();
+      }
+      case DocNode.SinceTag since -> {
+        emit("@since " + since.version());
+        newline();
+      }
+      case DocNode.DeprecatedTag deprecated -> {
+        emit("@deprecated ");
+        generateNode(deprecated.description());
+        newline();
+      }
+      case DocNode.AuthorTag author -> {
+        emit("@author " + author.author());
+        newline();
+      }
+      case DocNode.VersionTag version -> {
+        emit("@version " + version.version());
+        newline();
+      }
+      case DocNode.GenericBlockTag generic -> {
+        emit("@" + generic.tagName() + " " + generic.content());
+        newline();
+      }
+
+      // Inline tags
+      case DocNode.LinkTag link -> {
+        String labelText = extractText(link.label());
+        if (labelText.equals(link.reference())) {
+          emit("[" + link.reference() + "]");
+        } else {
+          emit("[" + labelText + "](" + link.reference() + ")");
+        }
+      }
+      case DocNode.CodeInline code -> {
+        emit("`");
+        // Extract raw text without formatting
+        emit(extractRawText(code.content()));
+        emit("`");
+      }
+      case DocNode.LiteralTag literal -> emit(literal.text());
+      case DocNode.ValueTag value -> emit("{@value " + value.reference() + "}");
+      case DocNode.DocRootTag docRoot -> emit("{@docRoot}");
+      case DocNode.InheritDocTag inheritDoc -> emit("{@inheritDoc}");
+      case DocNode.GenericInlineTag generic -> emit("{@" + generic.tagName() + " " + generic.content() + "}");
+
+      // HTML inline elements
+      case DocNode.Bold bold -> {
+        emit("**");
+        generateNode(bold.content());
+        emit("**");
+      }
+      case DocNode.Italic italic -> {
+        emit("*");
+        generateNode(italic.content());
+        emit("*");
+      }
+      case DocNode.Superscript sup -> {
+        emit("<sup>");
+        generateNode(sup.content());
+        emit("</sup>");
+      }
+      case DocNode.Subscript sub -> {
+        emit("<sub>");
+        generateNode(sub.content());
+        emit("</sub>");
+      }
+      case DocNode.Span span -> generateNode(span.content());
+      case DocNode.Anchor anchor -> generateNode(anchor.content());
+
+      // HTML block elements
+      case DocNode.Paragraph p -> {
+        generateNode(p.content());
+      }
+      case DocNode.H1 h1 -> {
+        emit("# ");
+        generateNode(h1.content());
+      }
+      case DocNode.H2 h2 -> {
+        emit("## ");
+        generateNode(h2.content());
+      }
+      case DocNode.H3 h3 -> {
+        emit("### ");
+        generateNode(h3.content());
+      }
+      case DocNode.H4 h4 -> {
+        emit("#### ");
+        generateNode(h4.content());
+      }
+      case DocNode.H5 h5 -> {
+        emit("##### ");
+        generateNode(h5.content());
+      }
+      case DocNode.H6 h6 -> {
+        emit("###### ");
+        generateNode(h6.content());
+      }
+      case DocNode.CodeBlock code -> {
+        ensureSingleEmptyLine();
+        emit("```");
+        newline();
+        String codeText = extractRawText(code.content());
+        for (String line : codeText.split("\n", -1)) {
+          emit(line);
+          newline();
+        }
+        emit("```");
+      }
+      case DocNode.Pre pre -> {
+        ensureSingleEmptyLine();
+        emit("```");
+        newline();
+        String preText = extractRawText(pre.content());
+        for (String line : preText.split("\n", -1)) {
+          emit(line);
+          newline();
+        }
+        emit("```");
+      }
+      case DocNode.BlockQuote quote -> {
+        emit("> ");
+        generateNode(quote.content());
+      }
+      case DocNode.Div div -> generateNode(div.content());
+
+      // Lists
+      case DocNode.UnorderedList ul -> {
+        if (ul.content() instanceof DocNode.Sequence(List<DocNode> children)) {
+          for (DocNode item : children) {
+            if (item instanceof DocNode.ListItem(DocNode content)) {
+              emit("- ");
+              generateNode(content);
+              trimTrailingWhitespaceAndOptionalNewline();
+              newline();
+            }
+          }
+        } else if (ul.content() instanceof DocNode.ListItem(DocNode content)) {
+          emit("- ");
+          generateNode(content);
+          trimTrailingWhitespaceAndOptionalNewline();
+          newline();
+        }
+      }
+      case DocNode.OrderedList ol -> {
+        if (ol.content() instanceof DocNode.Sequence(List<DocNode> children)) {
+          int index = 1;
+          for (DocNode item : children) {
+            if (item instanceof DocNode.ListItem(DocNode content)) {
+              emit(index + ". ");
+              generateNode(content);
+              trimTrailingWhitespaceAndOptionalNewline();
+              newline();
+              index++;
+            }
+          }
+        } else if (ol.content() instanceof DocNode.ListItem(DocNode content)) {
+          emit("1. ");
+          generateNode(content);
+          trimTrailingWhitespaceAndOptionalNewline();
+          newline();
+        }
+      }
+      case DocNode.ListItem li -> generateNode(li.content());
+
+      // Description lists (convert to bold term + definition)
+      case DocNode.DescriptionList dl -> generateNode(dl.content());
+      case DocNode.DescriptionTerm dt -> {
+        emit("**");
+        generateNode(dt.content());
+        emit("**");
+        newline();
+      }
+      case DocNode.DescriptionDetail dd -> {
+        emit(": ");
+        generateNode(dd.content());
+        newline();
+      }
+
+      // Tables
+      case DocNode.Table table -> generateTable(table);
+      case DocNode.TableHead thead -> { /* Handled in generateTable */ }
+      case DocNode.TableBody tbody -> { /* Handled in generateTable */ }
+      case DocNode.TableRow tr -> { /* Handled in generateTable */ }
+      case DocNode.TableHeader th -> { /* Handled in generateTable */ }
+      case DocNode.TableData td -> { /* Handled in generateTable */ }
+      case DocNode.Caption caption -> {
+        generateNode(caption.content());
+        newline();
+      }
+
+      // Empty elements
+      case DocNode.LineBreak br -> {
+        newline();
+      }
+      case DocNode.HorizontalRule hr -> {
+        emit("---");
+      }
+
+      // Generic
+      case DocNode.GenericHtmlTag generic -> generateNode(generic.content());
+    }
+  }
+
+  // ... existing table generation methods ...
+
+  private void generateTable(DocNode.Table table) {
+    List<List<String>> headerRows = new ArrayList<>();
+    List<List<String>> bodyRows = new ArrayList<>();
+    List<Integer> columnWidths = new ArrayList<>();
+
+    // Extract table structure
+    extractTableContent(table.content(), headerRows, bodyRows);
+
+    // If no explicit header, use first body row as header
+    if (headerRows.isEmpty() && !bodyRows.isEmpty()) {
+      headerRows.add(bodyRows.remove(0));
+    }
+
+    int columnCount;
+    columnCount = headerRows.stream().mapToInt(List::size).max().orElse(0);
+    columnCount = Math.max(columnCount, bodyRows.stream().mapToInt(List::size).max().orElse(0));
+
+    for (int i = 0; i < columnCount; i++) {
+      columnWidths.add(0);
+    }
+
+    for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+      final int i = columnIndex;
+      int headerSize = headerRows.stream().flatMap(row -> i < row.size() ? Stream.of(row.get(i)) : Stream.empty()).mapToInt(String::length).max().orElse(0);
+      int bodySize = bodyRows.stream().flatMap(row -> i < row.size() ? Stream.of(row.get(i)) : Stream.empty()).mapToInt(String::length).max().orElse(0);
+
+      // +2 for padding on either side
+      columnWidths.set(i, Math.max(1, Math.max(headerSize, bodySize)) + 2);
+    }
+
+    // Generate markdown table
+    if (!headerRows.isEmpty()) {
+      for (List<String> headerRow : headerRows) {
+        for (int col = 0; col < headerRow.size(); col++) {
+          int width = columnWidths.get(col);
+          String text = headerRow.get(col);
+          emit("|");
+          emit(" ".repeat(width - text.length() - 1));
+          emit(text);
+          emit(" ");
+          if (col == columnWidths.size() - 1) {
+            emit("|");
+          }
+        }
+        newline();
+      }
+
+      // Separator row
+      if (!headerRows.isEmpty()) {
+        emit("|");
+        for (Integer columnWidth : columnWidths) {
+          emit("-".repeat(columnWidth));
+          emit("|");
+        }
+        newline();
+      }
+    }
+
+    for (List<String> bodyRow : bodyRows) {
+      for (int col = 0; col < bodyRow.size(); col++) {
+        int width = columnWidths.get(col);
+        String text = bodyRow.get(col);
+        emit("|");
+        emit(" ".repeat(width - text.length() - 1));
+        emit(text);
+        emit(" ");
+        if (col == columnWidths.size() - 1) {
+          emit("|");
+        }
+      }
+      newline();
+    }
+  }
+
+  private void extractTableContent(DocNode content, List<List<String>> headerRows, List<List<String>> bodyRows) {
+    if (content instanceof DocNode.Sequence seq) {
+      for (DocNode child : seq.children()) {
+        extractTableContent(child, headerRows, bodyRows);
+      }
+    } else if (content instanceof DocNode.TableHead thead) {
+      extractTableRows(thead.content(), headerRows);
+    } else if (content instanceof DocNode.TableBody tbody) {
+      extractTableRows(tbody.content(), bodyRows);
+    } else if (content instanceof DocNode.TableRow row) {
+      // Direct row without thead/tbody
+      bodyRows.add(extractRowCells(row));
+    }
+  }
+
+  private void extractTableRows(DocNode content, List<List<String>> rows) {
+    if (content instanceof DocNode.Sequence seq) {
+      for (DocNode child : seq.children()) {
+        if (child instanceof DocNode.TableRow row) {
+          rows.add(extractRowCells(row));
+        }
+      }
+    } else if (content instanceof DocNode.TableRow row) {
+      rows.add(extractRowCells(row));
+    }
+  }
+
+  private List<String> extractRowCells(DocNode.TableRow row) {
+    List<String> cells = new ArrayList<>();
+    if (row.content() instanceof DocNode.Sequence seq) {
+      for (DocNode child : seq.children()) {
+        if (child instanceof DocNode.TableData td) {
+          cells.add(extractText(td.content()).strip());
+        } else if (child instanceof DocNode.TableHeader th) {
+          cells.add(extractText(th.content()).strip());
+        }
+      }
+    } else if (row.content() instanceof DocNode.TableData td) {
+      cells.add(extractText(td.content()).strip());
+    } else if (row.content() instanceof DocNode.TableHeader th) {
+      cells.add(extractText(th.content()).strip());
+    }
+    return cells;
+  }
+
+  /// Extracts raw text from a node, preserving indentation and whitespace.
+  /// Used for code blocks where formatting matters.
+  private String extractRawText(DocNode node) {
+    if (node instanceof DocNode.TextNode text) {
+      return text.content();
+    } else if (node instanceof DocNode.Sequence seq) {
+      StringBuilder sb = new StringBuilder();
+      for (DocNode child : seq.children()) {
+        sb.append(extractRawText(child));
+      }
+      return sb.toString();
+    }
+    return "";
+  }
+
+  private String extractText(DocNode node) {
+    StringBuilder sb = new StringBuilder();
+    extractTextRecursive(node, sb);
+    return sb.toString();
+  }
+
+  private void extractTextRecursive(DocNode node, StringBuilder sb) {
+    switch (node) {
+      case DocNode.TextNode text -> sb.append(text.content());
+      case DocNode.Sequence seq -> {
+        for (DocNode child : seq.children()) {
+          extractTextRecursive(child, sb);
+        }
+      }
+      case DocNode.Bold bold -> {
+        sb.append("**");
+        extractTextRecursive(bold.content(), sb);
+        sb.append("**");
+      }
+      case DocNode.Italic italic -> {
+        sb.append("*");
+        extractTextRecursive(italic.content(), sb);
+        sb.append("*");
+      }
+      case DocNode.CodeInline code -> {
+        sb.append("`");
+        sb.append(extractRawText(code.content()));
+        sb.append("`");
+      }
+      case DocNode.LinkTag link -> {
+        String labelText = extractText(link.label());
+        if (labelText.equals(link.reference())) {
+          sb.append("[").append(link.reference()).append("]").append(' ');
+        } else {
+          sb.append("[").append(labelText).append("](").append(link.reference()).append(")").append(' ');
+        }
+      }
+      default -> {
+        // Try to extract content from nodes with content
+        try {
+          var method = node.getClass().getMethod("content");
+          Object content = method.invoke(node);
+          if (content instanceof DocNode contentNode) {
+            extractTextRecursive(contentNode, sb);
+          }
+        } catch (Exception e) {
+          // Ignore nodes without content
+        }
+      }
+    }
+  }
+
+  private void emit(String text) {
+    output.append(text);
+  }
+
+  private void newline() {
+    output.append("\n");
+  }
+
+  // Trim trailing spaces/tabs and at most a single newline from the output buffer.
+  // Useful to avoid blank lines within lists where item content may have carried a newline.
+  private void trimTrailingWhitespaceAndOptionalNewline() {
+    int len = output.length();
+    if (len == 0) return;
+    // Trim trailing spaces and tabs
+    int i = len - 1;
+    while (i >= 0) {
+      char c = output.charAt(i);
+      if (c == ' ' || c == '\t') {
+        i--;
+      } else {
+        break;
+      }
+    }
+    output.setLength(i + 1);
+    // Optionally trim a single trailing newline
+    if (output.length() > 0 && output.charAt(output.length() - 1) == '\n') {
+      output.setLength(output.length() - 1);
+      // Also trim any spaces/tabs immediately before that newline
+      int j = output.length() - 1;
+      while (j >= 0) {
+        char c = output.charAt(j);
+        if (c == ' ' || c == '\t') {
+          j--;
+        } else {
+          break;
+        }
+      }
+      output.setLength(j + 1);
+    }
+  }
+}
+
+class FileParser {
+  final String fileContent;
+  private static final Pattern JAVADOC_PATTERN = Pattern.compile("^ */\\*\\*[\\s\\S]*?\\*/", Pattern.MULTILINE);
+
+  FileParser(String fileContent) {
+    this.fileContent = fileContent;
+  }
+
+  List<CommentBlock> extractJavadocComments() {
+    List<CommentBlock> blocks = new ArrayList<>();
+    int searchFrom = 0;
+
+    Matcher matcher = JAVADOC_PATTERN.matcher(fileContent);
+    while (matcher.find(searchFrom)) {
+      int start = matcher.start();
+      int end = matcher.end();
+      String content = matcher.group(0);
+      blocks.add(new CommentBlock(start, end, content));
+      searchFrom = end;
+    }
+
+    return blocks;
+  }
+}
+
+record CommentBlock(int start, int end, String content) {
+  CommentBlock {
+    var expectedLength = (end - start);
+    var actualLength = content.length();
+    if (expectedLength != actualLength) {
+      System.err.println(content);
+      throw new IllegalArgumentException(
+          "A substring from %d to %d should have length %d, but was given a string with length %d"
+              .formatted(start, end, expectedLength, actualLength)
+      );
+    }
+  }
+}
+class DocAST {
+  DocNode parse(CommentBlock commentBlock) {
+    // rawContent:
+    // """
+    // /**
+    //  * Description.
+    //  *
+    //  * @param foo Param foo.
+    //  * @return Return value.
+    //  */
+    // """.strip()
+    String rawContent = commentBlock.content().stripIndent().strip();
+    String[] lines = rawContent.split("\n");
+
+    // commentText format:
+    // """
+    // Description.
+    //
+    // @param foo Param foo.
+    // @return Return value.
+    // """.strip()
+    //
+    // Important: We preserve leading whitespace on each line for code blocks
+    String commentText =
+        Arrays.stream(lines)
+            .map(l -> stripLeading(l))
+            .map(l -> stripTrailing(l))
+            .collect(Collectors.joining("\n"))
+            .strip();
+
+    var parser = new JavadocParser(commentText);
+    return parser.parse();
+  }
+
+  String stripLeading(String line) {
+    // Remove the comment markers but preserve any indentation after them
+    if (line.matches("^ *\\*/?.*")) {
+      // Line starts with optional spaces, then *, optionally followed by /
+      return line.replaceFirst("^ *\\*/?", "");
+    } else if (line.matches("^ */\\*\\*.*")) {
+      // Opening /** line
+      return line.replaceFirst("^ */\\*\\*", "");
+    }
+    return line;
+  }
+
+  String stripTrailing(String line) {
+    if (line.matches(".*\\*/$")) {
+      // Line ends with the comment termination string "*/"
+      return line.replaceFirst("\\*/", "");
+    }
+    return line;
+  }
+}
+
+
+class JavadocParser {
+  private final String input;
+  private int pos = 0;
+
+  // Tags that are typically unclosed in JavaDoc
+  private static final Set<String> VOID_TAGS = Set.of("br", "hr", "img", "input", "meta", "link");
+  private static final Set<String> OPTIONAL_CLOSING_TAGS = Set.of("p", "li", "dt", "dd", "tr", "td", "th");
+
+  JavadocParser(String input) {
+    this.input = input;
+  }
+
+  DocNode parse() {
+    List<DocNode> children = new ArrayList<>();
+
+    while (pos < input.length()) {
+      DocNode node = parseNext();
+      if (node != null) {
+        children.add(node);
+      }
+    }
+
+    return new DocNode.Root(children);
+  }
+
+  private DocNode parseNext() {
+//    skipWhitespace();
+    skipNewlines();
+    if (pos >= input.length()) {
+      return null;
+    }
+
+    // Check for block tags (@param, @return, etc.)
+    if (peek() == '@' && (pos == 0 || input.charAt(pos - 1) == '\n')) {
+      return parseBlockTag();
+    }
+
+    // Check for inline tags ({@link, {@code}, etc.)
+    if (peek() == '{' && pos + 1 < input.length() && input.charAt(pos + 1) == '@') {
+      return parseInlineTag();
+    }
+
+    // Check for HTML tags
+    if (peek() == '<') {
+      return parseHtmlTag();
+    }
+
+    // Parse text
+    return parseText();
+  }
+
+  private DocNode parseBlockTag() {
+    consume('@');
+    String tagName = readIdentifier();
+    skipWhitespace();
+
+    return switch (tagName) {
+      case "param" -> {
+        String paramName = readIdentifier();
+        skipWhitespace();
+        DocNode description = parseUntilNextBlockTag();
+        yield new DocNode.ParamTag(paramName, description);
+      }
+      case "return", "returns" -> {
+        DocNode description = parseUntilNextBlockTag();
+        yield new DocNode.ReturnTag(description);
+      }
+      case "throws", "exception" -> {
+        String exceptionType = readQualifiedName();
+        skipWhitespace();
+        DocNode description = parseUntilNextBlockTag();
+        yield new DocNode.ThrowsTag(exceptionType, description);
+      }
+      case "see" -> {
+        String reference = readLine();
+        yield new DocNode.SeeTag(reference);
+      }
+      case "since" -> {
+        String version = readLine();
+        yield new DocNode.SinceTag(version);
+      }
+      case "deprecated" -> {
+        DocNode description = parseUntilNextBlockTag();
+        yield new DocNode.DeprecatedTag(description);
+      }
+      case "author" -> {
+        String author = readLine();
+        yield new DocNode.AuthorTag(author);
+      }
+      case "version" -> {
+        String version = readLine();
+        yield new DocNode.VersionTag(version);
+      }
+      default -> {
+        String content = readLine();
+        yield new DocNode.GenericBlockTag(tagName, content);
+      }
+    };
+  }
+
+  private DocNode parseUntilNextBlockTag() {
+    List<DocNode> children = new ArrayList<>();
+
+    while (pos < input.length()) {
+      // Check if we've hit a new block tag at the start of a line
+      if (peek() == '@' && (pos == 0 || input.charAt(pos - 1) == '\n')) {
+        break;
+      }
+
+      DocNode node = parseInlineContent();
+      if (node != null) {
+        children.add(node);
+      } else {
+        break;
+      }
+    }
+
+    if (children.isEmpty()) {
+      return new DocNode.TextNode("");
+    } else if (children.size() == 1) {
+      return children.get(0);
+    } else {
+      return new DocNode.Sequence(children);
+    }
+  }
+
+  private DocNode parseInlineContent() {
+    return parseInlineContent(null);
+  }
+
+  private DocNode parseInlineContent(String parentTag) {
+    if (pos >= input.length()) {
+      return null;
+    }
+
+    // Stop at block tags
+    if (peek() == '@' && (pos == 0 || input.charAt(pos - 1) == '\n')) {
+      return null;
+    }
+
+    // Check for closing tag of parent
+    if (parentTag != null && peek() == '<' && pos + 1 < input.length() && input.charAt(pos + 1) == '/') {
+      if (peekClosingTag(parentTag)) {
+        return null;
+      }
+    }
+
+    // Check if we're hitting an opening tag that would implicitly close the parent
+    if (parentTag != null && OPTIONAL_CLOSING_TAGS.contains(parentTag) && peek() == '<') {
+      String nextTag = peekNextOpeningTag();
+      if (nextTag != null && shouldImplicitlyClose(parentTag, nextTag)) {
+        return null;
+      }
+    }
+
+    // Check for inline tags
+    if (peek() == '{' && pos + 1 < input.length() && input.charAt(pos + 1) == '@') {
+      return parseInlineTag();
+    }
+
+    // Check for HTML tags
+    if (peek() == '<') {
+      return parseHtmlTag();
+    }
+
+    // Parse text until next special character
+    return parseTextUntilSpecial();
+  }
+
+  /// Determines if an opening tag should implicitly close the parent tag.
+  /// For example, `<li>` implicitly closes a previous `<li>`,
+  /// and `<p>` implicitly closes a previous `<p>`.
+  private boolean shouldImplicitlyClose(String parentTag, String nextTag) {
+    return switch (parentTag) {
+      case "p" -> nextTag.equals("p") || nextTag.equals("div") ||
+          nextTag.equals("h1") || nextTag.equals("h2") || nextTag.equals("h3") ||
+          nextTag.equals("h4") || nextTag.equals("h5") || nextTag.equals("h6") ||
+          nextTag.equals("ul") || nextTag.equals("ol") || nextTag.equals("pre") ||
+          nextTag.equals("table") || nextTag.equals("blockquote");
+      case "li" -> nextTag.equals("li") || nextTag.equals("");
+      case "dt", "dd" -> nextTag.equals("dt") || nextTag.equals("dd");
+      case "td", "th" -> nextTag.equals("td") || nextTag.equals("th") || nextTag.equals("tr");
+      case "tr" -> nextTag.equals("tr");
+      default -> false;
+    };
+  }
+
+  /// Peeks at the next opening tag without consuming it.
+  private String peekNextOpeningTag() {
+    if (peek() != '<' || pos + 1 >= input.length()) {
+      return null;
+    }
+
+    int savedPos = pos;
+    try {
+      consume('<');
+      if (peek() == '/') {
+//        return null; // It's a closing tag
+      }
+      return readIdentifier().toLowerCase();
+    } catch (Exception e) {
+      return null;
+    } finally {
+      pos = savedPos;
+    }
+  }
+
+  private DocNode parseInlineTag() {
+    consume('{');
+    consume('@');
+    String tagName = readIdentifier();
+    skipWhitespace();
+
+    return switch (tagName) {
+      case "link", "linkplain" -> {
+        String reference = readUntil("}").strip();
+        consume('}');
+        // Parse reference which might be "ClassName#method" or "ClassName#method label"
+        int spaceIdx = reference.indexOf(' ');
+        if (spaceIdx > 0) {
+          String ref = reference.substring(0, spaceIdx);
+          String label = reference.substring(spaceIdx + 1).strip();
+          yield new DocNode.LinkTag(ref, new DocNode.TextNode(label));
+        } else {
+          yield new DocNode.LinkTag(reference, new DocNode.TextNode(reference));
+        }
+      }
+      case "code" -> {
+        String code = readUntil("}");
+        if (code.contains("\n")) {
+          yield new DocNode.TextNode(code);
+        }
+        consume('}');
+        yield new DocNode.CodeInline(new DocNode.TextNode(code));
+      }
+      case "literal" -> {
+        String text = readUntil("}");
+        consume('}');
+        yield new DocNode.LiteralTag(text);
+      }
+      case "value" -> {
+        String reference = readUntil("}").strip();
+        consume('}');
+        yield new DocNode.ValueTag(reference);
+      }
+      case "docRoot" -> {
+        consume('}');
+        yield new DocNode.DocRootTag();
+      }
+      case "inheritDoc" -> {
+        consume('}');
+        yield new DocNode.InheritDocTag();
+      }
+      default -> {
+        String content = readUntil("}");
+        consume('}');
+        yield new DocNode.GenericInlineTag(tagName, content);
+      }
+    };
+  }
+
+  private DocNode parseHtmlTag() {
+    consume('<');
+
+    // Check for closing tag
+    if (peek() == '/') {
+      // This shouldn't happen in normal flow, return null
+      return null;
+    }
+
+    String tagName = readIdentifier().toLowerCase();
+
+    // If we didn't read a valid tag name, treat '<' as literal text
+    if (tagName.isEmpty()) {
+      // Return the literal '<' character we consumed
+      return new DocNode.TextNode("<");
+    }
+
+    // Read attributes, respecting quotes, and detect self-closing properly
+    Map<String, String> attributes = new LinkedHashMap<>();
+    boolean selfClosing = false;
+    skipWhitespace();
+    while (pos < input.length()) {
+      char c = peek();
+      if (c == '>') {
+        consume('>');
+        break;
+      }
+      if (c == '/' && pos + 1 < input.length() && input.charAt(pos + 1) == '>') {
+        // Proper self-closing tag
+        consume('/');
+        consume('>');
+        selfClosing = true;
+        break;
+      }
+
+      // Read attribute name
+      String attrName = readAttrName();
+      if (attrName.isEmpty()) {
+        // Skip stray characters
+        consume();
+        skipWhitespace();
+        continue;
+      }
+      skipWhitespace();
+      String attrValue = "";
+      if (peek() == '=') {
+        consume('=');
+        skipWhitespace();
+        attrValue = readAttrValue();
+      }
+      attributes.put(attrName.toLowerCase(), attrValue);
+      skipWhitespace();
+    }
+
+    if (selfClosing) {
+      return createEmptyHtmlNode(tagName);
+    }
+
+    // Void elements have no content
+    if (VOID_TAGS.contains(tagName)) {
+      return createEmptyHtmlNode(tagName);
+    }
+
+    // Special handling for <pre> blocks: capture raw content until </pre>
+    // and, if it starts with a {@code ...} wrapper, strip that wrapper while
+    // preserving all inner braces and whitespace. Return a single TextNode.
+    if (tagName.equals("pre")) {
+      int closeStart = input.indexOf("</" + tagName, pos);
+      if (closeStart >= 0) {
+        String inner = input.substring(pos, closeStart);
+        // Advance parser to consume the closing tag
+        pos = closeStart;
+        matchClosingTag(tagName); // consume </pre>
+
+        // Optionally strip a leading {@code ...} wrapper
+        String processed = inner;
+        int i = 0;
+        // Skip leading whitespace/newlines
+        while (i < processed.length() && Character.isWhitespace(processed.charAt(i))) i++;
+        if (i + 7 <= processed.length() && processed.startsWith("{@code", i)) {
+          int afterCode = i + 6; // position at the 'e' in "code"
+          // move past "{@code"
+          afterCode = i + "{@code".length();
+          // Skip optional whitespace after {@code
+          while (afterCode < processed.length() && Character.isWhitespace(processed.charAt(afterCode))) afterCode++;
+          // Now processed[afterCode .. end) is the code content plus an optional trailing '}'
+          int end = processed.length();
+          // Trim trailing whitespace
+          while (end > afterCode && Character.isWhitespace(processed.charAt(end - 1))) end--;
+          // If there's a trailing '}', drop just one
+          if (end > afterCode && processed.charAt(end - 1) == '}') {
+            end--;
+            // Also trim whitespace again after removing '}'
+            while (end > afterCode && Character.isWhitespace(processed.charAt(end - 1))) end--;
+          }
+          processed = processed.substring(afterCode, end);
+        }
+
+        return new DocNode.Pre(new DocNode.TextNode(processed));
+      }
+      // If we can't find a closing tag, fall through to generic parsing below
+    }
+
+    // Parse content until closing tag (or implicit close for optional tags)
+    List<DocNode> children = new ArrayList<>();
+    while (pos < input.length()) {
+      // Check for explicit closing tag
+      if (peek() == '<' && pos + 1 < input.length() && input.charAt(pos + 1) == '/') {
+        if (peekClosingTag(tagName)) {
+          matchClosingTag(tagName); // consume it
+          break;
+        }
+      }
+
+      DocNode child = parseInlineContent(tagName);
+      if (child != null) {
+        children.add(child);
+      } else {
+        // Either hit an implicit close condition or end of content
+        break;
+      }
+    }
+
+    DocNode content = children.isEmpty() ? new DocNode.TextNode("") :
+        children.size() == 1 ? children.get(0) :
+            new DocNode.Sequence(children);
+
+    // Special handling for anchors to preserve href as links
+    if (tagName.equals("a")) {
+      String href = attributes.get("href");
+      if (href != null) {
+        return new DocNode.LinkTag(href, content);
+      }
+    }
+
+    return createHtmlNode(tagName, content);
+  }
+
+  private boolean peekClosingTag(String expectedTag) {
+    int savedPos = pos;
+    try {
+      consume('<');
+      consume('/');
+      String tagName = readIdentifier().toLowerCase();
+      return tagName.equals(expectedTag);
+    } catch (Exception e) {
+      return false;
+    } finally {
+      pos = savedPos;
+    }
+  }
+
+  private boolean matchClosingTag(String expectedTag) {
+    int savedPos = pos;
+    try {
+      consume('<');
+      consume('/');
+      String tagName = readIdentifier().toLowerCase();
+      skipWhitespace();
+      consume('>');
+      return tagName.equals(expectedTag);
+    } catch (Exception e) {
+      pos = savedPos;
+      return false;
+    }
+  }
+
+  private DocNode createHtmlNode(String tagName, DocNode content) {
+    return switch (tagName) {
+      case "p" -> new DocNode.Paragraph(content);
+      case "b", "strong" -> new DocNode.Bold(content);
+      case "i", "em" -> new DocNode.Italic(content);
+      case "code", "tt" -> new DocNode.CodeInline(content);
+      case "pre" -> new DocNode.Pre(content);
+      case "h1" -> new DocNode.H1(content);
+      case "h2" -> new DocNode.H2(content);
+      case "h3" -> new DocNode.H3(content);
+      case "h4" -> new DocNode.H4(content);
+      case "h5" -> new DocNode.H5(content);
+      case "h6" -> new DocNode.H6(content);
+      case "sup" -> new DocNode.Superscript(content);
+      case "sub" -> new DocNode.Subscript(content);
+      case "ul" -> new DocNode.UnorderedList(content);
+      case "ol" -> new DocNode.OrderedList(content);
+      case "li" -> new DocNode.ListItem(content);
+      case "a" -> new DocNode.Anchor(content);
+      case "br" -> new DocNode.LineBreak();
+      case "hr" -> new DocNode.HorizontalRule();
+      case "blockquote" -> new DocNode.BlockQuote(content);
+      case "dl" -> new DocNode.DescriptionList(content);
+      case "dt" -> new DocNode.DescriptionTerm(content);
+      case "dd" -> new DocNode.DescriptionDetail(content);
+      case "table" -> new DocNode.Table(content);
+      case "tr" -> new DocNode.TableRow(content);
+      case "td" -> new DocNode.TableData(content);
+      case "th" -> new DocNode.TableHeader(content);
+      case "thead" -> new DocNode.TableHead(content);
+      case "tbody" -> new DocNode.TableBody(content);
+      case "caption" -> new DocNode.Caption(content);
+      case "div" -> new DocNode.Div(content);
+      case "span" -> new DocNode.Span(content);
+      default -> new DocNode.GenericHtmlTag(tagName, content);
+    };
+  }
+
+  private DocNode createEmptyHtmlNode(String tagName) {
+    return switch (tagName) {
+      case "br" -> new DocNode.LineBreak();
+      case "hr" -> new DocNode.HorizontalRule();
+      default -> createHtmlNode(tagName, new DocNode.TextNode(""));
+    };
+  }
+
+  private DocNode parseText() {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length()) {
+      char c = peek();
+      // '<' means start of an HTML tag like `<p>`
+      // '{' means start of a Javadoc command like `{@code }`
+      // '@' means the start of a Javadoc tag like `@param`
+      if (c == '<' || c == '{' || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
+        break;
+      }
+      sb.append(consume());
+    }
+    return sb.length() > 0 ? new DocNode.TextNode(sb.toString()) : null;
+  }
+
+  private DocNode parseTextUntilSpecial() {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length()) {
+      char c = peek();
+      if (c == '<' || c == '{' || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
+        break;
+      }
+      sb.append(consume());
+    }
+    return sb.length() > 0 ? new DocNode.TextNode(sb.toString()) : null;
+  }
+
+  private char peek() {
+    return pos < input.length() ? input.charAt(pos) : '\0';
+  }
+
+  private char consume() {
+    return input.charAt(pos++);
+  }
+
+  private void consume(char expected) {
+    if (peek() != expected) {
+      String nearby = input.substring(Math.max(0, pos - 10), Math.min(input.length(), pos + 10));
+      throw new IllegalStateException("Expected '" + expected + "' but got '" + peek() + "' at position " + pos + " (near " + nearby + ")");
+    }
+    pos++;
+  }
+
+  private void skipWhitespace() {
+    while (pos < input.length() && Character.isWhitespace(peek())) {
+      pos++;
+    }
+  }
+
+  private void skipNewlines() {
+    while (pos < input.length() && peek() == '\n') {
+      pos++;
+    }
+  }
+
+  private String readIdentifier() {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length() && (Character.isJavaIdentifierPart(peek()) || peek() == '-')) {
+      sb.append(consume());
+    }
+    return sb.toString();
+  }
+
+  private String readQualifiedName() {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length() && (Character.isJavaIdentifierPart(peek()) || peek() == '.' || peek() == '#')) {
+      sb.append(consume());
+    }
+    return sb.toString();
+  }
+
+  private String readLine() {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length() && peek() != '\n') {
+      sb.append(consume());
+    }
+    if (peek() == '\n') {
+      consume();
+    }
+    return sb.toString().strip();
+  }
+
+  private String readUntil(String delimiter) {
+    int delimLength = delimiter.length();
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length() - delimLength && !input.substring(pos, pos + delimLength).equals(delimiter)) {
+      sb.append(consume());
+    }
+    return sb.toString();
+  }
+
+  private String readUntilAny(char... delimiters) {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length()) {
+      char c = peek();
+      boolean found = false;
+      for (char d : delimiters) {
+        if (c == d) {
+          found = true;
+          break;
+        }
+      }
+      if (found) break;
+      sb.append(consume());
+    }
+    return sb.toString();
+  }
+
+  // Reads an HTML attribute name: letters, digits, '-', ':', '_'
+  private String readAttrName() {
+    StringBuilder sb = new StringBuilder();
+    while (pos < input.length()) {
+      char c = peek();
+      if (Character.isLetterOrDigit(c) || c == '-' || c == ':' || c == '_') {
+        sb.append(consume());
+      } else {
+        break;
+      }
+    }
+    return sb.toString();
+  }
+
+  // Reads an HTML attribute value, supporting quoted and unquoted forms
+  private String readAttrValue() {
+    if (pos >= input.length()) return "";
+    char c = peek();
+    if (c == '"' || c == '\'') {
+      char quote = consume();
+      StringBuilder sb = new StringBuilder();
+      while (pos < input.length() && peek() != quote) {
+        sb.append(consume());
+      }
+      if (peek() == quote) consume(quote);
+      return sb.toString();
+    } else {
+      StringBuilder sb = new StringBuilder();
+      while (pos < input.length()) {
+        char ch = peek();
+        if (Character.isWhitespace(ch) || ch == '>' || (ch == '/' && pos + 1 < input.length() && input.charAt(pos + 1) == '>')) {
+          break;
+        }
+        sb.append(consume());
+      }
+      return sb.toString();
+    }
+  }
+
+  // no-op
+}
+
+sealed interface DocNode {
+  // Root and primitives
+  record Root(List<DocNode> children) implements DocNode {}
+  record TextNode(String content) implements DocNode {}
+  record Sequence(List<DocNode> children) implements DocNode {}
+
+  // HTML block elements
+  record H1(DocNode content) implements DocNode {}
+  record H2(DocNode content) implements DocNode {}
+  record H3(DocNode content) implements DocNode {}
+  record H4(DocNode content) implements DocNode {}
+  record H5(DocNode content) implements DocNode {}
+  record H6(DocNode content) implements DocNode {}
+  record Paragraph(DocNode content) implements DocNode {}
+  record Pre(DocNode content) implements DocNode {}
+  record BlockQuote(DocNode content) implements DocNode {}
+  record Div(DocNode content) implements DocNode {}
+
+  // HTML inline elements
+  record Anchor(DocNode content) implements DocNode {}
+  record Bold(DocNode content) implements DocNode {}
+  record CodeInline(DocNode content) implements DocNode {}
+  record Italic(DocNode content) implements DocNode {}
+  record Span(DocNode content) implements DocNode {}
+  record Subscript(DocNode content) implements DocNode {}
+  record Superscript(DocNode content) implements DocNode {}
+
+  // HTML list elements
+  record OrderedList(DocNode content) implements DocNode {}
+  record UnorderedList(DocNode content) implements DocNode {}
+  record ListItem(DocNode content) implements DocNode {}
+
+  // HTML description list elements
+  record DescriptionDetail(DocNode content) implements DocNode {}
+  record DescriptionList(DocNode content) implements DocNode {}
+  record DescriptionTerm(DocNode content) implements DocNode {}
+
+  // HTML table elements
+  record Caption(DocNode content) implements DocNode {}
+  record Table(DocNode content) implements DocNode {}
+  record TableBody(DocNode content) implements DocNode {}
+  record TableData(DocNode content) implements DocNode {}
+  record TableHead(DocNode content) implements DocNode {}
+  record TableHeader(DocNode content) implements DocNode {}
+  record TableRow(DocNode content) implements DocNode {}
+
+  // HTML empty elements
+  record HorizontalRule() implements DocNode {}
+  record LineBreak() implements DocNode {}
+
+  // Generic HTML tag for unsupported tags
+  record GenericHtmlTag(String tagName, DocNode content) implements DocNode {}
+
+  // JavaDoc block tags
+  record AuthorTag(String author) implements DocNode {}
+  record DeprecatedTag(DocNode description) implements DocNode {}
+  record GenericBlockTag(String tagName, String content) implements DocNode {}
+  record ParamTag(String paramName, DocNode description) implements DocNode {}
+  record ReturnTag(DocNode description) implements DocNode {}
+  record SeeTag(String reference) implements DocNode {}
+  record SinceTag(String version) implements DocNode {}
+  record ThrowsTag(String exceptionType, DocNode description) implements DocNode {}
+  record VersionTag(String version) implements DocNode {}
+
+  // JavaDoc inline tags
+  record DocRootTag() implements DocNode {}
+  record GenericInlineTag(String tagName, String content) implements DocNode {}
+  record InheritDocTag() implements DocNode {}
+  record LinkTag(String reference, DocNode label) implements DocNode {}
+  record LiteralTag(String text) implements DocNode {}
+  record ValueTag(String reference) implements DocNode {}
+
+  // Compound constructs
+  record CodeBlock(DocNode content) implements DocNode {}
+
+  // Removed duplicate declarations:
+  // record Link(DocNode display, DocNode resource) implements DocNode {}
+}
