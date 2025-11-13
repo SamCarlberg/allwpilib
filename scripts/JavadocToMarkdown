@@ -238,6 +238,18 @@ class MarkdownGenerator {
         } else if (!previousWasBlockTag && currentIsBlockTag) {
           // Transitioning to block tags from non-block-tag
           ensureSingleEmptyLine();
+        } else if (previousWasBlockTag && currentIsBlockTag) {
+          // Between successive block tags (e.g., multiple @param lines), ensure exactly
+          // one newline separates them (no blank line in between)
+          trimTrailingSpacesTabs();
+          int n = countTrailingNewlines();
+          if (n == 0) {
+            newline();
+          } else if (n > 1) {
+            int toTrim = n - 1;
+            int len = output.length();
+            output.setLength(len - toTrim);
+          }
         } else if (previousWasBlockTag && !currentIsBlockTag && !isJavadocBlockTag(child)) {
           // Transitioning from block tags to non-block-tag
           ensureSingleEmptyLine();
@@ -912,9 +924,14 @@ class JavadocParser {
       return null;
     }
 
-    // Check for block tags (@param, @return, etc.)
-    if (peek() == '@' && (pos == 0 || input.charAt(pos - 1) == '\n')) {
-      return parseBlockTag();
+    // Check for block tags (@param, @return, etc.) even if preceded by spaces at line start
+    if (pos == 0 || input.charAt(pos - 1) == '\n') {
+      int i = pos;
+      while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+      if (i < input.length() && input.charAt(i) == '@') {
+        pos = i; // advance to '@'
+        return parseBlockTag();
+      }
     }
 
     // Check for inline tags ({@link, {@code}, etc.)
@@ -938,7 +955,15 @@ class JavadocParser {
 
     return switch (tagName) {
       case "param" -> {
-        String paramName = readIdentifier();
+        // Support type-parameter form: @param <T> description
+        // If the next non-whitespace character is '<', treat the entire
+        // angle-bracketed token as plain text (not as an HTML tag).
+        String paramName;
+        if (peek() == '<') {
+          paramName = readAngleBracketedToken();
+        } else {
+          paramName = readIdentifier();
+        }
         skipWhitespace();
         DocNode description = parseUntilNextBlockTag();
         yield new DocNode.ParamTag(paramName, description);
@@ -1362,6 +1387,15 @@ class JavadocParser {
       // '{@' means start of a Javadoc command like `{@code }`
       // '@' means the start of a Javadoc tag like `@param`
       boolean startsInlineTag = c == '{' && (pos + 1) < input.length() && input.charAt(pos + 1) == '@';
+      // If we are at the start of a line, and the line begins with optional spaces then '@',
+      // treat it as a block tag boundary and stop text accumulation here.
+      if ((pos == 0 || input.charAt(pos - 1) == '\n')) {
+        int i = pos;
+        while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+        if (i < input.length() && input.charAt(i) == '@') {
+          break;
+        }
+      }
       if (c == '<' || startsInlineTag || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
         break;
       }
@@ -1375,6 +1409,14 @@ class JavadocParser {
     while (pos < input.length()) {
       char c = peek();
       boolean startsInlineTag = c == '{' && (pos + 1) < input.length() && input.charAt(pos + 1) == '@';
+      // Respect block tag boundaries even if there are leading spaces on the line.
+      if ((pos == 0 || input.charAt(pos - 1) == '\n')) {
+        int i = pos;
+        while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+        if (i < input.length() && input.charAt(i) == '@') {
+          break;
+        }
+      }
       if (c == '<' || startsInlineTag || (c == '@' && (pos == 0 || input.charAt(pos - 1) == '\n'))) {
         break;
       }
@@ -1436,6 +1478,24 @@ class JavadocParser {
       consume();
     }
     return sb.toString().strip();
+  }
+
+  // Reads a single angle-bracketed token starting at '<' and returns it, inclusive.
+  // Intended for reading type-parameter names in Javadoc such as "<T>" right after @param.
+  // If no closing '>' is found, this will return just "<" to avoid infinite loops.
+  private String readAngleBracketedToken() {
+    if (peek() != '<') return "";
+    int start = pos;
+    // consume the initial '<'
+    consume('<');
+    // read until the first matching '>'
+    while (pos < input.length() && peek() != '>') {
+      consume();
+    }
+    if (peek() == '>') {
+      consume('>');
+    }
+    return input.substring(start, pos);
   }
 
   private String readUntil(String delimiter) {
