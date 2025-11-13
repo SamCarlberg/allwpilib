@@ -7,15 +7,23 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/// This script accepts a set of file paths to update from the command line, converting all
+/// HTML-formatted Javadoc comments into a Markdown format.
+///
+/// Requirements for the script:
+/// - Java 21 or newer
+///
+/// Requirements for the target:
+/// - Java 24 or newer for Markdown-formatted Javadoc comments
 class JavadocToMarkdown {
   /// Main entry point.
   ///
@@ -28,10 +36,14 @@ class JavadocToMarkdown {
     if (a.contains("--help") || a.contains("-h") || a.isEmpty()) {
       System.out.println(
           """
-              Usage: ./scripts/JavadocToMarkdown [--help|-h|--dry] file_paths
+              Usage: ./scripts/JavadocToMarkdown [--help|-h] [--dry] [--debug] file_paths
               --help, -h: Print this help message
               --dry: Run without converting files. Output will be printed to stdout but no files will be modified.
+              --debug: Print debug information during the parsing and conversion process.
               file_paths: A list of file paths to convert to markdown. Accepts globs
+
+              Note: Formatting may change, particularly line lengths. It's recommended to run a formatter after
+                    running this script.
               """.stripIndent().trim()
       );
       System.exit(0);
@@ -48,19 +60,24 @@ class JavadocToMarkdown {
 
     String[] paths = a.toArray(new String[0]);
 
+    int totalCommentCount = 0;
+    int totalCommentLineChange = 0;
+
     for (String fileToUpdate : paths) {
       Path path = Paths.get(fileToUpdate);
-      System.out.println("Processing: " + fileToUpdate);
+      ANSIPrint.println("Processing: " + fileToUpdate, ANSIPrint.TextColor.MAGENTA);
       var fileContent = Files.readString(path);
+      ANSIPrint.println("  Line count: " + fileContent.split("\\n").length, ANSIPrint.TextColor.MAGENTA);
       var updatedFileContent = fileContent;
       var parser = new FileParser(fileContent);
       var comments = parser.extractJavadocComments();
+      ANSIPrint.println("  Javadoc comment count: " + comments.size(), ANSIPrint.TextColor.MAGENTA);
 
       // Process comments from end to beginning to maintain correct offsets
       for (int i = comments.size() - 1; i >= 0; i--) {
         CommentBlock comment = comments.get(i);
         if (debug) {
-          System.out.println("\nOriginal comment at " + comment.start() + "-" + comment.end() + ":");
+          ANSIPrint.println("\nOriginal comment at " + comment.start() + "-" + comment.end() + ":", ANSIPrint.TextColor.MAGENTA);
           System.out.println(comment.content());
         }
 
@@ -69,7 +86,7 @@ class JavadocToMarkdown {
 
         DocNode ast = new DocAST().parse(comment);
         if (debug) {
-          System.out.println("\nAST:");
+          ANSIPrint.println("\nAST:", ANSIPrint.TextColor.MAGENTA);
           System.out.println(ast);
         }
 
@@ -79,7 +96,7 @@ class JavadocToMarkdown {
         String indentedMarkdown = applyIndentation(markdown, indentation);
 
         if (debug) {
-          System.out.println("\nMarkdown output:");
+          ANSIPrint.println("\nMarkdown output:", ANSIPrint.TextColor.MAGENTA);
           System.out.println(indentedMarkdown);
         }
 
@@ -87,17 +104,38 @@ class JavadocToMarkdown {
         updatedFileContent = updatedFileContent.substring(0, comment.start())
             + indentedMarkdown
             + updatedFileContent.substring(comment.end());
+
+        totalCommentCount++;
+        totalCommentLineChange += markdown.split("\\n").length;
       }
 
       // Write the modified content back to the file
       if (dryRun) {
-        System.out.println("Converted output for " + fileToUpdate + ":");
-        System.out.println(updatedFileContent);
+        ANSIPrint.println("Converted output for " + fileToUpdate + ":", ANSIPrint.TextColor.MAGENTA);
+        for (String line : updatedFileContent.split("\\n")) {
+          System.out.print("  "); // indent the code
+          if (line.matches("^ *///.*$")) {
+            // markdown comment block
+            ANSIPrint.println(line, ANSIPrint.TextColor.GREEN);
+          } else {
+            // normal code
+            System.out.println(line);
+          }
+        }
       } else {
         Files.writeString(path, updatedFileContent);
-        System.out.println("✓ File updated: " + fileToUpdate);
+        ANSIPrint.println("✓ File updated: " + fileToUpdate, ANSIPrint.TextColor.GREEN);
+        if (comments.isEmpty()) {
+          ANSIPrint.println("  No comments were converted to markdown", ANSIPrint.TextColor.RED);
+        } else {
+          ANSIPrint.println("  " + comments.size() + " comment(s) were converted to markdown", ANSIPrint.TextColor.GREEN);
+        }
       }
     }
+
+    ANSIPrint.println(paths.length + " file(s) processed successfully", ANSIPrint.TextColor.GREEN);
+    ANSIPrint.println(totalCommentCount + " comment(s) were converted to markdown", ANSIPrint.TextColor.GREEN);
+    ANSIPrint.println(totalCommentLineChange + " line(s) of markdown comments were generated", ANSIPrint.TextColor.GREEN);
   }
 
   private static String extractIndentation(String commentBlockContent) {
@@ -129,21 +167,72 @@ class JavadocToMarkdown {
   }
 }
 
+/// Helper for printing to console with ANSI color codes.
+class ANSIPrint {
+  public static final String RESET = "\u001b[0m";
+
+  enum TextColor {
+    BLACK("\u001b[30m"),
+    RED("\u001b[31m"),
+    GREEN("\u001b[32m"),
+    YELLOW("\u001b[33m"),
+    BLUE("\u001b[34m"),
+    MAGENTA("\u001b[35m"),
+    CYAN("\u001b[36m"),
+    WHITE("\u001b[37m"),
+    ;
+    final String sequence;
+
+    TextColor(String sequence) {
+      this.sequence = sequence;
+    }
+  }
+
+  public static void print(String text, TextColor color) {
+    System.out.print(color.sequence);
+    System.out.print(text);
+    System.out.print(RESET);
+  }
+
+  public static void println(String text, TextColor color) {
+    print(text, color);
+    System.out.println();
+  }
+}
+
 class MarkdownGenerator {
   private StringBuilder output;
+
+  /// Will cause the final output to include a `/// ` prefix for use in a Javadoc comment.
+  /// Otherwise, will output just the raw Markdown text.
+  private final boolean linePrefix;
+
+  MarkdownGenerator() {
+    this(true);
+  }
+
+  MarkdownGenerator(boolean linePrefix) {
+    this.linePrefix = linePrefix;
+  }
   
-  // Escapes square brackets for Markdown, e.g., "[" -> "\[" and "]" -> "\]".
-  // Should be used for normal text, but NOT for code blocks or inline code.
-  private String escapeSquareBrackets(String text) {
+  /// Escapes square brackets for Markdown, e.g., `[` -> `\\[` and `]` -> `\\]`.
+  ///
+  /// @param text The text to escape
+  /// @param opening If set to `true`, will cause opening square brackets to be escaped
+  /// @param closing If set to `true`, will cause closing square brackets to be escaped
+  /// @return The escaped string
+  private String escapeSquareBrackets(String text, boolean opening, boolean closing) {
     if (text == null || text.isEmpty()) return text;
     // Fast path: if no brackets, return as-is
-    boolean hasOpen = text.indexOf('[') >= 0;
-    boolean hasClose = text.indexOf(']') >= 0;
+    boolean hasOpen = opening && text.indexOf('[') >= 0;
+    boolean hasClose = closing && text.indexOf(']') >= 0;
     if (!hasOpen && !hasClose) return text;
     StringBuilder sb = new StringBuilder(text.length() + 8);
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
-      if (c == '[' || c == ']') {
+      if (opening && c == '[') {
+        sb.append('\\').append(c);
+      } else if (closing && c == ']') {
         sb.append('\\').append(c);
       } else {
         sb.append(c);
@@ -152,6 +241,10 @@ class MarkdownGenerator {
     return sb.toString();
   }
 
+  /// Generates markdown for a given node. The markdown will begin evey line with "/// " if
+  /// [#linePrefix] is set to `true`
+  /// @param node The node to generate markdown for
+  /// @return The markdown representation of the node
   public String generate(DocNode node) {
     output = new StringBuilder();
 
@@ -161,10 +254,15 @@ class MarkdownGenerator {
       generateNode(node);
     }
 
-    // Ensure all lines start with "/// "
-    return prefixAllLines(output.toString());
+    if (linePrefix) {
+      // Ensure all lines start with "/// "
+      return prefixAllLines(output.toString());
+    } else {
+      return output.toString();
+    }
   }
 
+  /// Prefixes every line with a "///" sequence.
   private String prefixAllLines(String text) {
     // Trim excessive trailing blank lines from the generated markdown text
     text = trimTrailingBlankLines(text);
@@ -206,7 +304,7 @@ class MarkdownGenerator {
       }
       if (onlyWhitespace) {
         // drop this trailing whitespace-only line
-        end = lineStart == 0 ? 0 : lineStart - 0; // move to before this line
+        end = lineStart == 0 ? 0 : lineStart; // move to before this line
         // Also drop the newline before it if present
         if (end > 0 && text.charAt(end - 1) == '\n') {
           end--; // remove the newline
@@ -228,12 +326,11 @@ class MarkdownGenerator {
       // Handle whitespace-only text nodes at the root:
       // - If they contain a newline, skip them (spacing between blocks handled below)
       // - If they are only spaces/tabs, emit a single space to preserve inline separation
-      if (child instanceof DocNode.TextNode t && t.content().trim().isEmpty()) {
-        String ws = t.content();
-        if (ws.indexOf('\n') >= 0) {
+      if (child instanceof DocNode.TextNode(String content) && content.trim().isEmpty()) {
+        if (content.indexOf('\n') >= 0) {
           // skip newline-only whitespace; block spacing is normalized separately
           continue;
-        } else if (!ws.isEmpty()) {
+        } else if (!content.isEmpty()) {
           // preserve a single inline space between adjacent inline elements
           emit(" ");
           // Do not update previousNonWhitespace or previousWasBlockTag here,
@@ -281,10 +378,6 @@ class MarkdownGenerator {
       previousWasBlockTag = currentIsBlockTag;
       previousNonWhitespace = child;
     }
-  }
-
-  private boolean isWhitespaceNode(DocNode node) {
-    return (node instanceof DocNode.TextNode t) && t.content().trim().isEmpty();
   }
 
   // Ensures there is exactly one empty line (i.e., exactly two trailing '\n' characters)
@@ -360,7 +453,7 @@ class MarkdownGenerator {
   private void generateNode(DocNode node) {
     switch (node) {
       case DocNode.Root root -> generateRoot(root);
-      case DocNode.TextNode text -> emit(escapeSquareBrackets(text.content()));
+      case DocNode.TextNode text -> emit(escapeSquareBrackets(text.content(), true, false));
       case DocNode.Sequence seq -> {
         for (DocNode child : seq.children()) {
           generateNode(child);
@@ -421,9 +514,8 @@ class MarkdownGenerator {
       // Inline tags
       case DocNode.LinkTag link -> {
         String labelText = extractText(link.label());
-        // Escape brackets inside the label text so the link syntax remains valid
-        String escapedLabel = escapeSquareBrackets(labelText);
-        String escapedReference = escapeSquareBrackets(link.reference());
+        String escapedLabel = escapeSquareBrackets(labelText, true, true);
+        String escapedReference = escapeSquareBrackets(link.reference(), true, true);
         if (escapedLabel.equals(escapedReference)) {
           // If the label text is identical to the reference, use a shorter syntax
           emit("[" + escapedLabel + "]");
@@ -438,7 +530,7 @@ class MarkdownGenerator {
         emit(extractRawText(code.content()));
         emit("`");
       }
-      case DocNode.LiteralTag literal -> emit(escapeSquareBrackets(literal.text()));
+      case DocNode.LiteralTag literal -> emit(escapeSquareBrackets(literal.text(), true, false));
       case DocNode.ValueTag value -> emit("{@value " + value.reference() + "}");
       case DocNode.DocRootTag docRoot -> emit("{@docRoot}");
       case DocNode.InheritDocTag inheritDoc -> emit("{@inheritDoc}");
@@ -447,12 +539,12 @@ class MarkdownGenerator {
       // HTML inline elements
       case DocNode.Bold bold -> {
         emit("**");
-        generateNode(bold.content());
+        emit(extractText(bold.content()).trim());
         emit("**");
       }
       case DocNode.Italic italic -> {
         emit("*");
-        generateNode(italic.content());
+        emit(extractText(italic.content()).trim());
         emit("*");
       }
       case DocNode.Superscript sup -> {
@@ -466,7 +558,14 @@ class MarkdownGenerator {
         emit("</sub>");
       }
       case DocNode.Span span -> generateNode(span.content());
-      case DocNode.Anchor anchor -> generateNode(anchor.content());
+      case DocNode.Anchor anchor -> {
+        emit("[");
+        emit(escapeSquareBrackets(extractText(anchor.content()), true, true));
+        emit("]");
+        emit("(");
+        emit(anchor.href());
+        emit(")");
+      }
 
       // HTML block elements
       case DocNode.Paragraph p -> {
@@ -602,8 +701,6 @@ class MarkdownGenerator {
     }
   }
 
-  // ... existing table generation methods ...
-
   private void generateTable(DocNode.Table table) {
     List<List<String>> headerRows = new ArrayList<>();
     List<List<String>> bodyRows = new ArrayList<>();
@@ -679,46 +776,56 @@ class MarkdownGenerator {
   }
 
   private void extractTableContent(DocNode content, List<List<String>> headerRows, List<List<String>> bodyRows) {
-    if (content instanceof DocNode.Sequence seq) {
-      for (DocNode child : seq.children()) {
-        extractTableContent(child, headerRows, bodyRows);
+    switch (content) {
+      case DocNode.Sequence(var children) -> {
+        for (var child : children) {
+          extractTableContent(child, headerRows, bodyRows);
+        }
       }
-    } else if (content instanceof DocNode.TableHead thead) {
-      extractTableRows(thead.content(), headerRows);
-    } else if (content instanceof DocNode.TableBody tbody) {
-      extractTableRows(tbody.content(), bodyRows);
-    } else if (content instanceof DocNode.TableRow row) {
+      case DocNode.TableHead(DocNode innerContent) -> extractTableRows(innerContent, headerRows);
+      case DocNode.TableBody(DocNode innerContent) -> extractTableRows(innerContent, bodyRows);
       // Direct row without thead/tbody
-      bodyRows.add(extractRowCells(row));
+      case DocNode.TableRow row -> bodyRows.add(extractRowCells(row));
+      case null, default -> {
+        // ignore; doesn't belong in a table
+      }
     }
   }
 
   private void extractTableRows(DocNode content, List<List<String>> rows) {
-    if (content instanceof DocNode.Sequence seq) {
-      for (DocNode child : seq.children()) {
-        if (child instanceof DocNode.TableRow row) {
-          rows.add(extractRowCells(row));
+    switch (content) {
+      case DocNode.Sequence(var children) -> {
+        for (var child : children) {
+          if (child instanceof DocNode.TableRow row) {
+            rows.add(extractRowCells(row));
+          }
         }
       }
-    } else if (content instanceof DocNode.TableRow row) {
-      rows.add(extractRowCells(row));
+      case DocNode.TableRow row -> rows.add(extractRowCells(row));
+      case null, default -> {
+      }
     }
   }
 
   private List<String> extractRowCells(DocNode.TableRow row) {
     List<String> cells = new ArrayList<>();
-    if (row.content() instanceof DocNode.Sequence seq) {
-      for (DocNode child : seq.children()) {
-        if (child instanceof DocNode.TableData td) {
-          cells.add(escapeSquareBrackets(extractText(td.content()).strip()));
-        } else if (child instanceof DocNode.TableHeader th) {
-          cells.add(escapeSquareBrackets(extractText(th.content()).strip()));
+    switch (row.content()) {
+      case DocNode.Sequence(var children) -> {
+        for (var child : children) {
+          switch (child) {
+            case DocNode.TableData(var content) -> cells.add(extractText(content).strip());
+            case DocNode.TableHeader(var content) -> cells.add(extractText(content).strip());
+            case null, default -> {
+              // ignore the child
+            }
+          }
         }
       }
-    } else if (row.content() instanceof DocNode.TableData td) {
-      cells.add(escapeSquareBrackets(extractText(td.content()).strip()));
-    } else if (row.content() instanceof DocNode.TableHeader th) {
-      cells.add(escapeSquareBrackets(extractText(th.content()).strip()));
+      case DocNode.TableData(var content) -> cells.add(extractText(content).strip());
+      case DocNode.TableHeader(var content) -> cells.add(extractText(content).strip());
+      case null, default -> {
+        // ignore
+      }
     }
     return cells;
   }
@@ -726,11 +833,11 @@ class MarkdownGenerator {
   /// Extracts raw text from a node, preserving indentation and whitespace.
   /// Used for code blocks where formatting matters.
   private String extractRawText(DocNode node) {
-    if (node instanceof DocNode.TextNode text) {
-      return text.content();
-    } else if (node instanceof DocNode.Sequence seq) {
+    if (node instanceof DocNode.TextNode(String content)) {
+      return content;
+    } else if (node instanceof DocNode.Sequence(List<DocNode> children)) {
       StringBuilder sb = new StringBuilder();
-      for (DocNode child : seq.children()) {
+      for (DocNode child : children) {
         sb.append(extractRawText(child));
       }
       return sb.toString();
@@ -738,69 +845,29 @@ class MarkdownGenerator {
     return "";
   }
 
+  /// Extracts the exact textual representation of a node.
   private String extractText(DocNode node) {
-    StringBuilder sb = new StringBuilder();
-    extractTextRecursive(node, sb);
-    return sb.toString();
+    return new MarkdownGenerator(false).generate(node);
   }
 
-  private void extractTextRecursive(DocNode node, StringBuilder sb) {
-    switch (node) {
-      case DocNode.TextNode text -> sb.append(text.content());
-      case DocNode.Sequence seq -> {
-        for (DocNode child : seq.children()) {
-          extractTextRecursive(child, sb);
-        }
-      }
-      case DocNode.Bold bold -> {
-        sb.append("**");
-        extractTextRecursive(bold.content(), sb);
-        sb.append("**");
-      }
-      case DocNode.Italic italic -> {
-        sb.append("*");
-        extractTextRecursive(italic.content(), sb);
-        sb.append("*");
-      }
-      case DocNode.CodeInline code -> {
-        sb.append("`");
-        sb.append(extractRawText(code.content()));
-        sb.append("`");
-      }
-      case DocNode.LinkTag link -> {
-        String labelText = extractText(link.label());
-        // Reference-style link in extracted text as well
-        sb.append("[").append(labelText).append("][").append(link.reference()).append("]").append(' ');
-      }
-      default -> {
-        // Try to extract content from nodes with content
-        try {
-          var method = node.getClass().getMethod("content");
-          Object content = method.invoke(node);
-          if (content instanceof DocNode contentNode) {
-            extractTextRecursive(contentNode, sb);
-          }
-        } catch (Exception e) {
-          // Ignore nodes without content
-        }
-      }
-    }
-  }
-
+  /// Emits text to the markdown output.
   private void emit(String text) {
     output.append(text);
   }
 
+  /// Emits a newline to the markdown output.
   private void newline() {
-    output.append("\n");
+    emit("\n");
   }
 
-  // For block tags: if the current line (content accumulated so far)
-  // ends with a closing bracket ']', append a single '.' before any trailing newline.
-  // Otherwise, leave the line as-is. Trims trailing spaces/tabs for the check only.
+  /// For block tags: if the current line (content accumulated so far)
+  /// ends with a closing bracket ']', append a single '.' before any trailing newline.
+  /// Otherwise, leave the line as-is. Trims trailing spaces/tabs for the check only.
   private void ensureLineEndsWithPeriod() {
     int len = output.length();
-    if (len == 0) return;
+    if (len == 0) {
+      return;
+    }
 
     // Find index of last non-space/tab character; keep track if there's a trailing newline
     int i = len - 1;
@@ -818,7 +885,9 @@ class MarkdownGenerator {
         break;
       }
     }
-    if (i < 0) return; // nothing meaningful to modify
+    if (i < 0) {
+      return; // nothing meaningful to modify
+    }
 
     char lastContentChar = output.charAt(i);
 
@@ -833,11 +902,13 @@ class MarkdownGenerator {
     }
   }
 
-  // Trim trailing spaces/tabs and at most a single newline from the output buffer.
-  // Useful to avoid blank lines within lists where item content may have carried a newline.
+  /// Trim trailing spaces/tabs and at most a single newline from the output buffer.
+  /// Useful to avoid blank lines within lists where item content may have carried a newline.
   private void trimTrailingWhitespaceAndOptionalNewline() {
     int len = output.length();
-    if (len == 0) return;
+    if (len == 0) {
+      return;
+    }
     // Trim trailing spaces and tabs
     int i = len - 1;
     while (i >= 0) {
@@ -867,14 +938,18 @@ class MarkdownGenerator {
   }
 }
 
+/// Parses Javadoc comment blocks using the `/** ... */` comment style.
+@SuppressWarnings("ClassCanBeRecord")
 class FileParser {
   final String fileContent;
   private static final Pattern JAVADOC_PATTERN = Pattern.compile("^ */\\*\\*[\\s\\S]*?\\*/", Pattern.MULTILINE);
 
+  /// @param fileContent The string contents of the file to parse
   FileParser(String fileContent) {
     this.fileContent = fileContent;
   }
 
+  /// Extracts all javadoc comments from the source code.
   List<CommentBlock> extractJavadocComments() {
     List<CommentBlock> blocks = new ArrayList<>();
     int searchFrom = 0;
@@ -892,6 +967,10 @@ class FileParser {
   }
 }
 
+/// Represents a Javadoc comment block in source code.
+/// @param start The starting index of the text block in the source code
+/// @param end The ending index of the text block in the source code
+/// @param content The raw text content of the comment block
 record CommentBlock(int start, int end, String content) {
   CommentBlock {
     var expectedLength = (end - start);
@@ -905,6 +984,8 @@ record CommentBlock(int start, int end, String content) {
     }
   }
 }
+
+/// Parses javadoc comments into an AST of [DocNodes][DocNode].
 class DocAST {
   DocNode parse(CommentBlock commentBlock) {
     // rawContent:
@@ -959,7 +1040,6 @@ class DocAST {
     return line;
   }
 }
-
 
 class JavadocParser {
   private final String input;
@@ -1413,15 +1493,7 @@ class JavadocParser {
         children.size() == 1 ? children.get(0) :
             new DocNode.Sequence(children);
 
-    // Special handling for anchors to preserve href as links
-    if (tagName.equals("a")) {
-      String href = attributes.get("href");
-      if (href != null) {
-        return new DocNode.LinkTag(href, content);
-      }
-    }
-
-    return createHtmlNode(tagName, content);
+    return createHtmlNode(tagName, attributes, content);
   }
 
   private boolean peekClosingTag(String expectedTag) {
@@ -1453,7 +1525,7 @@ class JavadocParser {
     }
   }
 
-  private DocNode createHtmlNode(String tagName, DocNode content) {
+  private DocNode createHtmlNode(String tagName, Map<String, String> attributes, DocNode content) {
     return switch (tagName) {
       case "p" -> new DocNode.Paragraph(content);
       case "b", "strong" -> new DocNode.Bold(content);
@@ -1471,7 +1543,7 @@ class JavadocParser {
       case "ul" -> new DocNode.UnorderedList(content);
       case "ol" -> new DocNode.OrderedList(content);
       case "li" -> new DocNode.ListItem(content);
-      case "a" -> new DocNode.Anchor(content);
+      case "a" -> new DocNode.Anchor(attributes.get("href"), content);
       case "br" -> new DocNode.LineBreak();
       case "hr" -> new DocNode.HorizontalRule();
       case "blockquote" -> new DocNode.BlockQuote(content);
@@ -1495,7 +1567,7 @@ class JavadocParser {
     return switch (tagName) {
       case "br" -> new DocNode.LineBreak();
       case "hr" -> new DocNode.HorizontalRule();
-      default -> createHtmlNode(tagName, new DocNode.TextNode(""));
+      default -> createHtmlNode(tagName, Map.of(), new DocNode.TextNode(""));
     };
   }
 
@@ -1667,6 +1739,7 @@ class JavadocParser {
   }
 }
 
+/// A node in a Javadoc comment.
 sealed interface DocNode {
   // Root and primitives
   record Root(List<DocNode> children) implements DocNode {}
@@ -1686,7 +1759,7 @@ sealed interface DocNode {
   record Div(DocNode content) implements DocNode {}
 
   // HTML inline elements
-  record Anchor(DocNode content) implements DocNode {}
+  record Anchor(String href, DocNode content) implements DocNode {}
   record Bold(DocNode content) implements DocNode {}
   record CodeInline(DocNode content) implements DocNode {}
   record Italic(DocNode content) implements DocNode {}

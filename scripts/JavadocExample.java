@@ -104,4 +104,22 @@ public class JavadocExample {
    * @param b a value in [0, 1]
    */
   public void thisHasParamsWithSquareBracketDescriptions(int a, int b) {}
+
+  /**
+   * Here's a place, or something.
+   *
+   * <a href=https://en.wikipedia.org/wiki/Fibonacci_number>
+   *   A link on many
+   *   lines</a>
+   *
+   * <p>This link should be square-brackets-and-parens <a href=https://example.com>https://example.com</a>
+   *
+   * @param x something
+   * @see <a href=https://en.wikipedia.org/wiki/Fibonacci_number>An external link</a>
+   * @see <a href=https://en.wikipedia.org/wiki/Fibonacci_number>
+   *   A different external link</a>
+   * @throws java.lang.RuntimeException When you fail
+   * @param <X> the type of X
+   */
+  public <X> void thisLinksWithSee(int x) {}
 }
