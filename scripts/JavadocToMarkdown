@@ -1043,7 +1043,10 @@ class JavadocParser {
         yield new DocNode.ThrowsTag(exceptionType, description);
       }
       case "see" -> {
-        String reference = readLine();
+        // A @see entry can span multiple lines and may include raw HTML like <a ...>...</a>.
+        // We must capture everything up to (but not including) the next block tag that starts
+        // at the beginning of a line (after optional indentation).
+        String reference = readRawUntilNextBlockTag();
         yield new DocNode.SeeTag(reference);
       }
       case "since" -> {
@@ -1260,6 +1263,22 @@ class JavadocParser {
       }
     }
     return -1;
+  }
+
+  // Reads raw text from the current position up to the next Javadoc block tag
+  // that begins at the start of a line (allowing optional leading spaces/tabs),
+  // or to the end of input if none. This preserves internal newlines and any
+  // HTML like <a> tags without attempting to parse them, which is desired for
+  // multi-line @see entries that include <a ...>...</a> content across lines.
+  private String readRawUntilNextBlockTag() {
+    int start = pos;
+    while (pos < input.length()) {
+      if (isAtLineStartFollowedByAt()) {
+        break;
+      }
+      pos++;
+    }
+    return input.substring(start, pos).stripTrailing();
   }
 
   private DocNode parseHtmlTag() {
