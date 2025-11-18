@@ -114,6 +114,10 @@ public class JavadocExample {
    *
    * <p>This link should be square-brackets-and-parens <a href=https://example.com>https://example.com</a>
    *
+   * {@link java.lang.String strings
+   * are useful
+   * constructs}
+   *
    * @param x something
    * @see <a href=https://en.wikipedia.org/wiki/Fibonacci_number>An external link</a>
    * @see <a href=https://en.wikipedia.org/wiki/Fibonacci_number>

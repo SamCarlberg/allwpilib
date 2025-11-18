@@ -3,10 +3,8 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +30,18 @@ class JavadocToMarkdown {
     boolean debug = false;
     boolean dryRun = false;
 
-    Deque<String> a = new ArrayDeque<>(List.of(args));
+    List<String> a = new ArrayList<>(List.of(args));
     if (a.contains("--help") || a.contains("-h") || a.isEmpty()) {
       System.out.println(
           """
-              Usage: ./scripts/JavadocToMarkdown [--help|-h] [--dry] [--debug] file_paths
+              Usage: ./scripts/JavadocToMarkdown [--help|-h] [--dry] [--debug] [--max-line-length n] file_paths
               --help, -h: Print this help message
               --dry: Run without converting files. Output will be printed to stdout but no files will be modified.
               --debug: Print debug information during the parsing and conversion process.
+              --max-line-length n: Limits Markdown javadoc comments to n characters.
+                    Lines that cannot be broken down, such as long URLs and references, can exceed this limit
+                    Default value: 100
+
               file_paths: A list of file paths to convert to markdown. Accepts globs
 
               Note: Formatting may change, particularly line lengths. It's recommended to run a formatter after
@@ -56,6 +58,14 @@ class JavadocToMarkdown {
     if (a.contains("--debug")) {
       debug = true;
       a.remove("--debug");
+    }
+
+    int maxOverallLineLength = 100;
+    if (a.contains("--max-line-length")) {
+      int i = a.indexOf("--max-line-length");
+      maxOverallLineLength = Integer.parseInt(a.get(i + 1));
+      a.remove(i); // remove the command
+      a.remove(i); // and the parameter
     }
 
     String[] paths = a.toArray(new String[0]);
@@ -90,19 +100,22 @@ class JavadocToMarkdown {
           System.out.println(ast);
         }
 
-        String markdown = new MarkdownGenerator().generate(ast);
+        // Perform AST-aware reflow inside the generator itself, only for TextNodes,
+        // skipping tables, code blocks, inline code, pre blocks, links, emphasis, and headings.
+        String markdown = new MarkdownGenerator(true, maxOverallLineLength - indentation.length() - "/// ".length())
+            .generate(ast);
 
         // Apply indentation to the markdown
-        String indentedMarkdown = applyIndentation(markdown, indentation);
+        String markdownCommentBlock = applyIndentation(markdown, indentation);
 
         if (debug) {
           ANSIPrint.println("\nMarkdown output:", ANSIPrint.TextColor.MAGENTA);
-          System.out.println(indentedMarkdown);
+          System.out.println(markdownCommentBlock);
         }
 
         // Replace the comment block in the file content
         updatedFileContent = updatedFileContent.substring(0, comment.start())
-            + indentedMarkdown
+            + markdownCommentBlock
             + updatedFileContent.substring(comment.end());
 
         totalCommentCount++;
@@ -202,17 +215,60 @@ class ANSIPrint {
 
 class MarkdownGenerator {
   private StringBuilder output;
+  private final int maxLineLength;
+  private int currentLineLength = 0; // counts characters since last newline in output
+  private boolean reflowEnabled = true;
+  // Tracks whether there was whitespace between the previously emitted node
+  // and the next node that should be preserved as a single space when wrapping.
+  private boolean pendingSpaceAcrossNodes = false;
+
+  // Hanging indent support for block tags: when enabled, any continuation line
+  // (i.e., after a newline within the block tag content) will start with this
+  // many spaces before text is emitted. Wrapping calculations must account for
+  // this indentation prior to deciding break positions to ensure the configured
+  // max line length is never exceeded.
+  // TODO: Make the indent size configurable? Currently uses the default of 4 spaces
+  private static final int DEFAULT_HANGING_INDENT = 4;
+  private boolean hangingIndentEnabled = false;
+  private final int hangingIndentWidth = DEFAULT_HANGING_INDENT;
+  private boolean hangingIndentArmed = false; // apply indent at start-of-line when true
 
   /// Will cause the final output to include a `/// ` prefix for use in a Javadoc comment.
   /// Otherwise, will output just the raw Markdown text.
   private final boolean linePrefix;
 
   MarkdownGenerator() {
-    this(true);
+    this(true, 0);
   }
 
   MarkdownGenerator(boolean linePrefix) {
+    this(linePrefix, 0);
+  }
+
+  MarkdownGenerator(boolean linePrefix, int maxLineLength) {
     this.linePrefix = linePrefix;
+    this.maxLineLength = Math.max(0, maxLineLength);
+  }
+  
+  // Executes the given body with a hanging indent enabled for continuation lines.
+  // The first line is not indented; after the first newline (and all subsequent
+  // newlines while active), the line will start with the configured number of spaces.
+  private void withHangingIndent(Runnable body) {
+    boolean prevEnabled = hangingIndentEnabled;
+    boolean prevArmed = hangingIndentArmed;
+    try {
+      hangingIndentEnabled = true;
+      // Do not indent the current line; only continuation lines
+      // If we were already at start-of-line within another hanging context that was armed,
+      // keep the existing state; otherwise leave unarmed until the next newline.
+      if (!prevEnabled) {
+        hangingIndentArmed = false;
+      }
+      body.run();
+    } finally {
+      hangingIndentEnabled = prevEnabled;
+      hangingIndentArmed = prevArmed;
+    }
   }
   
   /// Escapes square brackets for Markdown, e.g., `[` -> `\\[` and `]` -> `\\]`.
@@ -222,11 +278,15 @@ class MarkdownGenerator {
   /// @param closing If set to `true`, will cause closing square brackets to be escaped
   /// @return The escaped string
   private String escapeSquareBrackets(String text, boolean opening, boolean closing) {
-    if (text == null || text.isEmpty()) return text;
+    if (text == null || text.isEmpty()) {
+      return text;
+    }
     // Fast path: if no brackets, return as-is
     boolean hasOpen = opening && text.indexOf('[') >= 0;
     boolean hasClose = closing && text.indexOf(']') >= 0;
-    if (!hasOpen && !hasClose) return text;
+    if (!hasOpen && !hasClose) {
+      return text;
+    }
     StringBuilder sb = new StringBuilder(text.length() + 8);
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
@@ -247,6 +307,9 @@ class MarkdownGenerator {
   /// @return The markdown representation of the node
   public String generate(DocNode node) {
     output = new StringBuilder();
+    currentLineLength = 0;
+    reflowEnabled = true;
+    pendingSpaceAcrossNodes = false;
 
     if (node instanceof DocNode.Root root) {
       generateRoot(root);
@@ -266,54 +329,42 @@ class MarkdownGenerator {
   private String prefixAllLines(String text) {
     // Trim excessive trailing blank lines from the generated markdown text
     text = trimTrailingBlankLines(text);
-    if (text.isEmpty()) {
+    if (text.isBlank()) {
       return "///";
     }
 
-    String[] lines = text.split("\n", -1);
-    StringBuilder result = new StringBuilder();
-
-    for (int i = 0; i < lines.length; i++) {
-      // Ensure we don't double up on spaces after the triple slash, eg "///  start of a line"
-      result.append("///");
-      String line = lines[i];
-      if (!line.startsWith(" ")) {
-        result.append(' ');
-      }
-      result.append(line);
-      if (i < lines.length - 1) {
-        result.append("\n");
-      }
-    }
-
-    return result.toString();
+    return Arrays
+        .stream(text.split("\n", -1))
+        .map(line -> {
+          if (line.startsWith(" ") || line.isBlank()) {
+            // Line begins with a space or is empty; don't add any spacing
+            return line;
+          } else {
+            // Add a " " character for spacing after the comment token.
+            return " " + line;
+          }
+        })
+        .map(line -> "///" + line)
+        .collect(Collectors.joining("\n"));
   }
 
   // Removes trailing blank lines (lines that are empty or whitespace only)
   private String trimTrailingBlankLines(String text) {
-    int end = text.length();
-    // Remove trailing whitespace characters, but stop when we remove up to first non-newline content
-    // We specifically want to remove complete blank lines at the end.
-    // Strategy: while text ends with a newline, trim whitespace-only suffix lines.
-    // Find index of last non-whitespace character that is not part of a required newline between content.
-    while (end > 0) {
-      int lineStart = text.lastIndexOf('\n', end - 1) + 1; // start of last line (after previous \n or 0)
-      boolean onlyWhitespace = true;
-      for (int i = lineStart; i < end; i++) {
-        if (!Character.isWhitespace(text.charAt(i))) { onlyWhitespace = false; break; }
-      }
-      if (onlyWhitespace) {
-        // drop this trailing whitespace-only line
-        end = lineStart == 0 ? 0 : lineStart; // move to before this line
-        // Also drop the newline before it if present
-        if (end > 0 && text.charAt(end - 1) == '\n') {
-          end--; // remove the newline
-        }
-      } else {
-        break;
-      }
+    if (text == null || text.isEmpty()) {
+      return text;
     }
-    return text.substring(0, end);
+    String[] lines = text.split("\n", -1); // keep trailing empties
+    int end = lines.length;
+    while (end > 0 && lines[end - 1].isBlank()) {
+      end--;
+    }
+    if (end == lines.length) {
+      return text; // nothing to trim
+    }
+    if (end == 0) {
+      return "";
+    }
+    return String.join("\n", java.util.Arrays.copyOf(lines, end));
   }
 
   private void generateRoot(DocNode.Root root) {
@@ -402,7 +453,11 @@ class MarkdownGenerator {
   private int countTrailingNewlines() {
     int count = 0;
     for (int i = output.length() - 1; i >= 0; i--) {
-      if (output.charAt(i) == '\n') count++; else break;
+      if (output.charAt(i) == '\n') {
+        count++;
+      } else {
+        break;
+      }
     }
     return count;
   }
@@ -453,7 +508,7 @@ class MarkdownGenerator {
   private void generateNode(DocNode node) {
     switch (node) {
       case DocNode.Root root -> generateRoot(root);
-      case DocNode.TextNode text -> emit(escapeSquareBrackets(text.content(), true, false));
+      case DocNode.TextNode text -> emitTextPossiblyReflowed(escapeSquareBrackets(text.content(), true, false));
       case DocNode.Sequence seq -> {
         for (DocNode child : seq.children()) {
           generateNode(child);
@@ -463,24 +518,27 @@ class MarkdownGenerator {
       // Block tags
       case DocNode.ParamTag param -> {
         emit("@param " + param.paramName() + " ");
-        generateNode(param.description());
+        withHangingIndent(() -> generateNode(param.description()));
         ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.ReturnTag ret -> {
         emit("@return ");
-        generateNode(ret.description());
+        withHangingIndent(() -> generateNode(ret.description()));
         ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.ThrowsTag throws_ -> {
         emit("@throws " + throws_.exceptionType() + " ");
-        generateNode(throws_.description());
+        withHangingIndent(() -> generateNode(throws_.description()));
         ensureLineEndsWithPeriod();
         newline();
       }
       case DocNode.SeeTag see -> {
-        emit("@see " + see.reference());
+        emit("@see ");
+        // The reference may contain raw HTML like <a href=...>label</a> possibly spanning lines.
+        // Apply reflow to the human-readable text segments while keeping HTML tags atomic.
+        withHangingIndent(() -> emitHtmlAwarePossiblyReflowed(see.reference()));
         ensureLineEndsWithPeriod();
         newline();
       }
@@ -506,7 +564,9 @@ class MarkdownGenerator {
         newline();
       }
       case DocNode.GenericBlockTag generic -> {
-        emit("@" + generic.tagName() + " " + generic.content());
+        emit("@" + generic.tagName() + " ");
+        // Generic content may include raw HTML; reflow text within, keep tags atomic.
+        emitHtmlAwarePossiblyReflowed(generic.content());
         ensureLineEndsWithPeriod();
         newline();
       }
@@ -514,14 +574,14 @@ class MarkdownGenerator {
       // Inline tags
       case DocNode.LinkTag link -> {
         String labelText = extractText(link.label());
-        String escapedLabel = escapeSquareBrackets(labelText, true, true);
+        // Normalize internal whitespace in the label (including newlines) to minimize
+        // line breaks coming from source formatting of {@link ...} descriptions.
+        String normalizedLabel = labelText.replaceAll("\\s+", " ").trim();
+        String escapedLabel = escapeSquareBrackets(normalizedLabel, true, true);
         String escapedReference = escapeSquareBrackets(link.reference(), true, true);
-        if (escapedLabel.equals(escapedReference)) {
-          // If the label text is identical to the reference, use a shorter syntax
-          emit("[" + escapedLabel + "]");
-        } else {
-          // Emit reference-style links: [label][reference]
-          emit("[" + escapedLabel + "][" + escapedReference + "]");
+        emitTextPossiblyReflowed("[" + escapedLabel + "]");
+        if (!escapedLabel.equals(escapedReference)) {
+          emitAtomicToken("[" + escapedReference + "]");
         }
       }
       case DocNode.CodeInline code -> {
@@ -538,33 +598,44 @@ class MarkdownGenerator {
 
       // HTML inline elements
       case DocNode.Bold bold -> {
+        boolean prev = disableReflow();
         emit("**");
-        emit(extractText(bold.content()).trim());
+        generateNode(bold.content());
         emit("**");
+        reflowEnabled = prev;
       }
       case DocNode.Italic italic -> {
+        boolean prev = disableReflow();
         emit("*");
-        emit(extractText(italic.content()).trim());
+        generateNode(italic.content());
         emit("*");
+        reflowEnabled = prev;
       }
       case DocNode.Superscript sup -> {
+        boolean prev = disableReflow();
         emit("<sup>");
         generateNode(sup.content());
         emit("</sup>");
+        reflowEnabled = prev;
       }
       case DocNode.Subscript sub -> {
+        boolean prev = disableReflow();
         emit("<sub>");
         generateNode(sub.content());
         emit("</sub>");
+        reflowEnabled = prev;
       }
       case DocNode.Span span -> generateNode(span.content());
       case DocNode.Anchor anchor -> {
-        emit("[");
-        emit(escapeSquareBrackets(extractText(anchor.content()), true, true));
-        emit("]");
-        emit("(");
-        emit(anchor.href());
-        emit(")");
+        // Emit the entire markdown link as an atomic token to avoid wrapping inside
+        boolean prev = disableReflow();
+        String rawLabel = extractText(anchor.content());
+        // Normalize internal whitespace in label (including newlines) to single spaces
+        String normalizedLabel = rawLabel.replaceAll("\\s+", " ").trim();
+        String label = escapeSquareBrackets(normalizedLabel, true, true);
+        reflowEnabled = prev;
+        String token = "[" + label + "](" + anchor.href() + ")";
+        emitAtomicToken(token);
       }
 
       // HTML block elements
@@ -572,31 +643,44 @@ class MarkdownGenerator {
         generateNode(p.content());
       }
       case DocNode.H1 h1 -> {
+        boolean prev = disableReflow();
         emit("# ");
         generateNode(h1.content());
+        reflowEnabled = prev;
       }
       case DocNode.H2 h2 -> {
+        boolean prev = disableReflow();
         emit("## ");
         generateNode(h2.content());
+        reflowEnabled = prev;
       }
       case DocNode.H3 h3 -> {
+        boolean prev = disableReflow();
         emit("### ");
         generateNode(h3.content());
+        reflowEnabled = prev;
       }
       case DocNode.H4 h4 -> {
+        boolean prev = disableReflow();
         emit("#### ");
         generateNode(h4.content());
+        reflowEnabled = prev;
       }
       case DocNode.H5 h5 -> {
+        boolean prev = disableReflow();
         emit("##### ");
         generateNode(h5.content());
+        reflowEnabled = prev;
       }
       case DocNode.H6 h6 -> {
+        boolean prev = disableReflow();
         emit("###### ");
         generateNode(h6.content());
+        reflowEnabled = prev;
       }
       case DocNode.CodeBlock code -> {
         ensureSingleEmptyLine();
+        boolean prev = disableReflow();
         emit("```");
         newline();
         String codeText = extractRawText(code.content());
@@ -605,9 +689,11 @@ class MarkdownGenerator {
           newline();
         }
         emit("```");
+        reflowEnabled = prev;
       }
       case DocNode.Pre pre -> {
         ensureSingleEmptyLine();
+        boolean prev = disableReflow();
         emit("```");
         newline();
         String preText = extractRawText(pre.content());
@@ -616,6 +702,7 @@ class MarkdownGenerator {
           newline();
         }
         emit("```");
+        reflowEnabled = prev;
       }
       case DocNode.BlockQuote quote -> {
         emit("> ");
@@ -852,12 +939,46 @@ class MarkdownGenerator {
 
   /// Emits text to the markdown output.
   private void emit(String text) {
+    if (text == null || text.isEmpty()) {
+      return;
+    }
+    // If we're at the start of a line and hanging indent is armed, insert the indent first
+    if (currentLineLength == 0 && hangingIndentEnabled && hangingIndentArmed) {
+      if (hangingIndentWidth > 0) {
+        output.append(" ".repeat(hangingIndentWidth));
+        currentLineLength += hangingIndentWidth;
+      }
+      // Only apply once per line
+      // Keep armed so that subsequent blank lines still indent after further newlines
+    }
     output.append(text);
+    int lastNl = text.lastIndexOf('\n');
+    if (lastNl >= 0) {
+      currentLineLength = text.length() - lastNl - 1;
+    } else {
+      currentLineLength += text.length();
+    }
   }
 
   /// Emits a newline to the markdown output.
   private void newline() {
-    emit("\n");
+    output.append("\n");
+    currentLineLength = 0;
+    pendingSpaceAcrossNodes = false;
+    if (hangingIndentEnabled) {
+      // Arm the hanging indent for the next line
+      hangingIndentArmed = true;
+    }
+  }
+
+  // Returns the current line length for wrapping calculations. If we're at the
+  // start of a line and a hanging indent is armed, account for the indent
+  // width so wrapping considers those spaces before placing tokens.
+  private int effectiveCurrentLineLength() {
+    if (currentLineLength == 0 && hangingIndentEnabled && hangingIndentArmed) {
+      return hangingIndentWidth;
+    }
+    return currentLineLength;
   }
 
   /// For block tags: if the current line (content accumulated so far)
@@ -900,6 +1021,216 @@ class MarkdownGenerator {
         output.append('.');
       }
     }
+  }
+
+  // Disable reflow for the duration of rendering a nested node
+  private boolean disableReflow() {
+    boolean prev = reflowEnabled;
+    reflowEnabled = false;
+    return prev;
+  }
+
+  // Emits text with greedy wrapping when reflow is enabled and a max line length is set.
+  private void emitTextPossiblyReflowed(String text) {
+    if (!reflowEnabled || maxLineLength <= 0) {
+      emit(text);
+      return;
+    }
+    int i = 0;
+    final int n = text.length();
+    boolean atStart = true;
+    boolean endsWithWhitespace = false;
+
+    while (i < n) {
+      // Consume any leading whitespace for this iteration
+      int wsStart = i;
+      while (i < n && Character.isWhitespace(text.charAt(i))) {
+        i++;
+      }
+      boolean sawWhitespace = i > wsStart; // there was whitespace before next token
+
+      // Consume next non-whitespace token
+      int tokStart = i;
+      while (i < n && !Character.isWhitespace(text.charAt(i))) {
+        i++;
+      }
+      String token = text.substring(tokStart, i);
+
+      // Determine if we need to emit a space before the token
+      boolean needSpace = false;
+      if (sawWhitespace) {
+        needSpace = true;
+      } else if (atStart && pendingSpaceAcrossNodes) {
+        // Leading token of this TextNode has a pending space from previous node
+        needSpace = true;
+      }
+
+      if (!token.isEmpty()) {
+        // Decide wrapping
+        int lineLen = effectiveCurrentLineLength();
+        int extra = (lineLen == 0 || !needSpace) ? 0 : 1;
+        int needed = extra + token.length();
+        if (lineLen > 0 && lineLen + needed > maxLineLength) {
+          newline();
+          needSpace = false; // after newline, no leading space
+        }
+        if (needSpace && effectiveCurrentLineLength() > 0) {
+          emit(" ");
+        }
+        emit(token);
+        atStart = false;
+        pendingSpaceAcrossNodes = false; // consumed if it was pending
+        endsWithWhitespace = false;
+      }
+
+      // Lookahead to see if loop ended due to whitespace; if so, remember for cross-node spacing
+      int look = i;
+      while (look < n && Character.isWhitespace(text.charAt(look))) {
+        look++;
+      }
+      endsWithWhitespace = (look > i) || (token.isEmpty() && sawWhitespace);
+      // Continue from current i
+    }
+
+    // If the TextNode ended with whitespace, remember a single pending space for the next node
+    if (endsWithWhitespace) {
+      pendingSpaceAcrossNodes = true;
+    }
+  }
+
+  // Emit a token as an atomic unit with wrapping decisions and pending-space handling.
+  private void emitAtomicToken(String token) {
+    if (token == null) {
+      return;
+    }
+    if (maxLineLength > 0) {
+      int tokenLen = token.length();
+      int lineLen = effectiveCurrentLineLength();
+      boolean insertSpace = pendingSpaceAcrossNodes && lineLen > 0;
+      int extra = insertSpace ? 1 : 0;
+      if (lineLen > 0 && lineLen + extra + tokenLen > maxLineLength) {
+        newline();
+        insertSpace = false;
+      }
+      if (insertSpace) {
+        emit(" ");
+      }
+    } else {
+      if (pendingSpaceAcrossNodes && currentLineLength > 0) {
+        emit(" ");
+      }
+    }
+    emit(token);
+    pendingSpaceAcrossNodes = false;
+  }
+
+  // Emits a string that may contain raw HTML tags like <a ...>...</a>.
+  // HTML tags are emitted atomically (no wrapping within them), while the
+  // intervening text content is emitted via the normal text reflow path.
+  private void emitHtmlAwarePossiblyReflowed(String s) {
+    if (s == null || s.isEmpty()) {
+      return;
+    }
+    int i = 0;
+    int n = s.length();
+    StringBuilder textBuf = new StringBuilder();
+    // Track whether the last emitted token was an opening HTML tag (e.g., <a ...>, <em>, <span>, etc.).
+    // If so, trim any leading whitespace from the immediately following text segment
+    // to avoid inserting an unintended space after the '>' of the opening tag when the
+    // label/text started on a new line in the source.
+    boolean lastWasOpeningTag = false;
+
+    while (i < n) {
+      char c = s.charAt(i);
+      if (c == '<') {
+        // Flush any accumulated text before emitting the tag
+        if (!textBuf.isEmpty()) {
+          String textChunk = textBuf.toString();
+          if (lastWasOpeningTag) {
+            // Remove leading whitespace introduced by newline/indentation right after an opening tag
+            int k = 0;
+            while (k < textChunk.length() && Character.isWhitespace(textChunk.charAt(k))) {
+              k++;
+            }
+            if (k > 0) {
+              textChunk = textChunk.substring(k);
+            }
+            // applied
+          }
+          // Escape brackets in text outside of tags to avoid breaking markdown
+          textChunk = escapeSquareBrackets(textChunk, true, true);
+          emitTextPossiblyReflowed(textChunk);
+          textBuf.setLength(0);
+        }
+
+        // Parse the tag token <...> respecting quotes
+        int start = i;
+        i++; // skip '<'
+        boolean inQuote = false;
+        char quoteChar = '\0';
+        while (i < n) {
+          char ch = s.charAt(i);
+          if (!inQuote && (ch == '"' || ch == '\'')) {
+            inQuote = true;
+            quoteChar = ch;
+            i++;
+            continue;
+          }
+          if (inQuote) {
+            if (ch == quoteChar) {
+              inQuote = false;
+            }
+            i++;
+            continue;
+          }
+          if (ch == '>') {
+            i++; // include '>'
+            break;
+          }
+          i++;
+        }
+        // If we didn't find a closing '>', treat remainder as text
+        if (i > n) {
+          i = n;
+        }
+        String tagToken = s.substring(start, i);
+        emitAtomicToken(tagToken);
+        // Detect if this is an opening HTML tag (not a closing tag/comment/PI)
+        lastWasOpeningTag = isOpeningTag(tagToken);
+      } else {
+        textBuf.append(c);
+        i++;
+      }
+    }
+
+    // Flush any remaining text
+    if (!textBuf.isEmpty()) {
+      String textChunk = textBuf.toString();
+      if (lastWasOpeningTag) {
+        int k = 0;
+        while (k < textChunk.length() && Character.isWhitespace(textChunk.charAt(k))) {
+          k++;
+        }
+        if (k > 0) {
+          textChunk = textChunk.substring(k);
+        }
+      }
+      textChunk = escapeSquareBrackets(textChunk, true, true);
+      emitTextPossiblyReflowed(textChunk);
+    }
+  }
+
+  // Helper: determine if a tag token like "<tag ...>" is an opening HTML tag of any name.
+  // Returns false for closing tags (</...>), comments (<!-- ... -->), and processing instructions (<?...?>).
+  private boolean isOpeningTag(String tagToken) {
+    if (tagToken == null || tagToken.length() < 3) {
+      return false; // minimal: <x>
+    }
+    if (tagToken.charAt(0) != '<') {
+      return false;
+    }
+    char second = tagToken.length() > 1 ? tagToken.charAt(1) : '\0';
+    return second != '/' && second != '!' && second != '?';
   }
 
   /// Trim trailing spaces/tabs and at most a single newline from the output buffer.
@@ -1067,7 +1398,6 @@ class JavadocParser {
   }
 
   private DocNode parseNext() {
-//    skipWhitespace();
     skipNewlines();
     if (pos >= input.length()) {
       return null;
@@ -1076,7 +1406,9 @@ class JavadocParser {
     // Check for block tags (@param, @return, etc.) even if preceded by spaces at line start
     if (pos == 0 || input.charAt(pos - 1) == '\n') {
       int i = pos;
-      while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+      while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) {
+        i++;
+      }
       if (i < input.length() && input.charAt(i) == '@') {
         pos = i; // advance to '@'
         return parseBlockTag();
@@ -1230,9 +1562,13 @@ class JavadocParser {
   // Returns true if current position is at start of a line (or start of input),
   // followed by optional spaces/tabs and an '@' character.
   private boolean isAtLineStartFollowedByAt() {
-    if (!(pos == 0 || input.charAt(pos - 1) == '\n')) return false;
+    if (!(pos == 0 || input.charAt(pos - 1) == '\n')) {
+      return false;
+    }
     int i = pos;
-    while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+    while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) {
+      i++;
+    }
     return i < input.length() && input.charAt(i) == '@';
   }
 
@@ -1444,22 +1780,30 @@ class JavadocParser {
         String processed = inner;
         int i = 0;
         // Skip leading whitespace/newlines
-        while (i < processed.length() && Character.isWhitespace(processed.charAt(i))) i++;
+        while (i < processed.length() && Character.isWhitespace(processed.charAt(i))) {
+          i++;
+        }
         if (i + 7 <= processed.length() && processed.startsWith("{@code", i)) {
           int afterCode = i + 6; // position at the 'e' in "code"
           // move past "{@code"
           afterCode = i + "{@code".length();
           // Skip optional whitespace after {@code
-          while (afterCode < processed.length() && Character.isWhitespace(processed.charAt(afterCode))) afterCode++;
+          while (afterCode < processed.length() && Character.isWhitespace(processed.charAt(afterCode))) {
+            afterCode++;
+          }
           // Now processed[afterCode .. end) is the code content plus an optional trailing '}'
           int end = processed.length();
           // Trim trailing whitespace
-          while (end > afterCode && Character.isWhitespace(processed.charAt(end - 1))) end--;
+          while (end > afterCode && Character.isWhitespace(processed.charAt(end - 1))) {
+            end--;
+          }
           // If there's a trailing '}', drop just one
           if (end > afterCode && processed.charAt(end - 1) == '}') {
             end--;
             // Also trim whitespace again after removing '}'
-            while (end > afterCode && Character.isWhitespace(processed.charAt(end - 1))) end--;
+            while (end > afterCode && Character.isWhitespace(processed.charAt(end - 1))) {
+              end--;
+            }
           }
           processed = processed.substring(afterCode, end);
         }
@@ -1583,7 +1927,9 @@ class JavadocParser {
       // treat it as a block tag boundary and stop text accumulation here.
       if ((pos == 0 || input.charAt(pos - 1) == '\n')) {
         int i = pos;
-        while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+        while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) {
+          i++;
+        }
         if (i < input.length() && input.charAt(i) == '@') {
           break;
         }
@@ -1604,7 +1950,9 @@ class JavadocParser {
       // Respect block tag boundaries even if there are leading spaces on the line.
       if ((pos == 0 || input.charAt(pos - 1) == '\n')) {
         int i = pos;
-        while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) i++;
+        while (i < input.length() && (input.charAt(i) == ' ' || input.charAt(i) == '\t')) {
+          i++;
+        }
         if (i < input.length() && input.charAt(i) == '@') {
           break;
         }
@@ -1676,7 +2024,9 @@ class JavadocParser {
   // Intended for reading type-parameter names in Javadoc such as "<T>" right after @param.
   // If no closing '>' is found, this will return just "<" to avoid infinite loops.
   private String readAngleBracketedToken() {
-    if (peek() != '<') return "";
+    if (peek() != '<') {
+      return "";
+    }
     int start = pos;
     // consume the initial '<'
     consume('<');
@@ -1715,7 +2065,9 @@ class JavadocParser {
 
   // Reads an HTML attribute value, supporting quoted and unquoted forms
   private String readAttrValue() {
-    if (pos >= input.length()) return "";
+    if (pos >= input.length()) {
+      return "";
+    }
     char c = peek();
     if (c == '"' || c == '\'') {
       char quote = consume();
@@ -1723,7 +2075,9 @@ class JavadocParser {
       while (pos < input.length() && peek() != quote) {
         sb.append(consume());
       }
-      if (peek() == quote) consume(quote);
+      if (peek() == quote) {
+        consume(quote);
+      }
       return sb.toString();
     } else {
       StringBuilder sb = new StringBuilder();
