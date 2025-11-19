@@ -72,6 +72,7 @@ class JavadocToMarkdown {
 
     int totalCommentCount = 0;
     int totalCommentLineChange = 0;
+    int totalJavadocCommentLines = 0;
 
     for (String fileToUpdate : paths) {
       Path path = Paths.get(fileToUpdate);
@@ -90,6 +91,7 @@ class JavadocToMarkdown {
           ANSIPrint.println("\nOriginal comment at " + comment.start() + "-" + comment.end() + ":", ANSIPrint.TextColor.MAGENTA);
           System.out.println(comment.content());
         }
+        totalJavadocCommentLines += comment.content().split("\n").length;
 
         // Determine the indentation of the original comment
         String indentation = extractIndentation(comment.content());
@@ -149,6 +151,7 @@ class JavadocToMarkdown {
     ANSIPrint.println(paths.length + " file(s) processed successfully", ANSIPrint.TextColor.GREEN);
     ANSIPrint.println(totalCommentCount + " comment(s) were converted to markdown", ANSIPrint.TextColor.GREEN);
     ANSIPrint.println(totalCommentLineChange + " line(s) of markdown comments were generated", ANSIPrint.TextColor.GREEN);
+    ANSIPrint.println(totalJavadocCommentLines + " line(s) of HTML comments were replaced", ANSIPrint.TextColor.GREEN);
   }
 
   private static String extractIndentation(String commentBlockContent) {
