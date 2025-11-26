@@ -111,8 +111,8 @@ subprojects {
 
     plugins.withType(JavaPlugin) {
         java {
-            sourceCompatibility = 21
-            targetCompatibility = 21
+            sourceCompatibility = 25
+            targetCompatibility = 25
         }
     }
 
@@ -171,5 +171,5 @@ ext.getCurrentArch = {
 }
 
 wrapper {
-    gradleVersion = '8.14.3'
+    gradleVersion = '9.2.1'
 }
