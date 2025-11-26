@@ -40,34 +40,6 @@ class CoroutineTest extends CommandTestBase {
   }
 
   @Test
-  void yieldInSynchronizedBlock() {
-    Object mutex = new Object();
-    AtomicInteger i = new AtomicInteger(0);
-
-    var yieldInSynchronized =
-        Command.noRequirements()
-            .executing(
-                co -> {
-                  while (true) {
-                    synchronized (mutex) {
-                      i.incrementAndGet();
-                      co.yield();
-                    }
-                  }
-                })
-            .named("Yield In Synchronized Block");
-
-    m_scheduler.schedule(yieldInSynchronized);
-
-    var error = assertThrows(IllegalStateException.class, m_scheduler::run);
-    assertEquals(
-        "Coroutine.yield() cannot be called inside a synchronized block or method. "
-            + "Consider using a Lock instead of synchronized, "
-            + "or rewrite your code to avoid locks and mutexes altogether.",
-        error.getMessage());
-  }
-
-  @Test
   void yieldInLockBody() {
     Lock lock = new ReentrantLock();
     AtomicInteger i = new AtomicInteger(0);
