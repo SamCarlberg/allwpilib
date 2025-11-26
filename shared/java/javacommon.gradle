@@ -106,7 +106,7 @@ configurations {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
         '--release',
-        '21',
+        '25',
         '-encoding',
         'UTF8',
         "-Werror",
@@ -117,6 +117,8 @@ tasks.withType(JavaCompile).configureEach {
         "-Xlint:-serial",
         // ignore unclaimed annotation warning from annotation processing
         "-Xlint:-processing",
+        // ignore errors related to System.load
+        "-Xlint:-restricted",
     ]
 }
 
