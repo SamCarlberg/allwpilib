@@ -17,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Handles deserialization of JSON text to objects. This class natively works with standard Java
@@ -27,24 +26,6 @@ import java.util.function.Function;
  * JsonConstructor @JsonConstructor} annotation.
  */
 public final class JsonDeserializer {
-  private static final Map<Class<?>, Function<Number, Object>> NUMERIC_CONVERSIONS;
-
-  static {
-    NUMERIC_CONVERSIONS = new LinkedHashMap<>();
-    NUMERIC_CONVERSIONS.put(double.class, Number::doubleValue);
-    NUMERIC_CONVERSIONS.put(Double.class, Number::doubleValue);
-    NUMERIC_CONVERSIONS.put(int.class, Number::intValue);
-    NUMERIC_CONVERSIONS.put(Integer.class, Number::intValue);
-    NUMERIC_CONVERSIONS.put(long.class, Number::longValue);
-    NUMERIC_CONVERSIONS.put(Long.class, Number::longValue);
-    NUMERIC_CONVERSIONS.put(float.class, Number::floatValue);
-    NUMERIC_CONVERSIONS.put(Float.class, Number::floatValue);
-    NUMERIC_CONVERSIONS.put(short.class, Number::shortValue);
-    NUMERIC_CONVERSIONS.put(Short.class, Number::shortValue);
-    NUMERIC_CONVERSIONS.put(byte.class, Number::byteValue);
-    NUMERIC_CONVERSIONS.put(Byte.class, Number::byteValue);
-  }
-
   private JsonDeserializer() {
     throw new UnsupportedOperationException(
         "JsonDeserializer is a utility class and cannot be instantiated");
@@ -153,9 +134,23 @@ public final class JsonDeserializer {
 
   @SuppressWarnings("unchecked")
   private static <T> T loadNumber(Object node, Number num, Class<?> clazz) {
-    Function<Number, Object> conv = NUMERIC_CONVERSIONS.get(clazz);
-    if (conv != null) {
-      return (T) conv.apply(num);
+    if (clazz == double.class || clazz == Double.class) {
+      return (T) Double.valueOf(num.doubleValue());
+    }
+    if (clazz == int.class || clazz == Integer.class) {
+      return (T) Integer.valueOf(num.intValue());
+    }
+    if (clazz == long.class || clazz == Long.class) {
+      return (T) Long.valueOf(num.longValue());
+    }
+    if (clazz == float.class || clazz == Float.class) {
+      return (T) Float.valueOf(num.floatValue());
+    }
+    if (clazz == short.class || clazz == Short.class) {
+      return (T) Short.valueOf(num.shortValue());
+    }
+    if (clazz == byte.class || clazz == Byte.class) {
+      return (T) Byte.valueOf(num.byteValue());
     }
     throw new IllegalArgumentException("Expected number, got " + node.getClass().getSimpleName());
   }
