@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Handles serialization of objects to JSON text. Any collections in the object tree will be
@@ -45,77 +43,104 @@ public final class JsonSerializer {
       return object.toString();
     }
     if (object instanceof Collection<?> collection) {
-      return "["
-          + collection.stream().map(JsonSerializer::toJson).collect(Collectors.joining(", "))
-          + "]";
+      return "[" + collectionToJson(collection) + "]";
     }
     if (object instanceof Map<?, ?> map) {
-      return "{"
-          + map.entrySet().stream()
-              .map(e -> "\"" + escape(String.valueOf(e.getKey())) + "\": " + toJson(e.getValue()))
-              .collect(Collectors.joining(", "))
-          + "}";
+      return "{" + mapToJson(map) + "}";
     }
     if (object.getClass().isArray()) {
-      return "["
-          + IntStream.range(0, Array.getLength(object))
-              .mapToObj(i -> toJson(Array.get(object, i)))
-              .collect(Collectors.joining(", "))
-          + "]";
+      return "[" + arrayToJson(object) + "]";
     }
 
     Class<?> clazz = object.getClass();
     Map<String, Object> props = new LinkedHashMap<>();
 
-    getAllMethods(clazz)
-        .forEach(
-            method -> {
-              JsonAttribute attr = method.getAnnotation(JsonAttribute.class);
-              if (method.getParameterCount() != 0) {
-                throw new IllegalArgumentException(
-                    "@JsonAttribute methods cannot have parameters: "
-                        + method.getDeclaringClass().getName()
-                        + "."
-                        + method.getName());
-              }
+    for (Method method : getAllMethods(clazz)) {
+      JsonAttribute attr = method.getAnnotation(JsonAttribute.class);
+      if (method.getParameterCount() != 0) {
+        throw new IllegalArgumentException(
+            "@JsonAttribute methods cannot have parameters: "
+                + method.getDeclaringClass().getName()
+                + "."
+                + method.getName());
+      }
 
-              if (props.containsKey(attr.value())) {
-                return;
-              }
+      if (props.containsKey(attr.value())) {
+        continue;
+      }
 
-              method.setAccessible(true);
+      method.setAccessible(true);
 
-              try {
-                Object val = method.invoke(object);
-                if (val != null) {
-                  props.put(attr.value(), val);
-                }
-              } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Failed to invoke method " + method.getName(), e);
-              }
-            });
+      try {
+        Object val = method.invoke(object);
+        if (val != null) {
+          props.put(attr.value(), val);
+        }
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException("Failed to invoke method " + method.getName(), e);
+      }
+    }
 
-    getAllFields(clazz)
-        .forEach(
-            field -> {
-              JsonAttribute attr = field.getAnnotation(JsonAttribute.class);
-              if (props.containsKey(attr.value())) {
-                return;
-              }
+    for (Field field : getAllFields(clazz)) {
+      JsonAttribute attr = field.getAnnotation(JsonAttribute.class);
+      if (props.containsKey(attr.value())) {
+        continue;
+      }
 
-              field.setAccessible(true);
+      field.setAccessible(true);
 
-              try {
-                Object val = field.get(object);
-                if (val != null) {
-                  props.put(attr.value(), val);
-                }
-              } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to access field " + field.getName(), e);
-              }
-            });
+      try {
+        Object val = field.get(object);
+        if (val != null) {
+          props.put(attr.value(), val);
+        }
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Failed to access field " + field.getName(), e);
+      }
+    }
 
     return toJson(props);
+  }
+
+  private static String collectionToJson(Collection<?> collection) {
+    StringBuilder sb = new StringBuilder();
+    boolean first = true;
+    for (Object item : collection) {
+      if (!first) {
+        sb.append(", ");
+      }
+      sb.append(toJson(item));
+      first = false;
+    }
+    return sb.toString();
+  }
+
+  private static String mapToJson(Map<?, ?> map) {
+    StringBuilder sb = new StringBuilder();
+    boolean first = true;
+    for (Map.Entry<?, ?> entry : map.entrySet()) {
+      if (!first) {
+        sb.append(", ");
+      }
+      sb.append('"')
+          .append(escape(String.valueOf(entry.getKey())))
+          .append("\": ")
+          .append(toJson(entry.getValue()));
+      first = false;
+    }
+    return sb.toString();
+  }
+
+  private static String arrayToJson(Object array) {
+    StringBuilder sb = new StringBuilder();
+    int length = Array.getLength(array);
+    for (int i = 0; i < length; i++) {
+      if (i > 0) {
+        sb.append(", ");
+      }
+      sb.append(toJson(Array.get(array, i)));
+    }
+    return sb.toString();
   }
 
   private static List<Method> getAllMethods(Class<?> clazz) {
