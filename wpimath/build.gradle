@@ -90,7 +90,6 @@ nativeUtils.exportsConfigs {
 dependencies {
     api project(":wpiunits")
     api libs.bundles.ejml
-    api libs.bundles.jackson
     api libs.quickbuf.runtime
 }
 

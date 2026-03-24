@@ -24,7 +24,6 @@ if(WITH_JAVA)
 
     file(GLOB_RECURSE JAVA_SOURCES src/main/java/*.java src/generated/main/java/*.java)
     file(GLOB EJML_JARS "${WPILIB_BINARY_DIR}/wpimath/thirdparty/ejml/*.jar")
-    file(GLOB JACKSON_JARS "${WPILIB_BINARY_DIR}/wpiutil/thirdparty/jackson/*.jar")
 
     add_jar(
         wpilibj_jar
@@ -34,7 +33,6 @@ if(WITH_JAVA)
             hal_jar
             ntcore_jar
             ${EJML_JARS}
-            ${JACKSON_JARS}
             ${OPENCV_JAR_FILE}
             cscore_jar
             cameraserver_jar

@@ -4,22 +4,22 @@
 
 package org.wpilib.vision.apriltag;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.util.RawFrame;
+import org.wpilib.util.json.JsonAttribute;
+import org.wpilib.util.json.JsonConstructor;
 import org.wpilib.vision.apriltag.jni.AprilTagJNI;
 
 /** Represents an AprilTag's metadata. */
 @SuppressWarnings("MemberName")
 public class AprilTag {
   /** The tag's ID. */
-  @JsonProperty(value = "ID")
+  @JsonAttribute(value = "ID")
   public int ID;
 
   /** The tag's pose. */
-  @JsonProperty(value = "pose")
+  @JsonAttribute(value = "pose")
   public Pose3d pose;
 
   /**
@@ -29,10 +29,10 @@ public class AprilTag {
    * @param pose The tag's pose.
    */
   @SuppressWarnings("ParameterName")
-  @JsonCreator
+  @JsonConstructor
   public AprilTag(
-      @JsonProperty(required = true, value = "ID") int ID,
-      @JsonProperty(required = true, value = "pose") Pose3d pose) {
+      @JsonAttribute("ID") int ID,
+      @JsonAttribute("pose") Pose3d pose) {
     this.ID = ID;
     this.pose = pose;
   }

@@ -6,10 +6,6 @@ package org.wpilib.math.geometry;
 
 import static org.wpilib.units.Units.Meters;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +18,8 @@ import org.wpilib.math.linalg.Vector;
 import org.wpilib.math.numbers.N2;
 import org.wpilib.math.util.MathUtil;
 import org.wpilib.units.measure.Distance;
+import org.wpilib.util.json.JsonAttribute;
+import org.wpilib.util.json.JsonConstructor;
 import org.wpilib.util.protobuf.ProtobufSerializable;
 import org.wpilib.util.struct.StructSerializable;
 
@@ -31,8 +29,6 @@ import org.wpilib.util.struct.StructSerializable;
  * <p>This assumes that you are using conventional mathematical axes. When the robot is at the
  * origin facing in the positive X direction, forward is positive X and left is positive Y.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Translation2d
     implements Interpolatable<Translation2d>, ProtobufSerializable, StructSerializable {
   /**
@@ -56,10 +52,10 @@ public class Translation2d
    * @param x The x component of the translation.
    * @param y The y component of the translation.
    */
-  @JsonCreator
+  @JsonConstructor
   public Translation2d(
-      @JsonProperty(required = true, value = "x") double x,
-      @JsonProperty(required = true, value = "y") double y) {
+      @JsonAttribute(value = "x") double x,
+      @JsonAttribute(value = "y") double y) {
     m_x = x;
     m_y = y;
   }
@@ -130,7 +126,7 @@ public class Translation2d
    *
    * @return The X component of the translation.
    */
-  @JsonProperty
+  @JsonAttribute("x")
   public double getX() {
     return m_x;
   }
@@ -140,7 +136,7 @@ public class Translation2d
    *
    * @return The Y component of the translation.
    */
-  @JsonProperty
+  @JsonAttribute("y")
   public double getY() {
     return m_y;
   }

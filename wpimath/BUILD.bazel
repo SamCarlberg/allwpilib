@@ -245,9 +245,6 @@ wpilib_jni_java_library(
     deps = [
         "//wpiunits:wpiunits-java",
         "//wpiutil:wpiutil-java",
-        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
-        "@maven//:com_fasterxml_jackson_core_jackson_core",
-        "@maven//:com_fasterxml_jackson_core_jackson_databind",
         "@maven//:org_ejml_ejml_core",
         "@maven//:org_ejml_ejml_ddense",
         "@maven//:org_ejml_ejml_simple",

@@ -7,12 +7,13 @@ package org.wpilib.vision.apriltag;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.util.Units;
+import org.wpilib.util.json.JsonDeserializer;
+import org.wpilib.util.json.JsonSerializer;
 
 class AprilTagSerializationTest {
   @Test
@@ -25,13 +26,10 @@ class AprilTagSerializationTest {
             Units.feetToMeters(54.0),
             Units.feetToMeters(27.0));
 
-    var objectMapper = new ObjectMapper();
-
     var deserialized =
         assertDoesNotThrow(
             () ->
-                objectMapper.readValue(
-                    objectMapper.writeValueAsString(layout), AprilTagFieldLayout.class));
+                JsonDeserializer.deserialize(JsonSerializer.toJson(layout), AprilTagFieldLayout.class));
 
     assertEquals(layout, deserialized);
   }

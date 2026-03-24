@@ -6,10 +6,6 @@ package org.wpilib.math.geometry;
 
 import static org.wpilib.units.Units.Meters;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,12 +18,12 @@ import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N3;
 import org.wpilib.math.util.Nat;
 import org.wpilib.units.measure.Distance;
+import org.wpilib.util.json.JsonAttribute;
+import org.wpilib.util.json.JsonConstructor;
 import org.wpilib.util.protobuf.ProtobufSerializable;
 import org.wpilib.util.struct.StructSerializable;
 
 /** Represents a 2D pose containing translational and rotational elements. */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Pose2d implements Interpolatable<Pose2d>, ProtobufSerializable, StructSerializable {
   /**
    * A preallocated Pose2d representing the origin.
@@ -51,10 +47,10 @@ public class Pose2d implements Interpolatable<Pose2d>, ProtobufSerializable, Str
    * @param translation The translational component of the pose.
    * @param rotation The rotational component of the pose.
    */
-  @JsonCreator
+  @JsonConstructor
   public Pose2d(
-      @JsonProperty(required = true, value = "translation") Translation2d translation,
-      @JsonProperty(required = true, value = "rotation") Rotation2d rotation) {
+      @JsonAttribute("translation") Translation2d translation,
+      @JsonAttribute("rotation") Rotation2d rotation) {
     m_translation = translation;
     m_rotation = rotation;
   }
@@ -129,7 +125,7 @@ public class Pose2d implements Interpolatable<Pose2d>, ProtobufSerializable, Str
    *
    * @return The translational component of the pose.
    */
-  @JsonProperty
+  @JsonAttribute("translation")
   public Translation2d getTranslation() {
     return m_translation;
   }
@@ -175,7 +171,7 @@ public class Pose2d implements Interpolatable<Pose2d>, ProtobufSerializable, Str
    *
    * @return The rotational component of the pose.
    */
-  @JsonProperty
+  @JsonAttribute("rotation")
   public Rotation2d getRotation() {
     return m_rotation;
   }

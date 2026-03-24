@@ -42,8 +42,6 @@ wpilib_java_library(
     resources = glob(["src/main/native/resources/**"]),
     visibility = ["//visibility:public"],
     deps = [
-        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
-        "@maven//:com_fasterxml_jackson_core_jackson_databind",
     ],
 )
 

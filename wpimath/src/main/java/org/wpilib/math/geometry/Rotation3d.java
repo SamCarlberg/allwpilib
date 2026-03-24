@@ -6,10 +6,6 @@ package org.wpilib.math.geometry;
 
 import static org.wpilib.units.Units.Radians;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import org.wpilib.math.geometry.proto.Rotation3dProto;
 import org.wpilib.math.geometry.struct.Rotation3dStruct;
@@ -22,6 +18,8 @@ import org.wpilib.math.numbers.N3;
 import org.wpilib.math.util.MathSharedStore;
 import org.wpilib.math.util.Nat;
 import org.wpilib.units.measure.Angle;
+import org.wpilib.util.json.JsonAttribute;
+import org.wpilib.util.json.JsonConstructor;
 import org.wpilib.util.protobuf.ProtobufSerializable;
 import org.wpilib.util.struct.StructSerializable;
 
@@ -68,8 +66,6 @@ import org.wpilib.util.struct.StructSerializable;
  * rotation. A neat property is that applying a series of rotations extrinsically is the same as
  * applying the same series in the opposite order intrinsically.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Rotation3d
     implements Interpolatable<Rotation3d>, ProtobufSerializable, StructSerializable {
   /**
@@ -91,8 +87,8 @@ public class Rotation3d
    *
    * @param q The quaternion.
    */
-  @JsonCreator
-  public Rotation3d(@JsonProperty(required = true, value = "quaternion") Quaternion q) {
+  @JsonConstructor
+  public Rotation3d(@JsonAttribute(value = "quaternion") Quaternion q) {
     m_q = q.normalize();
   }
 
@@ -393,7 +389,7 @@ public class Rotation3d
    *
    * @return The quaternion representation of the Rotation3d.
    */
-  @JsonProperty(value = "quaternion")
+  @JsonAttribute(value = "quaternion")
   public Quaternion getQuaternion() {
     return m_q;
   }

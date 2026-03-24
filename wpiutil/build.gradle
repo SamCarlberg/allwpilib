@@ -272,6 +272,5 @@ model {
 }
 
 dependencies {
-    api libs.bundles.jackson
     api libs.quickbuf.runtime
 }
