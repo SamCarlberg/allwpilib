@@ -4,6 +4,12 @@
 
 package org.wpilib.util.json;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,11 +18,17 @@ import java.util.SequencedMap;
 
 /** Parses JSON text into Java objects. */
 public final class JsonParser {
-  private final String m_json;
+  private final Reader m_reader;
+  // Make the buffer the size of a hardware page (4KB)
+  private final char[] m_buffer = new char[4096];
+  private int m_bufferPos;
+  private int m_bufferLen;
   private int m_pos;
 
-  private JsonParser(String json) {
-    this.m_json = json;
+  private JsonParser(Reader reader) {
+    this.m_reader = reader;
+    this.m_bufferPos = 0;
+    this.m_bufferLen = 0;
     this.m_pos = 0;
   }
 
@@ -31,23 +43,87 @@ public final class JsonParser {
     if (json == null) {
       throw new IllegalArgumentException("JSON string cannot be null");
     }
-    JsonParser parser = new JsonParser(json);
+    JsonParser parser = new JsonParser(new StringReader(json));
     Object node = parser.parseValue();
     parser.skipWhitespace();
-    if (parser.m_pos < json.length()) {
+    if (parser.hasNext()) {
       throw new ParseException(
           "Invalid JSON. Expected end of input at " + parser.m_pos, parser.m_pos);
     }
     return node;
   }
 
-  private Object parseValue() {
-    skipWhitespace();
-    if (m_pos >= m_json.length()) {
-      throw new ParseException("Unexpected end of input at position " + m_pos, m_pos);
+  /**
+   * Parses a JSON input stream into a Java object.
+   *
+   * @param is The JSON input stream to parse
+   * @return The parsed Java object
+   * @throws ParseException If the JSON in the input stream is invalid or if the input stream cannot
+   *   be read
+   */
+  public static Object parse(InputStream is) {
+    if (is == null) {
+      throw new IllegalArgumentException("Input stream cannot be null");
     }
 
-    char c = m_json.charAt(m_pos);
+    try (var reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+      JsonParser parser = new JsonParser(reader);
+      Object node = parser.parseValue();
+      parser.skipWhitespace();
+      if (parser.hasNext()) {
+        throw new ParseException(
+            "Invalid JSON. Expected end of input at " + parser.m_pos, parser.m_pos);
+      }
+      return node;
+    } catch (IOException e) {
+      throw new ParseException("Could not read JSON text from input stream", e, 0);
+    }
+  }
+
+  private boolean hasNext() {
+    if (m_bufferPos < m_bufferLen) {
+      return true;
+    }
+    fillBuffer();
+    return m_bufferPos < m_bufferLen;
+  }
+
+  private char peek() {
+    if (!hasNext()) {
+      throw new ParseException("Unexpected end of input at position " + m_pos, m_pos);
+    }
+    return m_buffer[m_bufferPos];
+  }
+
+  private char next() {
+    char c = peek();
+    m_bufferPos++;
+    m_pos++;
+    return c;
+  }
+
+  private boolean matches(String s) {
+    for (int i = 0; i < s.length(); i++) {
+      if (!hasNext() || peek() != s.charAt(i)) {
+        return false;
+      }
+      next();
+    }
+    return true;
+  }
+
+  private void fillBuffer() {
+    try {
+      m_bufferLen = m_reader.read(m_buffer);
+      m_bufferPos = 0;
+    } catch (IOException e) {
+      throw new ParseException("IO error: " + e.getMessage(), m_pos);
+    }
+  }
+
+  private Object parseValue() {
+    skipWhitespace();
+    char c = peek();
     Object node =
         switch (c) {
           case '{' -> parseObject();
@@ -69,81 +145,81 @@ public final class JsonParser {
   }
 
   private Map<String, Object> parseObject() {
-    m_pos++; // skip '{'
+    next(); // skip '{'
 
     // Use a linked hashmap to preserve key order
     SequencedMap<String, Object> properties = new LinkedHashMap<>();
     skipWhitespace();
-    if (m_pos < m_json.length() && m_json.charAt(m_pos) == '}') {
-      m_pos++;
+    if (hasNext() && peek() == '}') {
+      next();
       return properties;
     }
 
     while (true) {
       skipWhitespace();
-      if (m_pos >= m_json.length() || m_json.charAt(m_pos) != '"') {
+      if (!hasNext() || peek() != '"') {
         throw new ParseException("Expected string key in object at position " + m_pos, m_pos);
       }
       final String key = parseString();
 
       skipWhitespace();
-      if (m_pos >= m_json.length() || m_json.charAt(m_pos) != ':') {
+      if (!hasNext() || peek() != ':') {
         throw new ParseException("Expected ':' after key in object at position " + m_pos, m_pos);
       }
-      m_pos++;
+      next();
 
       Object value = parseValue();
       properties.put(key, value);
 
-      if (m_pos < m_json.length() && m_json.charAt(m_pos) == '}') {
-        m_pos++;
+      skipWhitespace();
+      if (hasNext() && peek() == '}') {
+        next();
         break;
       }
-      if (m_pos >= m_json.length() || m_json.charAt(m_pos) != ',') {
+      if (!hasNext() || peek() != ',') {
         throw new ParseException("Expected ',' or '}' in object at position " + m_pos, m_pos);
       }
-      m_pos++;
+      next();
     }
     return properties;
   }
 
   private List<Object> parseArray() {
-    m_pos++; // skip '['
+    next(); // skip '['
     List<Object> children = new ArrayList<>();
     skipWhitespace();
-    if (m_pos < m_json.length() && m_json.charAt(m_pos) == ']') {
-      m_pos++;
+    if (hasNext() && peek() == ']') {
+      next();
       return children;
     }
 
     while (true) {
       children.add(parseValue());
-      if (m_pos < m_json.length() && m_json.charAt(m_pos) == ']') {
-        m_pos++;
+      skipWhitespace();
+      if (hasNext() && peek() == ']') {
+        next();
         break;
       }
-      if (m_pos >= m_json.length() || m_json.charAt(m_pos) != ',') {
+      if (!hasNext() || peek() != ',') {
         throw new ParseException("Expected ',' or ']' in array at position " + m_pos, m_pos);
       }
-      m_pos++;
+      next();
     }
     return children;
   }
 
   private String parseString() {
-    m_pos++; // skip '"'
+    next(); // skip '"'
     StringBuilder sb = new StringBuilder();
-    while (m_pos < m_json.length()) {
-      char c = m_json.charAt(m_pos);
+    while (hasNext()) {
+      char c = next();
       if (c == '"') {
-        m_pos++;
         return sb.toString();
       } else if (c == '\\') {
-        m_pos++;
-        if (m_pos >= m_json.length()) {
+        if (!hasNext()) {
           throw new ParseException("Unterminated escape sequence", m_pos);
         }
-        char escaped = m_json.charAt(m_pos);
+        char escaped = next();
         switch (escaped) {
           case '"' -> sb.append('"');
           case '\\' -> sb.append('\\');
@@ -154,40 +230,41 @@ public final class JsonParser {
           case 'r' -> sb.append('\r');
           case 't' -> sb.append('\t');
           case 'u' -> {
-            if (m_pos + 4 >= m_json.length()) {
-              throw new ParseException("Invalid unicode escape", m_pos);
+            StringBuilder hexSb = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+              if (!hasNext()) {
+                throw new ParseException("Invalid unicode escape", m_pos);
+              }
+              hexSb.append(next());
             }
-            String hex = m_json.substring(m_pos + 1, m_pos + 5);
+            String hex = hexSb.toString();
             try {
               sb.append((char) Integer.parseInt(hex, 16));
             } catch (NumberFormatException e) {
               throw new ParseException("Invalid unicode escape: " + hex, m_pos);
             }
-            m_pos += 4;
           }
           default -> sb.append(escaped);
         }
       } else {
         sb.append(c);
       }
-      m_pos++;
     }
     throw new ParseException("Unterminated string starting at " + m_pos, m_pos);
   }
 
   private double parseNumber() {
     int start = m_pos;
-    // Consume characters that can be part of a number
-    // We'll be a bit liberal here and let Double.parseDouble handle the actual validation
-    while (m_pos < m_json.length()) {
-      char c = m_json.charAt(m_pos);
+    StringBuilder sb = new StringBuilder();
+    while (hasNext()) {
+      char c = peek();
       if (Character.isDigit(c) || c == '.' || c == '-' || c == '+' || c == 'e' || c == 'E') {
-        m_pos++;
+        sb.append(next());
       } else {
         break;
       }
     }
-    String numStr = m_json.substring(start, m_pos);
+    String numStr = sb.toString();
     try {
       return Double.parseDouble(numStr);
     } catch (NumberFormatException e) {
@@ -196,27 +273,28 @@ public final class JsonParser {
   }
 
   private boolean parseBoolean() {
-    if (m_json.startsWith("true", m_pos)) {
-      m_pos += 4;
-      return true;
-    } else if (m_json.startsWith("false", m_pos)) {
-      m_pos += 5;
-      return false;
+    if (peek() == 't') {
+      if (matches("true")) {
+        return true;
+      }
+    } else if (peek() == 'f') {
+      if (matches("false")) {
+        return false;
+      }
     }
     throw new ParseException("Expected boolean at position " + m_pos, m_pos);
   }
 
   private Object parseNull() {
-    if (m_json.startsWith("null", m_pos)) {
-      m_pos += 4;
+    if (matches("null")) {
       return null;
     }
     throw new ParseException("Expected null at position " + m_pos, m_pos);
   }
 
   private void skipWhitespace() {
-    while (m_pos < m_json.length() && Character.isWhitespace(m_json.charAt(m_pos))) {
-      m_pos++;
+    while (hasNext() && Character.isWhitespace(peek())) {
+      next();
     }
   }
 }

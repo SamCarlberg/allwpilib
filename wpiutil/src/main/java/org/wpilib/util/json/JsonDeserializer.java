@@ -4,6 +4,7 @@
 
 package org.wpilib.util.json;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -59,6 +60,19 @@ public final class JsonDeserializer {
   }
 
   /**
+   * Parses a JSON input stream into raw Java types. This can be used if you don't need to marshal
+   * data to a specific type, or if you plan on doing the marshaling yourself.
+   *
+   * @param inputStream The JSON input stream to parse.
+   * @return The parsed JSON value (String, Double, Boolean, List, Map, or null).
+   * @throws ParseException If the JSON in the input stream is invalid or if the input stream cannot
+   *   be read
+   */
+  public static Object deserializeRaw(InputStream inputStream) {
+    return JsonParser.parse(inputStream);
+  }
+
+  /**
    * Parses a JSON string into an object of the specified class. JSON primitive values are converted
    * to their Java counterparts, arrays are transformed into List objects, and nested objects are
    * recursively parsed into nested maps.
@@ -72,6 +86,24 @@ public final class JsonDeserializer {
    */
   public static <T> T deserialize(String json, Class<T> clazz) {
     Object node = JsonParser.parse(json);
+    return parseNodeAs(node, clazz);
+  }
+
+  /**
+   * Parses a JSON input stream into an object of the specified class. JSON primitive values are
+   * converted to their Java counterparts, arrays are transformed into List objects, and nested
+   * objects are recursively parsed into nested maps.
+   *
+   * @param inputStream The JSON input stream to parse.
+   * @param clazz The class to parse the JSON into.
+   * @return The parsed JSON object.
+   * @throws ParseException If the JSON in the input stream is invalid or if the input stream cannot
+   *   be read.
+   * @throws ClassCastException If the parsed JSON object cannot be cast to the specified class.
+   * @param <T> The type of the parsed object.
+   */
+  public static <T> T deserialize(InputStream inputStream, Class<T> clazz) {
+    Object node = JsonParser.parse(inputStream);
     return parseNodeAs(node, clazz);
   }
 

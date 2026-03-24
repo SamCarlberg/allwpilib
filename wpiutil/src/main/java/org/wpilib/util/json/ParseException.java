@@ -20,6 +20,18 @@ public class ParseException extends RuntimeException {
   }
 
   /**
+   * Constructs a ParseException with a message, cause, and the character position in the JSON text.
+   *
+   * @param message The error message.
+   * @param cause The cause of the exception.
+   * @param position The character position in the JSON text.
+   */
+  public ParseException(String message, Throwable cause, int position) {
+    super(message, cause);
+    m_position = position;
+  }
+
+  /**
    * Gets the character position in the JSON text where the error occurred.
    *
    * @return The character position in the JSON text.

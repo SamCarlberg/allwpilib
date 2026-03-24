@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -164,5 +166,39 @@ class JsonParserTest {
   void testUnicode() {
     Object node = JsonParser.parse("\"\\u0041\"");
     assertEquals("A", node);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void testInputStream() {
+    String json = "{\"key\": \"value\", \"array\": [1, 2, 3], \"bool\": true, \"null\": null}";
+    ByteArrayInputStream is = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+    Object node = JsonParser.parse(is);
+    assertInstanceOf(Map.class, node);
+    Map<String, Object> props = (Map<String, Object>) node;
+    assertEquals("value", props.get("key"));
+    assertEquals(List.of(1.0, 2.0, 3.0), props.get("array"));
+    assertTrue((Boolean) props.get("bool"));
+    assertNull(props.get("null"));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void testLargeInput() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    for (int i = 0; i < 10000; i++) {
+      if (i > 0) sb.append(",");
+      sb.append(i);
+    }
+    sb.append("]");
+    String json = sb.toString();
+    ByteArrayInputStream is = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+    Object node = JsonParser.parse(is);
+    assertInstanceOf(List.class, node);
+    List<Object> list = (List<Object>) node;
+    assertEquals(10000, list.size());
+    assertEquals(0.0, list.get(0));
+    assertEquals(9999.0, list.get(9999));
   }
 }
