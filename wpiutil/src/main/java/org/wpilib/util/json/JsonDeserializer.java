@@ -5,12 +5,14 @@
 package org.wpilib.util.json;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +125,8 @@ public final class JsonDeserializer {
       case Number num -> loadNumber(node, num, clazz);
       case Boolean bool -> loadBoolean(bool);
       case String str -> loadString(str);
-      case List<?> list -> loadList(type, list, clazz);
+      case List<?> list when clazz.isArray() -> loadArray(list, clazz);
+      case List<?> list -> loadCollection(type, list, clazz);
       case Map<?, ?> map when Map.class.isAssignableFrom(clazz) ->
           loadMap(type, map, (Class<? extends Map<?, ?>>) clazz);
       default -> {
@@ -162,7 +165,17 @@ public final class JsonDeserializer {
   }
 
   @SuppressWarnings("unchecked")
-  private static <T> T loadList(Type type, List<?> list, Class<?> clazz) {
+  private static <T> T loadArray(List<?> list, Class<?> clazz) {
+    Class<?> componentType = clazz.getComponentType();
+    Object result = Array.newInstance(componentType, list.size());
+    for (int i = 0; i < list.size(); i++) {
+      Array.set(result, i, parseNodeAs(list.get(i), componentType));
+    }
+    return (T) result;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> T loadCollection(Type type, List<?> list, Class<?> clazz) {
     Type elementType;
     if (Objects.requireNonNull(type) instanceof ParameterizedType pt) {
       elementType = pt.getActualTypeArguments()[0];
@@ -170,34 +183,28 @@ public final class JsonDeserializer {
       elementType = null;
     }
 
+    Collection<Object> result;
     if (clazz.isAssignableFrom(ArrayList.class)) {
       // Default for `Collection`, `List`, etc: Use arraylist for size reasons
-      List<Object> result = new ArrayList<>(list.size());
-      if (elementType == null) {
-        result.addAll(list);
-      } else {
-        for (Object item : list) {
-          result.add(parseNodeAs(item, elementType));
-        }
-      }
-      return (T) result;
-    } else if (List.class.isAssignableFrom(clazz)) {
+      result = new ArrayList<>(list.size());
+    } else if (Collection.class.isAssignableFrom(clazz)) {
       try {
-        List<Object> result = (List<Object>) clazz.getConstructor().newInstance();
-        if (elementType == null) {
-          result.addAll(list);
-        } else {
-          for (Object item : list) {
-            result.add(parseNodeAs(item, elementType));
-          }
-        }
-        return (T) result;
+        result = (Collection<Object>) clazz.getConstructor().newInstance();
       } catch (ReflectiveOperationException e) {
-        throw new RuntimeException("Failed to instantiate list class: " + clazz.getName(), e);
+        throw new RuntimeException("Failed to instantiate collection class: " + clazz.getName(), e);
       }
+    } else {
+      throw new IllegalArgumentException("Expected collection, got " + clazz.getSimpleName());
     }
 
-    throw new IllegalArgumentException("Expected list, got " + clazz.getSimpleName());
+    if (elementType == null) {
+      result.addAll(list);
+    } else {
+      for (Object item : list) {
+        result.add(parseNodeAs(item, elementType));
+      }
+    }
+    return (T) result;
   }
 
   @SuppressWarnings("unchecked")

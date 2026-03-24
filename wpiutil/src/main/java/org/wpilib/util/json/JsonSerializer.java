@@ -4,6 +4,7 @@
 
 package org.wpilib.util.json;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Handles serialization of objects to JSON text. Any collections in the object tree will be
@@ -53,6 +55,13 @@ public final class JsonSerializer {
               .map(e -> "\"" + escape(String.valueOf(e.getKey())) + "\": " + toJson(e.getValue()))
               .collect(Collectors.joining(", "))
           + "}";
+    }
+    if (object.getClass().isArray()) {
+      return "["
+          + IntStream.range(0, Array.getLength(object))
+              .mapToObj(i -> toJson(Array.get(object, i)))
+              .collect(Collectors.joining(", "))
+          + "]";
     }
 
     Class<?> clazz = object.getClass();
