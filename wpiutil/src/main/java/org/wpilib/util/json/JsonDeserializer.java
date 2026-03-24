@@ -22,9 +22,9 @@ import java.util.function.Function;
 /**
  * Handles deserialization of JSON text to objects. This class natively works with standard Java
  * types and collections; specficially, {@code ArrayList} for JSON arrays and {@code LinkedHashMap}
- * for JSON objects. If you want to deserialize JSON data to a specific type, use
- * {@link #deserialize(String, Class)}. The target class must have exactly one constructor with the
- * {@link JsonConstructor @JsonConstructor} annotation.
+ * for JSON objects. If you want to deserialize JSON data to a specific type, use {@link
+ * #deserialize(String, Class)}. The target class must have exactly one constructor with the {@link
+ * JsonConstructor @JsonConstructor} annotation.
  */
 public final class JsonDeserializer {
   private static final Map<Class<?>, Function<Number, Object>> NUMERIC_CONVERSIONS;
@@ -46,7 +46,8 @@ public final class JsonDeserializer {
   }
 
   private JsonDeserializer() {
-    throw new UnsupportedOperationException("JsonDeserializer is a utility class and cannot be instantiated");
+    throw new UnsupportedOperationException(
+        "JsonDeserializer is a utility class and cannot be instantiated");
   }
 
   /**
@@ -68,7 +69,7 @@ public final class JsonDeserializer {
    * @param inputStream The JSON input stream to parse.
    * @return The parsed JSON value (String, Double, Boolean, List, Map, or null).
    * @throws ParseException If the JSON in the input stream is invalid or if the input stream cannot
-   *   be read
+   *     be read
    */
   public static Object deserializeRaw(InputStream inputStream) {
     return JsonParser.parse(inputStream);
@@ -79,9 +80,9 @@ public final class JsonDeserializer {
    * to their Java counterparts, arrays are transformed into List objects, and nested objects are
    * recursively parsed into nested maps.
    *
-   * @param json  The JSON string to parse.
+   * @param json The JSON string to parse.
    * @param clazz The class to parse the JSON into.
-   * @param <T>   The type of the parsed object.
+   * @param <T> The type of the parsed object.
    * @return The parsed JSON object.
    * @throws ParseException If the JSON string is invalid or cannot be parsed.
    * @throws ClassCastException If the parsed JSON object cannot be cast to the specified class.
@@ -98,11 +99,11 @@ public final class JsonDeserializer {
    *
    * @param inputStream The JSON input stream to parse.
    * @param clazz The class to parse the JSON into.
+   * @param <T> The type of the parsed object.
    * @return The parsed JSON object.
    * @throws ParseException If the JSON in the input stream is invalid or if the input stream cannot
-   *   be read.
+   *     be read.
    * @throws ClassCastException If the parsed JSON object cannot be cast to the specified class.
-   * @param <T> The type of the parsed object.
    */
   public static <T> T deserialize(InputStream inputStream, Class<T> clazz) {
     Object node = JsonParser.parse(inputStream);
@@ -132,7 +133,10 @@ public final class JsonDeserializer {
       default -> {
         if (!(node instanceof Map)) {
           throw new IllegalArgumentException(
-              "Expected object for " + clazz.getName() + ", got " + node.getClass().getSimpleName());
+              "Expected object for "
+                  + clazz.getName()
+                  + ", got "
+                  + node.getClass().getSimpleName());
         }
         yield loadObject((Map<String, Object>) node, clazz);
       }

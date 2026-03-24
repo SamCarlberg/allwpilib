@@ -80,7 +80,9 @@ class JsonParserTest {
     // Missing value
     assertThrows(ParseException.class, () -> JsonParser.parse("{ \"key\": }"));
     // Missing comma
-    assertThrows(ParseException.class, () -> JsonParser.parse("{ \"key1\": \"value1\" \"key2\": \"value2\" }"));
+    assertThrows(
+        ParseException.class,
+        () -> JsonParser.parse("{ \"key1\": \"value1\" \"key2\": \"value2\" }"));
     // Trailing comma
     assertThrows(ParseException.class, () -> JsonParser.parse("{ \"key1\": \"value1\", }"));
     // Key is not a string
@@ -186,12 +188,14 @@ class JsonParserTest {
   @SuppressWarnings("unchecked")
   void testLargeInput() {
     StringBuilder sb = new StringBuilder();
-    sb.append("[");
+    sb.append('[');
     for (int i = 0; i < 10000; i++) {
-      if (i > 0) sb.append(",");
+      if (i > 0) {
+        sb.append(',');
+      }
       sb.append(i);
     }
-    sb.append("]");
+    sb.append(']');
     String json = sb.toString();
     ByteArrayInputStream is = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
     Object node = JsonParser.parse(is);

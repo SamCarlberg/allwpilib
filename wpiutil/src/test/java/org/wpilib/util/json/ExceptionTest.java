@@ -13,7 +13,8 @@ class ExceptionTest {
   @Test
   void testParseTypeMismatch() {
     String json = "{\"x\": \"not a number\"}";
-    assertThrows(IllegalArgumentException.class, () -> JsonDeserializer.deserialize(json, CustomType.class));
+    assertThrows(
+        IllegalArgumentException.class, () -> JsonDeserializer.deserialize(json, CustomType.class));
   }
 
   @Test
@@ -23,7 +24,9 @@ class ExceptionTest {
       int m_x;
     }
 
-    assertThrows(IllegalArgumentException.class, () -> JsonDeserializer.deserialize("{\"x\": 1}", NoCtor.class));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> JsonDeserializer.deserialize("{\"x\": 1}", NoCtor.class));
   }
 
   @Test
@@ -37,7 +40,8 @@ class ExceptionTest {
     }
 
     assertThrows(
-        IllegalArgumentException.class, () -> JsonDeserializer.deserialize("{\"x\": 1}", MultiCtor.class));
+        IllegalArgumentException.class,
+        () -> JsonDeserializer.deserialize("{\"x\": 1}", MultiCtor.class));
   }
 
   @Test
@@ -48,13 +52,15 @@ class ExceptionTest {
     }
 
     assertThrows(
-        IllegalArgumentException.class, () -> JsonDeserializer.deserialize("{\"x\": 1}", MissingAttr.class));
+        IllegalArgumentException.class,
+        () -> JsonDeserializer.deserialize("{\"x\": 1}", MissingAttr.class));
   }
 
   @Test
   void testParseMissingProperty() {
     String json = "{\"x\": 1}"; // Missing 'y'
-    assertThrows(IllegalArgumentException.class, () -> JsonDeserializer.deserialize(json, CustomType.class));
+    assertThrows(
+        IllegalArgumentException.class, () -> JsonDeserializer.deserialize(json, CustomType.class));
   }
 
   @Test
@@ -80,7 +86,8 @@ class ExceptionTest {
 
   @Test
   void testParserExpectedCommaOrBraceInObject() {
-    assertThrows(ParseException.class, () -> JsonDeserializer.deserializeRaw("{\"key\": 1 \"other\": 2}"));
+    assertThrows(
+        ParseException.class, () -> JsonDeserializer.deserializeRaw("{\"key\": 1 \"other\": 2}"));
   }
 
   @Test

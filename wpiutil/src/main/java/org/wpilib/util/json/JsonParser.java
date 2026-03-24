@@ -59,7 +59,7 @@ public final class JsonParser {
    * @param is The JSON input stream to parse
    * @return The parsed Java object
    * @throws ParseException If the JSON in the input stream is invalid or if the input stream cannot
-   *   be read
+   *     be read
    */
   public static Object parse(InputStream is) {
     if (is == null) {
@@ -273,14 +273,10 @@ public final class JsonParser {
   }
 
   private boolean parseBoolean() {
-    if (peek() == 't') {
-      if (matches("true")) {
-        return true;
-      }
-    } else if (peek() == 'f') {
-      if (matches("false")) {
-        return false;
-      }
+    if (peek() == 't' && matches("true")) {
+      return true;
+    } else if (peek() == 'f' && matches("false")) {
+      return false;
     }
     throw new ParseException("Expected boolean at position " + m_pos, m_pos);
   }
