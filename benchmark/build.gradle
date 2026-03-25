@@ -59,6 +59,11 @@ dependencies {
     annotationProcessor project(':epilogue-processor')
     implementation libs.jmh.core
     annotationProcessor libs.jmh.annotationprocessor
+
+    implementation libs.jackson.databind
+    implementation libs.fastjson2
+    implementation libs.avaje.jsonb
+    annotationProcessor libs.avaje.jsonb.generator
 }
 
 tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {

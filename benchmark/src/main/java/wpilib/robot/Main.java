@@ -25,7 +25,7 @@ public class Main {
   public static void main(String... args) throws RunnerException {
     var opt =
         new OptionsBuilder()
-            .include(Main.class.getSimpleName())
+            .include(JsonBenchmark.class.getSimpleName())
             .addProfiler(GCProfiler.class)
             .forks(1)
             .warmupIterations(2)

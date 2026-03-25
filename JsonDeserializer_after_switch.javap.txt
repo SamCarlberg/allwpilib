@@ -1,0 +1,619 @@
+Classfile /home/sam/code/wpilib/allwpilib/wpiutil/build/classes/java/main/org/wpilib/util/json/JsonDeserializer.class
+  Last modified Mar 24, 2026; size 11833 bytes
+  SHA-256 checksum fe4f9d1d4b805bf5971be2d4fc20cd5e5f5f2519faf0bd6b6e5bc3af96868d15
+  Compiled from "JsonDeserializer.java"
+public final class org.wpilib.util.json.JsonDeserializer
+  minor version: 0
+  major version: 65
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #24                         // org/wpilib/util/json/JsonDeserializer
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 14, attributes: 3
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/UnsupportedOperationException
+    #8 = Utf8               java/lang/UnsupportedOperationException
+    #9 = String             #10           // JsonDeserializer is a utility class and cannot be instantiated
+   #10 = Utf8               JsonDeserializer is a utility class and cannot be instantiated
+   #11 = Methodref          #7.#12        // java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+   #12 = NameAndType        #5:#13        // "<init>":(Ljava/lang/String;)V
+   #13 = Utf8               (Ljava/lang/String;)V
+   #14 = Methodref          #15.#16       // org/wpilib/util/json/JsonParser.parse:(Ljava/lang/String;)Ljava/lang/Object;
+   #15 = Class              #17           // org/wpilib/util/json/JsonParser
+   #16 = NameAndType        #18:#19       // parse:(Ljava/lang/String;)Ljava/lang/Object;
+   #17 = Utf8               org/wpilib/util/json/JsonParser
+   #18 = Utf8               parse
+   #19 = Utf8               (Ljava/lang/String;)Ljava/lang/Object;
+   #20 = Methodref          #15.#21       // org/wpilib/util/json/JsonParser.parse:(Ljava/io/InputStream;)Ljava/lang/Object;
+   #21 = NameAndType        #18:#22       // parse:(Ljava/io/InputStream;)Ljava/lang/Object;
+   #22 = Utf8               (Ljava/io/InputStream;)Ljava/lang/Object;
+   #23 = Methodref          #24.#25       // org/wpilib/util/json/JsonDeserializer.parseNodeAs:(Ljava/lang/Object;Ljava/lang/reflect/Type;)Ljava/lang/Object;
+   #24 = Class              #26           // org/wpilib/util/json/JsonDeserializer
+   #25 = NameAndType        #27:#28       // parseNodeAs:(Ljava/lang/Object;Ljava/lang/reflect/Type;)Ljava/lang/Object;
+   #26 = Utf8               org/wpilib/util/json/JsonDeserializer
+   #27 = Utf8               parseNodeAs
+   #28 = Utf8               (Ljava/lang/Object;Ljava/lang/reflect/Type;)Ljava/lang/Object;
+   #29 = Class              #30           // java/lang/Class
+   #30 = Utf8               java/lang/Class
+   #31 = Class              #32           // java/lang/reflect/ParameterizedType
+   #32 = Utf8               java/lang/reflect/ParameterizedType
+   #33 = InterfaceMethodref #31.#34       // java/lang/reflect/ParameterizedType.getRawType:()Ljava/lang/reflect/Type;
+   #34 = NameAndType        #35:#36       // getRawType:()Ljava/lang/reflect/Type;
+   #35 = Utf8               getRawType
+   #36 = Utf8               ()Ljava/lang/reflect/Type;
+   #37 = Class              #38           // java/lang/IllegalArgumentException
+   #38 = Utf8               java/lang/IllegalArgumentException
+   #39 = Methodref          #40.#41       // java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+   #40 = Class              #42           // java/lang/String
+   #41 = NameAndType        #43:#44       // valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+   #42 = Utf8               java/lang/String
+   #43 = Utf8               valueOf
+   #44 = Utf8               (Ljava/lang/Object;)Ljava/lang/String;
+   #45 = InvokeDynamic      #0:#46        // #0:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+   #46 = NameAndType        #47:#48       // makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+   #47 = Utf8               makeConcatWithConstants
+   #48 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+   #49 = Methodref          #37.#12       // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+   #50 = Class              #51           // java/lang/Number
+   #51 = Utf8               java/lang/Number
+   #52 = Methodref          #24.#53       // org/wpilib/util/json/JsonDeserializer.loadNumber:(Ljava/lang/Object;Ljava/lang/Number;Ljava/lang/Class;)Ljava/lang/Object;
+   #53 = NameAndType        #54:#55       // loadNumber:(Ljava/lang/Object;Ljava/lang/Number;Ljava/lang/Class;)Ljava/lang/Object;
+   #54 = Utf8               loadNumber
+   #55 = Utf8               (Ljava/lang/Object;Ljava/lang/Number;Ljava/lang/Class;)Ljava/lang/Object;
+   #56 = Class              #57           // java/lang/Boolean
+   #57 = Utf8               java/lang/Boolean
+   #58 = Methodref          #24.#59       // org/wpilib/util/json/JsonDeserializer.loadBoolean:(Ljava/lang/Object;)Ljava/lang/Object;
+   #59 = NameAndType        #60:#61       // loadBoolean:(Ljava/lang/Object;)Ljava/lang/Object;
+   #60 = Utf8               loadBoolean
+   #61 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+   #62 = Methodref          #24.#63       // org/wpilib/util/json/JsonDeserializer.loadString:(Ljava/lang/Object;)Ljava/lang/Object;
+   #63 = NameAndType        #64:#61       // loadString:(Ljava/lang/Object;)Ljava/lang/Object;
+   #64 = Utf8               loadString
+   #65 = Class              #66           // java/util/List
+   #66 = Utf8               java/util/List
+   #67 = Methodref          #29.#68       // java/lang/Class.isArray:()Z
+   #68 = NameAndType        #69:#70       // isArray:()Z
+   #69 = Utf8               isArray
+   #70 = Utf8               ()Z
+   #71 = Methodref          #24.#72       // org/wpilib/util/json/JsonDeserializer.loadArray:(Ljava/util/List;Ljava/lang/Class;)Ljava/lang/Object;
+   #72 = NameAndType        #73:#74       // loadArray:(Ljava/util/List;Ljava/lang/Class;)Ljava/lang/Object;
+   #73 = Utf8               loadArray
+   #74 = Utf8               (Ljava/util/List;Ljava/lang/Class;)Ljava/lang/Object;
+   #75 = Methodref          #24.#76       // org/wpilib/util/json/JsonDeserializer.loadCollection:(Ljava/lang/reflect/Type;Ljava/util/List;Ljava/lang/Class;)Ljava/lang/Object;
+   #76 = NameAndType        #77:#78       // loadCollection:(Ljava/lang/reflect/Type;Ljava/util/List;Ljava/lang/Class;)Ljava/lang/Object;
+   #77 = Utf8               loadCollection
+   #78 = Utf8               (Ljava/lang/reflect/Type;Ljava/util/List;Ljava/lang/Class;)Ljava/lang/Object;
+   #79 = Class              #80           // java/util/Map
+   #80 = Utf8               java/util/Map
+   #81 = Methodref          #29.#82       // java/lang/Class.isAssignableFrom:(Ljava/lang/Class;)Z
+   #82 = NameAndType        #83:#84       // isAssignableFrom:(Ljava/lang/Class;)Z
+   #83 = Utf8               isAssignableFrom
+   #84 = Utf8               (Ljava/lang/Class;)Z
+   #85 = Methodref          #24.#86       // org/wpilib/util/json/JsonDeserializer.loadMap:(Ljava/lang/reflect/Type;Ljava/util/Map;Ljava/lang/Class;)Ljava/lang/Object;
+   #86 = NameAndType        #87:#88       // loadMap:(Ljava/lang/reflect/Type;Ljava/util/Map;Ljava/lang/Class;)Ljava/lang/Object;
+   #87 = Utf8               loadMap
+   #88 = Utf8               (Ljava/lang/reflect/Type;Ljava/util/Map;Ljava/lang/Class;)Ljava/lang/Object;
+   #89 = Methodref          #24.#90       // org/wpilib/util/json/JsonDeserializer.loadObject:(Ljava/util/Map;Ljava/lang/Class;)Ljava/lang/Object;
+   #90 = NameAndType        #91:#92       // loadObject:(Ljava/util/Map;Ljava/lang/Class;)Ljava/lang/Object;
+   #91 = Utf8               loadObject
+   #92 = Utf8               (Ljava/util/Map;Ljava/lang/Class;)Ljava/lang/Object;
+   #93 = Methodref          #29.#94       // java/lang/Class.getName:()Ljava/lang/String;
+   #94 = NameAndType        #95:#96       // getName:()Ljava/lang/String;
+   #95 = Utf8               getName
+   #96 = Utf8               ()Ljava/lang/String;
+   #97 = Methodref          #2.#98        // java/lang/Object.getClass:()Ljava/lang/Class;
+   #98 = NameAndType        #99:#100      // getClass:()Ljava/lang/Class;
+   #99 = Utf8               getClass
+  #100 = Utf8               ()Ljava/lang/Class;
+  #101 = Methodref          #29.#102      // java/lang/Class.getSimpleName:()Ljava/lang/String;
+  #102 = NameAndType        #103:#96      // getSimpleName:()Ljava/lang/String;
+  #103 = Utf8               getSimpleName
+  #104 = InvokeDynamic      #1:#105       // #1:makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+  #105 = NameAndType        #47:#106      // makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+  #106 = Utf8               (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+  #107 = InvokeDynamic      #2:#46        // #2:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #108 = Fieldref           #109.#110     // java/lang/Double.TYPE:Ljava/lang/Class;
+  #109 = Class              #111          // java/lang/Double
+  #110 = NameAndType        #112:#113     // TYPE:Ljava/lang/Class;
+  #111 = Utf8               java/lang/Double
+  #112 = Utf8               TYPE
+  #113 = Utf8               Ljava/lang/Class;
+  #114 = Methodref          #50.#115      // java/lang/Number.doubleValue:()D
+  #115 = NameAndType        #116:#117     // doubleValue:()D
+  #116 = Utf8               doubleValue
+  #117 = Utf8               ()D
+  #118 = Methodref          #109.#119     // java/lang/Double.valueOf:(D)Ljava/lang/Double;
+  #119 = NameAndType        #43:#120      // valueOf:(D)Ljava/lang/Double;
+  #120 = Utf8               (D)Ljava/lang/Double;
+  #121 = Fieldref           #122.#110     // java/lang/Integer.TYPE:Ljava/lang/Class;
+  #122 = Class              #123          // java/lang/Integer
+  #123 = Utf8               java/lang/Integer
+  #124 = Methodref          #50.#125      // java/lang/Number.intValue:()I
+  #125 = NameAndType        #126:#127     // intValue:()I
+  #126 = Utf8               intValue
+  #127 = Utf8               ()I
+  #128 = Methodref          #122.#129     // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+  #129 = NameAndType        #43:#130      // valueOf:(I)Ljava/lang/Integer;
+  #130 = Utf8               (I)Ljava/lang/Integer;
+  #131 = Fieldref           #132.#110     // java/lang/Long.TYPE:Ljava/lang/Class;
+  #132 = Class              #133          // java/lang/Long
+  #133 = Utf8               java/lang/Long
+  #134 = Methodref          #50.#135      // java/lang/Number.longValue:()J
+  #135 = NameAndType        #136:#137     // longValue:()J
+  #136 = Utf8               longValue
+  #137 = Utf8               ()J
+  #138 = Methodref          #132.#139     // java/lang/Long.valueOf:(J)Ljava/lang/Long;
+  #139 = NameAndType        #43:#140      // valueOf:(J)Ljava/lang/Long;
+  #140 = Utf8               (J)Ljava/lang/Long;
+  #141 = Fieldref           #142.#110     // java/lang/Float.TYPE:Ljava/lang/Class;
+  #142 = Class              #143          // java/lang/Float
+  #143 = Utf8               java/lang/Float
+  #144 = Methodref          #50.#145      // java/lang/Number.floatValue:()F
+  #145 = NameAndType        #146:#147     // floatValue:()F
+  #146 = Utf8               floatValue
+  #147 = Utf8               ()F
+  #148 = Methodref          #142.#149     // java/lang/Float.valueOf:(F)Ljava/lang/Float;
+  #149 = NameAndType        #43:#150      // valueOf:(F)Ljava/lang/Float;
+  #150 = Utf8               (F)Ljava/lang/Float;
+  #151 = Fieldref           #152.#110     // java/lang/Short.TYPE:Ljava/lang/Class;
+  #152 = Class              #153          // java/lang/Short
+  #153 = Utf8               java/lang/Short
+  #154 = Methodref          #50.#155      // java/lang/Number.shortValue:()S
+  #155 = NameAndType        #156:#157     // shortValue:()S
+  #156 = Utf8               shortValue
+  #157 = Utf8               ()S
+  #158 = Methodref          #152.#159     // java/lang/Short.valueOf:(S)Ljava/lang/Short;
+  #159 = NameAndType        #43:#160      // valueOf:(S)Ljava/lang/Short;
+  #160 = Utf8               (S)Ljava/lang/Short;
+  #161 = Fieldref           #162.#110     // java/lang/Byte.TYPE:Ljava/lang/Class;
+  #162 = Class              #163          // java/lang/Byte
+  #163 = Utf8               java/lang/Byte
+  #164 = Methodref          #50.#165      // java/lang/Number.byteValue:()B
+  #165 = NameAndType        #166:#167     // byteValue:()B
+  #166 = Utf8               byteValue
+  #167 = Utf8               ()B
+  #168 = Methodref          #162.#169     // java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+  #169 = NameAndType        #43:#170      // valueOf:(B)Ljava/lang/Byte;
+  #170 = Utf8               (B)Ljava/lang/Byte;
+  #171 = InvokeDynamic      #3:#46        // #3:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #172 = InvokeDynamic      #4:#46        // #4:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #173 = Methodref          #29.#174      // java/lang/Class.getComponentType:()Ljava/lang/Class;
+  #174 = NameAndType        #175:#100     // getComponentType:()Ljava/lang/Class;
+  #175 = Utf8               getComponentType
+  #176 = InterfaceMethodref #65.#177      // java/util/List.size:()I
+  #177 = NameAndType        #178:#127     // size:()I
+  #178 = Utf8               size
+  #179 = Methodref          #180.#181     // java/lang/reflect/Array.newInstance:(Ljava/lang/Class;I)Ljava/lang/Object;
+  #180 = Class              #182          // java/lang/reflect/Array
+  #181 = NameAndType        #183:#184     // newInstance:(Ljava/lang/Class;I)Ljava/lang/Object;
+  #182 = Utf8               java/lang/reflect/Array
+  #183 = Utf8               newInstance
+  #184 = Utf8               (Ljava/lang/Class;I)Ljava/lang/Object;
+  #185 = InterfaceMethodref #65.#186      // java/util/List.get:(I)Ljava/lang/Object;
+  #186 = NameAndType        #187:#188     // get:(I)Ljava/lang/Object;
+  #187 = Utf8               get
+  #188 = Utf8               (I)Ljava/lang/Object;
+  #189 = Methodref          #180.#190     // java/lang/reflect/Array.set:(Ljava/lang/Object;ILjava/lang/Object;)V
+  #190 = NameAndType        #191:#192     // set:(Ljava/lang/Object;ILjava/lang/Object;)V
+  #191 = Utf8               set
+  #192 = Utf8               (Ljava/lang/Object;ILjava/lang/Object;)V
+  #193 = Methodref          #194.#195     // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #194 = Class              #196          // java/util/Objects
+  #195 = NameAndType        #197:#61      // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #196 = Utf8               java/util/Objects
+  #197 = Utf8               requireNonNull
+  #198 = InterfaceMethodref #31.#199      // java/lang/reflect/ParameterizedType.getActualTypeArguments:()[Ljava/lang/reflect/Type;
+  #199 = NameAndType        #200:#201     // getActualTypeArguments:()[Ljava/lang/reflect/Type;
+  #200 = Utf8               getActualTypeArguments
+  #201 = Utf8               ()[Ljava/lang/reflect/Type;
+  #202 = Class              #203          // java/util/ArrayList
+  #203 = Utf8               java/util/ArrayList
+  #204 = Methodref          #202.#205     // java/util/ArrayList."<init>":(I)V
+  #205 = NameAndType        #5:#206       // "<init>":(I)V
+  #206 = Utf8               (I)V
+  #207 = Class              #208          // java/util/Collection
+  #208 = Utf8               java/util/Collection
+  #209 = Methodref          #29.#210      // java/lang/Class.getConstructor:([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+  #210 = NameAndType        #211:#212     // getConstructor:([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+  #211 = Utf8               getConstructor
+  #212 = Utf8               ([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+  #213 = Methodref          #214.#215     // java/lang/reflect/Constructor.newInstance:([Ljava/lang/Object;)Ljava/lang/Object;
+  #214 = Class              #216          // java/lang/reflect/Constructor
+  #215 = NameAndType        #183:#217     // newInstance:([Ljava/lang/Object;)Ljava/lang/Object;
+  #216 = Utf8               java/lang/reflect/Constructor
+  #217 = Utf8               ([Ljava/lang/Object;)Ljava/lang/Object;
+  #218 = Class              #219          // java/lang/ReflectiveOperationException
+  #219 = Utf8               java/lang/ReflectiveOperationException
+  #220 = Class              #221          // java/lang/RuntimeException
+  #221 = Utf8               java/lang/RuntimeException
+  #222 = InvokeDynamic      #5:#46        // #5:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #223 = Methodref          #220.#224     // java/lang/RuntimeException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+  #224 = NameAndType        #5:#225       // "<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+  #225 = Utf8               (Ljava/lang/String;Ljava/lang/Throwable;)V
+  #226 = InvokeDynamic      #6:#46        // #6:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #227 = InterfaceMethodref #207.#228     // java/util/Collection.addAll:(Ljava/util/Collection;)Z
+  #228 = NameAndType        #229:#230     // addAll:(Ljava/util/Collection;)Z
+  #229 = Utf8               addAll
+  #230 = Utf8               (Ljava/util/Collection;)Z
+  #231 = InterfaceMethodref #65.#232      // java/util/List.iterator:()Ljava/util/Iterator;
+  #232 = NameAndType        #233:#234     // iterator:()Ljava/util/Iterator;
+  #233 = Utf8               iterator
+  #234 = Utf8               ()Ljava/util/Iterator;
+  #235 = InterfaceMethodref #236.#237     // java/util/Iterator.hasNext:()Z
+  #236 = Class              #238          // java/util/Iterator
+  #237 = NameAndType        #239:#70      // hasNext:()Z
+  #238 = Utf8               java/util/Iterator
+  #239 = Utf8               hasNext
+  #240 = InterfaceMethodref #236.#241     // java/util/Iterator.next:()Ljava/lang/Object;
+  #241 = NameAndType        #242:#243     // next:()Ljava/lang/Object;
+  #242 = Utf8               next
+  #243 = Utf8               ()Ljava/lang/Object;
+  #244 = InterfaceMethodref #207.#245     // java/util/Collection.add:(Ljava/lang/Object;)Z
+  #245 = NameAndType        #246:#247     // add:(Ljava/lang/Object;)Z
+  #246 = Utf8               add
+  #247 = Utf8               (Ljava/lang/Object;)Z
+  #248 = Class              #249          // java/util/LinkedHashMap
+  #249 = Utf8               java/util/LinkedHashMap
+  #250 = InterfaceMethodref #79.#177      // java/util/Map.size:()I
+  #251 = Methodref          #248.#205     // java/util/LinkedHashMap."<init>":(I)V
+  #252 = InterfaceMethodref #79.#253      // java/util/Map.putAll:(Ljava/util/Map;)V
+  #253 = NameAndType        #254:#255     // putAll:(Ljava/util/Map;)V
+  #254 = Utf8               putAll
+  #255 = Utf8               (Ljava/util/Map;)V
+  #256 = InterfaceMethodref #79.#257      // java/util/Map.entrySet:()Ljava/util/Set;
+  #257 = NameAndType        #258:#259     // entrySet:()Ljava/util/Set;
+  #258 = Utf8               entrySet
+  #259 = Utf8               ()Ljava/util/Set;
+  #260 = InterfaceMethodref #261.#232     // java/util/Set.iterator:()Ljava/util/Iterator;
+  #261 = Class              #262          // java/util/Set
+  #262 = Utf8               java/util/Set
+  #263 = Class              #264          // java/util/Map$Entry
+  #264 = Utf8               java/util/Map$Entry
+  #265 = InterfaceMethodref #263.#266     // java/util/Map$Entry.getKey:()Ljava/lang/Object;
+  #266 = NameAndType        #267:#243     // getKey:()Ljava/lang/Object;
+  #267 = Utf8               getKey
+  #268 = InterfaceMethodref #263.#269     // java/util/Map$Entry.getValue:()Ljava/lang/Object;
+  #269 = NameAndType        #270:#243     // getValue:()Ljava/lang/Object;
+  #270 = Utf8               getValue
+  #271 = InterfaceMethodref #79.#272      // java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #272 = NameAndType        #273:#274     // put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #273 = Utf8               put
+  #274 = Utf8               (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #275 = InvokeDynamic      #7:#46        // #7:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #276 = Methodref          #37.#224      // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+  #277 = Methodref          #24.#278      // org/wpilib/util/json/JsonDeserializer.getJsonConstructor:(Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+  #278 = NameAndType        #279:#280     // getJsonConstructor:(Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+  #279 = Utf8               getJsonConstructor
+  #280 = Utf8               (Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+  #281 = Methodref          #214.#282     // java/lang/reflect/Constructor.getParameters:()[Ljava/lang/reflect/Parameter;
+  #282 = NameAndType        #283:#284     // getParameters:()[Ljava/lang/reflect/Parameter;
+  #283 = Utf8               getParameters
+  #284 = Utf8               ()[Ljava/lang/reflect/Parameter;
+  #285 = Methodref          #29.#286      // java/lang/Class.isMemberClass:()Z
+  #286 = NameAndType        #287:#70      // isMemberClass:()Z
+  #287 = Utf8               isMemberClass
+  #288 = Methodref          #29.#289      // java/lang/Class.isLocalClass:()Z
+  #289 = NameAndType        #290:#70      // isLocalClass:()Z
+  #290 = Utf8               isLocalClass
+  #291 = Methodref          #29.#292      // java/lang/Class.getModifiers:()I
+  #292 = NameAndType        #293:#127     // getModifiers:()I
+  #293 = Utf8               getModifiers
+  #294 = Methodref          #295.#296     // java/lang/reflect/Modifier.isStatic:(I)Z
+  #295 = Class              #297          // java/lang/reflect/Modifier
+  #296 = NameAndType        #298:#299     // isStatic:(I)Z
+  #297 = Utf8               java/lang/reflect/Modifier
+  #298 = Utf8               isStatic
+  #299 = Utf8               (I)Z
+  #300 = InvokeDynamic      #8:#46        // #8:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #301 = Class              #302          // org/wpilib/util/json/JsonAttribute
+  #302 = Utf8               org/wpilib/util/json/JsonAttribute
+  #303 = Methodref          #304.#305     // java/lang/reflect/Parameter.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #304 = Class              #306          // java/lang/reflect/Parameter
+  #305 = NameAndType        #307:#308     // getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #306 = Utf8               java/lang/reflect/Parameter
+  #307 = Utf8               getAnnotation
+  #308 = Utf8               (Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #309 = Methodref          #304.#94      // java/lang/reflect/Parameter.getName:()Ljava/lang/String;
+  #310 = InvokeDynamic      #9:#105       // #9:makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+  #311 = InterfaceMethodref #301.#312     // org/wpilib/util/json/JsonAttribute.value:()Ljava/lang/String;
+  #312 = NameAndType        #313:#96      // value:()Ljava/lang/String;
+  #313 = Utf8               value
+  #314 = InterfaceMethodref #79.#315      // java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+  #315 = NameAndType        #187:#61      // get:(Ljava/lang/Object;)Ljava/lang/Object;
+  #316 = InterfaceMethodref #79.#317      // java/util/Map.containsKey:(Ljava/lang/Object;)Z
+  #317 = NameAndType        #318:#247     // containsKey:(Ljava/lang/Object;)Z
+  #318 = Utf8               containsKey
+  #319 = InvokeDynamic      #10:#105      // #10:makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+  #320 = Methodref          #304.#321     // java/lang/reflect/Parameter.getParameterizedType:()Ljava/lang/reflect/Type;
+  #321 = NameAndType        #322:#36      // getParameterizedType:()Ljava/lang/reflect/Type;
+  #322 = Utf8               getParameterizedType
+  #323 = Methodref          #29.#324      // java/lang/Class.isRecord:()Z
+  #324 = NameAndType        #325:#70      // isRecord:()Z
+  #325 = Utf8               isRecord
+  #326 = Methodref          #29.#327      // java/lang/Class.getRecordComponents:()[Ljava/lang/reflect/RecordComponent;
+  #327 = NameAndType        #328:#329     // getRecordComponents:()[Ljava/lang/reflect/RecordComponent;
+  #328 = Utf8               getRecordComponents
+  #329 = Utf8               ()[Ljava/lang/reflect/RecordComponent;
+  #330 = Methodref          #331.#94      // java/lang/reflect/RecordComponent.getName:()Ljava/lang/String;
+  #331 = Class              #332          // java/lang/reflect/RecordComponent
+  #332 = Utf8               java/lang/reflect/RecordComponent
+  #333 = Methodref          #40.#334      // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #334 = NameAndType        #335:#247     // equals:(Ljava/lang/Object;)Z
+  #335 = Utf8               equals
+  #336 = Methodref          #331.#337     // java/lang/reflect/RecordComponent.getGenericType:()Ljava/lang/reflect/Type;
+  #337 = NameAndType        #338:#36      // getGenericType:()Ljava/lang/reflect/Type;
+  #338 = Utf8               getGenericType
+  #339 = InvokeDynamic      #11:#46       // #11:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #340 = Methodref          #29.#341      // java/lang/Class.getDeclaredConstructors:()[Ljava/lang/reflect/Constructor;
+  #341 = NameAndType        #342:#343     // getDeclaredConstructors:()[Ljava/lang/reflect/Constructor;
+  #342 = Utf8               getDeclaredConstructors
+  #343 = Utf8               ()[Ljava/lang/reflect/Constructor;
+  #344 = Class              #345          // org/wpilib/util/json/JsonConstructor
+  #345 = Utf8               org/wpilib/util/json/JsonConstructor
+  #346 = Methodref          #214.#347     // java/lang/reflect/Constructor.isAnnotationPresent:(Ljava/lang/Class;)Z
+  #347 = NameAndType        #348:#84      // isAnnotationPresent:(Ljava/lang/Class;)Z
+  #348 = Utf8               isAnnotationPresent
+  #349 = String             #350          // Only one constructor can be annotated with @JsonConstructor
+  #350 = Utf8               Only one constructor can be annotated with @JsonConstructor
+  #351 = InvokeDynamic      #12:#46       // #12:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #352 = Methodref          #214.#353     // java/lang/reflect/Constructor.setAccessible:(Z)V
+  #353 = NameAndType        #354:#355     // setAccessible:(Z)V
+  #354 = Utf8               setAccessible
+  #355 = Utf8               (Z)V
+  #356 = Utf8               Code
+  #357 = Utf8               LineNumberTable
+  #358 = Utf8               LocalVariableTable
+  #359 = Utf8               this
+  #360 = Utf8               Lorg/wpilib/util/json/JsonDeserializer;
+  #361 = Utf8               deserializeRaw
+  #362 = Utf8               json
+  #363 = Utf8               Ljava/lang/String;
+  #364 = Utf8               inputStream
+  #365 = Utf8               Ljava/io/InputStream;
+  #366 = Utf8               deserialize
+  #367 = Utf8               (Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;
+  #368 = Utf8               clazz
+  #369 = Utf8               node
+  #370 = Utf8               Ljava/lang/Object;
+  #371 = Utf8               LocalVariableTypeTable
+  #372 = Utf8               Ljava/lang/Class<TT;>;
+  #373 = Utf8               Signature
+  #374 = Utf8               <T:Ljava/lang/Object;>(Ljava/lang/String;Ljava/lang/Class<TT;>;)TT;
+  #375 = Utf8               (Ljava/io/InputStream;Ljava/lang/Class;)Ljava/lang/Object;
+  #376 = Utf8               <T:Ljava/lang/Object;>(Ljava/io/InputStream;Ljava/lang/Class<TT;>;)TT;
+  #377 = Utf8               pt
+  #378 = Utf8               Ljava/lang/reflect/ParameterizedType;
+  #379 = Utf8               num
+  #380 = Utf8               Ljava/lang/Number;
+  #381 = Utf8               bool
+  #382 = Utf8               Ljava/lang/Boolean;
+  #383 = Utf8               str
+  #384 = Utf8               list
+  #385 = Utf8               Ljava/util/List;
+  #386 = Utf8               map
+  #387 = Utf8               Ljava/util/Map;
+  #388 = Utf8               type
+  #389 = Utf8               Ljava/lang/reflect/Type;
+  #390 = Utf8               Ljava/lang/Class<*>;
+  #391 = Utf8               Ljava/util/List<*>;
+  #392 = Utf8               Ljava/util/Map<**>;
+  #393 = Utf8               StackMapTable
+  #394 = Class              #395          // java/lang/reflect/Type
+  #395 = Utf8               java/lang/reflect/Type
+  #396 = Utf8               <T:Ljava/lang/Object;>(Ljava/lang/Object;Ljava/lang/reflect/Type;)TT;
+  #397 = Utf8               <T:Ljava/lang/Object;>(Ljava/lang/Object;)TT;
+  #398 = Utf8               <T:Ljava/lang/Object;>(Ljava/lang/Object;Ljava/lang/Number;Ljava/lang/Class<*>;)TT;
+  #399 = Utf8               i
+  #400 = Utf8               I
+  #401 = Utf8               componentType
+  #402 = Utf8               result
+  #403 = Utf8               <T:Ljava/lang/Object;>(Ljava/util/List<*>;Ljava/lang/Class<*>;)TT;
+  #404 = Utf8               elementType
+  #405 = Utf8               Ljava/util/Collection;
+  #406 = Utf8               e
+  #407 = Utf8               Ljava/lang/ReflectiveOperationException;
+  #408 = Utf8               item
+  #409 = Utf8               Ljava/util/Collection<Ljava/lang/Object;>;
+  #410 = Utf8               <T:Ljava/lang/Object;>(Ljava/lang/reflect/Type;Ljava/util/List<*>;Ljava/lang/Class<*>;)TT;
+  #411 = Utf8               valueType
+  #412 = Utf8               entry
+  #413 = Utf8               Ljava/util/Map$Entry;
+  #414 = Utf8               Ljava/util/Map$Entry<**>;
+  #415 = Utf8               Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;
+  #416 = Utf8               Ljava/lang/Class<+Ljava/util/Map<**>;>;
+  #417 = Utf8               <T:Ljava/lang/Object;>(Ljava/lang/reflect/Type;Ljava/util/Map<**>;Ljava/lang/Class<+Ljava/util/Map<**>;>;)TT;
+  #418 = Utf8               component
+  #419 = Utf8               Ljava/lang/reflect/RecordComponent;
+  #420 = Utf8               param
+  #421 = Utf8               Ljava/lang/reflect/Parameter;
+  #422 = Utf8               attr
+  #423 = Utf8               Lorg/wpilib/util/json/JsonAttribute;
+  #424 = Utf8               name
+  #425 = Utf8               valNode
+  #426 = Utf8               paramType
+  #427 = Utf8               ctor
+  #428 = Utf8               Ljava/lang/reflect/Constructor;
+  #429 = Utf8               parameters
+  #430 = Utf8               [Ljava/lang/reflect/Parameter;
+  #431 = Utf8               args
+  #432 = Utf8               [Ljava/lang/Object;
+  #433 = Utf8               Ljava/lang/reflect/Constructor<*>;
+  #434 = Class              #430          // "[Ljava/lang/reflect/Parameter;"
+  #435 = Class              #432          // "[Ljava/lang/Object;"
+  #436 = Class              #437          // "[Ljava/lang/reflect/RecordComponent;"
+  #437 = Utf8               [Ljava/lang/reflect/RecordComponent;
+  #438 = Utf8               <T:Ljava/lang/Object;>(Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;Ljava/lang/Class<*>;)TT;
+  #439 = Utf8               constructor
+  #440 = Class              #441          // "[Ljava/lang/reflect/Constructor;"
+  #441 = Utf8               [Ljava/lang/reflect/Constructor;
+  #442 = Utf8               (Ljava/lang/Class<*>;)Ljava/lang/reflect/Constructor<*>;
+  #443 = Utf8               SourceFile
+  #444 = Utf8               JsonDeserializer.java
+  #445 = Utf8               BootstrapMethods
+  #446 = String             #447          // Unsupported type: \u0001
+  #447 = Utf8               Unsupported type: \u0001
+  #448 = String             #449          // Expected object for \u0001, got \u0001
+  #449 = Utf8               Expected object for \u0001, got \u0001
+  #450 = String             #451          // Expected boolean, got \u0001
+  #451 = Utf8               Expected boolean, got \u0001
+  #452 = String             #453          // Expected number, got \u0001
+  #453 = Utf8               Expected number, got \u0001
+  #454 = String             #455          // Expected string, got \u0001
+  #455 = Utf8               Expected string, got \u0001
+  #456 = String             #457          // Failed to instantiate collection class: \u0001
+  #457 = Utf8               Failed to instantiate collection class: \u0001
+  #458 = String             #459          // Expected collection, got \u0001
+  #459 = Utf8               Expected collection, got \u0001
+  #460 = String             #461          // Failed to instantiate map class: \u0001
+  #461 = Utf8               Failed to instantiate map class: \u0001
+  #462 = String             #463          // Nonstatic inner classes cannot be instantiated: \u0001
+  #463 = Utf8               Nonstatic inner classes cannot be instantiated: \u0001
+  #464 = String             #465          // Parameter \u0001 in \u0001 constructor is missing @JsonAttribute
+  #465 = Utf8               Parameter \u0001 in \u0001 constructor is missing @JsonAttribute
+  #466 = String             #467          // Missing property \'\u0001\' for \u0001
+  #467 = Utf8               Missing property \'\u0001\' for \u0001
+  #468 = String             #469          // Failed to instantiate \u0001
+  #469 = Utf8               Failed to instantiate \u0001
+  #470 = String             #471          // No @JsonConstructor found for \u0001
+  #471 = Utf8               No @JsonConstructor found for \u0001
+  #472 = MethodHandle       6:#473        // REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #473 = Methodref          #474.#475     // java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #474 = Class              #476          // java/lang/invoke/StringConcatFactory
+  #475 = NameAndType        #47:#477      // makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #476 = Utf8               java/lang/invoke/StringConcatFactory
+  #477 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #478 = Utf8               InnerClasses
+  #479 = Utf8               Entry
+  #480 = Class              #481          // java/lang/invoke/MethodHandles$Lookup
+  #481 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #482 = Class              #483          // java/lang/invoke/MethodHandles
+  #483 = Utf8               java/lang/invoke/MethodHandles
+  #484 = Utf8               Lookup
+{
+  public static java.lang.Object deserializeRaw(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #14                 // Method org/wpilib/util/json/JsonParser.parse:(Ljava/lang/String;)Ljava/lang/Object;
+         4: areturn
+      LineNumberTable:
+        line 43: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  json   Ljava/lang/String;
+
+  public static java.lang.Object deserializeRaw(java.io.InputStream);
+    descriptor: (Ljava/io/InputStream;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #20                 // Method org/wpilib/util/json/JsonParser.parse:(Ljava/io/InputStream;)Ljava/lang/Object;
+         4: areturn
+      LineNumberTable:
+        line 56: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0 inputStream   Ljava/io/InputStream;
+
+  public static <T extends java.lang.Object> T deserialize(java.lang.String, java.lang.Class<T>);
+    descriptor: (Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aload_0
+         1: invokestatic  #14                 // Method org/wpilib/util/json/JsonParser.parse:(Ljava/lang/String;)Ljava/lang/Object;
+         4: astore_2
+         5: aload_2
+         6: aload_1
+         7: invokestatic  #23                 // Method parseNodeAs:(Ljava/lang/Object;Ljava/lang/reflect/Type;)Ljava/lang/Object;
+        10: areturn
+      LineNumberTable:
+        line 72: 0
+        line 73: 5
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  json   Ljava/lang/String;
+            0      11     1 clazz   Ljava/lang/Class;
+            5       6     2  node   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      11     1 clazz   Ljava/lang/Class<TT;>;
+    Signature: #374                         // <T:Ljava/lang/Object;>(Ljava/lang/String;Ljava/lang/Class<TT;>;)TT;
+
+  public static <T extends java.lang.Object> T deserialize(java.io.InputStream, java.lang.Class<T>);
+    descriptor: (Ljava/io/InputStream;Ljava/lang/Class;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aload_0
+         1: invokestatic  #20                 // Method org/wpilib/util/json/JsonParser.parse:(Ljava/io/InputStream;)Ljava/lang/Object;
+         4: astore_2
+         5: aload_2
+         6: aload_1
+         7: invokestatic  #23                 // Method parseNodeAs:(Ljava/lang/Object;Ljava/lang/reflect/Type;)Ljava/lang/Object;
+        10: areturn
+      LineNumberTable:
+        line 90: 0
+        line 91: 5
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0 inputStream   Ljava/io/InputStream;
+            0      11     1 clazz   Ljava/lang/Class;
+            5       6     2  node   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      11     1 clazz   Ljava/lang/Class<TT;>;
+    Signature: #376                         // <T:Ljava/lang/Object;>(Ljava/io/InputStream;Ljava/lang/Class<TT;>;)TT;
+}
+SourceFile: "JsonDeserializer.java"
+BootstrapMethods:
+  0: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #446 Unsupported type: \u0001
+  1: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #448 Expected object for \u0001, got \u0001
+  2: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #450 Expected boolean, got \u0001
+  3: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #452 Expected number, got \u0001
+  4: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #454 Expected string, got \u0001
+  5: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #456 Failed to instantiate collection class: \u0001
+  6: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #458 Expected collection, got \u0001
+  7: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #460 Failed to instantiate map class: \u0001
+  8: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #462 Nonstatic inner classes cannot be instantiated: \u0001
+  9: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #464 Parameter \u0001 in \u0001 constructor is missing @JsonAttribute
+  10: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #466 Missing property \'\u0001\' for \u0001
+  11: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #468 Failed to instantiate \u0001
+  12: #472 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #470 No @JsonConstructor found for \u0001
+InnerClasses:
+  public static #479= #263 of #79;        // Entry=class java/util/Map$Entry of class java/util/Map
+  public static final #484= #480 of #482; // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles
