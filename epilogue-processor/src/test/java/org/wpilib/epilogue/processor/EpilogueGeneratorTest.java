@@ -393,9 +393,10 @@ class EpilogueGeneratorTest {
 
   @Test
   void commandsv3Scheduler() {
-    String schedulerSource = """
+    String schedulerSource =
+        """
         package org.wpilib.command3;
-        
+
         import org.wpilib.util.protobuf.*;
         import us.hebi.quickbuf.*;
 
@@ -421,7 +422,8 @@ class EpilogueGeneratorTest {
         }
         """;
 
-    String robotSource = """
+    String robotSource =
+        """
         package org.wpilib.epilogue;
 
         @Logged
@@ -438,21 +440,25 @@ class EpilogueGeneratorTest {
 
     assertThat(compilation).succeededWithoutWarnings();
     var generatedFiles = compilation.generatedSourceFiles();
-    var epilogueFile = generatedFiles.stream()
-        .filter(jfo -> jfo.getName().contains("Epilogue"))
-        .findFirst()
-        .orElseThrow(() -> new IllegalStateException("Epilogue file was not generated!"));
+    var epilogueFile =
+        generatedFiles.stream()
+            .filter(jfo -> jfo.getName().contains("Epilogue"))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Epilogue file was not generated!"));
 
     try {
       var content = epilogueFile.getCharContent(false);
 
-      assertTrue(content.toString().contains(
-          """
+      assertTrue(
+          content
+              .toString()
+              .contains(
+                  """
               if (config.automaticallyLogCommandScheduler) {
                 config.backend.getNested(config.root).log("Command Scheduler", org.wpilib.command3.Scheduler.getDefault(), org.wpilib.command3.Scheduler.proto);
               }
-          """
-      ), "Generated file did not contain the expected scheduler logging code:\n\n" + content);
+          """),
+          "Generated file did not contain the expected scheduler logging code:\n\n" + content);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
