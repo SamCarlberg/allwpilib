@@ -6,7 +6,11 @@ package org.wpilib.simulation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.wpilib.util.OptionTestUtils.assertNoValue;
+import static org.wpilib.util.OptionTestUtils.assertOptionValue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +26,7 @@ import org.wpilib.hardware.hal.RobotMode;
 import org.wpilib.simulation.testutils.BooleanCallback;
 import org.wpilib.simulation.testutils.DoubleCallback;
 import org.wpilib.simulation.testutils.EnumCallback;
+import org.wpilib.util.Option;
 
 class DriverStationSimTest {
   @Test
@@ -150,8 +155,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertFalse(MatchState.getAlliance().isPresent());
-      assertFalse(MatchState.getLocation().isPresent());
+      assertNoValue(MatchState.getAlliance());
+      assertNoValue(MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
 
@@ -160,8 +165,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertEquals(Alliance.BLUE, MatchState.getAlliance().get());
-      assertEquals(1, MatchState.getLocation().getAsInt());
+      assertOptionValue(Alliance.BLUE, MatchState.getAlliance());
+      assertOptionValue(1, MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
 
@@ -170,8 +175,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertEquals(Alliance.BLUE, MatchState.getAlliance().get());
-      assertEquals(2, MatchState.getLocation().getAsInt());
+      assertOptionValue(Alliance.BLUE, MatchState.getAlliance());
+      assertOptionValue(2, MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
 
@@ -180,8 +185,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertEquals(Alliance.BLUE, MatchState.getAlliance().get());
-      assertEquals(3, MatchState.getLocation().getAsInt());
+      assertOptionValue(Alliance.BLUE, MatchState.getAlliance());
+      assertOptionValue(3, MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
 
@@ -190,8 +195,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertEquals(Alliance.RED, MatchState.getAlliance().get());
-      assertEquals(1, MatchState.getLocation().getAsInt());
+      assertOptionValue(Alliance.RED, MatchState.getAlliance());
+      assertOptionValue(1, MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
 
@@ -200,8 +205,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertEquals(Alliance.RED, MatchState.getAlliance().get());
-      assertEquals(2, MatchState.getLocation().getAsInt());
+      assertOptionValue(Alliance.RED, MatchState.getAlliance());
+      assertOptionValue(2, MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
 
@@ -210,8 +215,8 @@ class DriverStationSimTest {
       DriverStationSim.setAllianceStationId(allianceStation);
       DriverStationSim.notifyNewData();
       assertEquals(allianceStation, DriverStationSim.getAllianceStationId());
-      assertEquals(Alliance.RED, MatchState.getAlliance().get());
-      assertEquals(3, MatchState.getLocation().getAsInt());
+      assertOptionValue(Alliance.RED, MatchState.getAlliance());
+      assertOptionValue(3, MatchState.getLocation());
       assertTrue(callback.wasTriggered());
       assertEquals(allianceStation.ordinal(), callback.getSetValue());
     }
@@ -274,8 +279,11 @@ class DriverStationSimTest {
     DriverStationSim.setGameData(message);
     DriverStationSim.notifyNewData();
     var gameData = MatchState.getGameData();
-    assertTrue(gameData.isPresent());
-    assertEquals(message, gameData.get());
+    if (gameData instanceof Option.Value(String msg)) {
+      assertEquals(message, msg);
+    } else {
+      fail();
+    }
   }
 
   @Test
@@ -285,7 +293,7 @@ class DriverStationSimTest {
 
     DriverStationSim.setGameData("");
     DriverStationSim.notifyNewData();
-    assertTrue(MatchState.getGameData().isEmpty());
+    assertInstanceOf(Option.NoValue.class, MatchState.getGameData());
   }
 
   @Test
@@ -295,7 +303,7 @@ class DriverStationSimTest {
 
     DriverStationSim.setGameData(null);
     DriverStationSim.notifyNewData();
-    assertTrue(MatchState.getGameData().isEmpty());
+    assertInstanceOf(Option.NoValue.class, MatchState.getGameData());
   }
 
   @Test

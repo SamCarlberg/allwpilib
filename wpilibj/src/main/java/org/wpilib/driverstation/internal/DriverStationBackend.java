@@ -6,9 +6,6 @@ package org.wpilib.driverstation.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import org.wpilib.datalog.BooleanArrayLogEntry;
@@ -38,6 +35,7 @@ import org.wpilib.networktables.StringTopic;
 import org.wpilib.networktables.StructPublisher;
 import org.wpilib.system.Timer;
 import org.wpilib.util.Color;
+import org.wpilib.util.Option;
 import org.wpilib.util.WPIUtilJNI;
 import org.wpilib.util.concurrent.EventVector;
 
@@ -613,7 +611,7 @@ public final class DriverStationBackend {
    * @param button The button index.
    * @return The state of the joystick button, or false if the button is not available.
    */
-  public static Optional<Boolean> getStickButtonIfAvailable(final int stick, final int button) {
+  public static Option<Boolean> getStickButtonIfAvailable(final int stick, final int button) {
     if (stick < 0 || stick >= JOYSTICK_PORTS) {
       throw new IllegalArgumentException("Joystick index is out of range, should be 0-5");
     }
@@ -626,12 +624,12 @@ public final class DriverStationBackend {
     m_cacheDataMutex.lock();
     try {
       if ((m_joystickButtons[stick].m_available & mask) != 0) {
-        return Optional.of((m_joystickButtons[stick].m_buttons & mask) != 0);
+        return Option.of((m_joystickButtons[stick].m_buttons & mask) != 0);
       }
     } finally {
       m_cacheDataMutex.unlock();
     }
-    return Optional.empty();
+    return Option.noValue();
   }
 
   /**
@@ -829,7 +827,7 @@ public final class DriverStationBackend {
    * @param axis The analog axis value to read from the joystick.
    * @return The value of the axis on the joystick, or 0 if the axis is not available.
    */
-  public static OptionalDouble getStickAxisIfAvailable(int stick, int axis) {
+  public static Option<Double> getStickAxisIfAvailable(int stick, int axis) {
     if (stick < 0 || stick >= JOYSTICK_PORTS) {
       throw new IllegalArgumentException("Joystick index is out of range, should be 0-5");
     }
@@ -842,13 +840,13 @@ public final class DriverStationBackend {
     m_cacheDataMutex.lock();
     try {
       if ((m_joystickAxes[stick].m_available & mask) != 0) {
-        return OptionalDouble.of(m_joystickAxes[stick].m_axes[axis]);
+        return Option.of((double) m_joystickAxes[stick].m_axes[axis]);
       }
     } finally {
       m_cacheDataMutex.unlock();
     }
 
-    return OptionalDouble.empty();
+    return Option.noValue();
   }
 
   /**
@@ -1497,13 +1495,13 @@ public final class DriverStationBackend {
    *
    * @return the game specific message
    */
-  public static Optional<String> getGameData() {
+  public static Option<String> getGameData() {
     m_cacheDataMutex.lock();
     try {
       if (m_gameData == null || m_gameData.isEmpty()) {
-        return Optional.empty();
+        return Option.noValue();
       }
-      return Optional.of(m_gameData);
+      return Option.of(m_gameData);
     } finally {
       m_cacheDataMutex.unlock();
     }
@@ -1572,34 +1570,35 @@ public final class DriverStationBackend {
     }
   }
 
-  private static Map<AllianceStationID, Optional<Alliance>> m_allianceMap =
+  private static final Map<AllianceStationID, Option<Alliance>> m_allianceMap =
       Map.of(
-          AllianceStationID.UNKNOWN, Optional.empty(),
-          AllianceStationID.RED_1, Optional.of(Alliance.RED),
-          AllianceStationID.RED_2, Optional.of(Alliance.RED),
-          AllianceStationID.RED_3, Optional.of(Alliance.RED),
-          AllianceStationID.BLUE_1, Optional.of(Alliance.BLUE),
-          AllianceStationID.BLUE_2, Optional.of(Alliance.BLUE),
-          AllianceStationID.BLUE_3, Optional.of(Alliance.BLUE));
+          AllianceStationID.UNKNOWN, Option.noValue(),
+          AllianceStationID.RED_1, Option.of(Alliance.RED),
+          AllianceStationID.RED_2, Option.of(Alliance.RED),
+          AllianceStationID.RED_3, Option.of(Alliance.RED),
+          AllianceStationID.BLUE_1, Option.of(Alliance.BLUE),
+          AllianceStationID.BLUE_2, Option.of(Alliance.BLUE),
+          AllianceStationID.BLUE_3, Option.of(Alliance.BLUE));
 
-  private static Map<AllianceStationID, OptionalInt> m_stationMap =
+  private static final Map<AllianceStationID, Option<Integer>> m_stationMap =
       Map.of(
-          AllianceStationID.UNKNOWN, OptionalInt.empty(),
-          AllianceStationID.RED_1, OptionalInt.of(1),
-          AllianceStationID.RED_2, OptionalInt.of(2),
-          AllianceStationID.RED_3, OptionalInt.of(3),
-          AllianceStationID.BLUE_1, OptionalInt.of(1),
-          AllianceStationID.BLUE_2, OptionalInt.of(2),
-          AllianceStationID.BLUE_3, OptionalInt.of(3));
+          AllianceStationID.UNKNOWN, Option.noValue(),
+          AllianceStationID.RED_1, Option.of(1),
+          AllianceStationID.RED_2, Option.of(2),
+          AllianceStationID.RED_3, Option.of(3),
+          AllianceStationID.BLUE_1, Option.of(1),
+          AllianceStationID.BLUE_2, Option.of(2),
+          AllianceStationID.BLUE_3, Option.of(3));
 
   /**
    * Get the current alliance from the FMS.
    *
    * <p>If the FMS is not connected, it is set from the team alliance setting on the driver station.
    *
-   * @return The alliance (red or blue) or an empty optional if the alliance is invalid
+   * @return An option of the alliance selection from the FMS or driver station, or {@code
+   *     Option.NoValue} if there is no connection to the driver station.
    */
-  public static Optional<Alliance> getAlliance() {
+  public static Option<Alliance> getAlliance() {
     AllianceStationID allianceStationID = DriverStationJNI.getAllianceStation();
     if (allianceStationID == null) {
       allianceStationID = AllianceStationID.UNKNOWN;
@@ -1615,7 +1614,7 @@ public final class DriverStationBackend {
    *
    * @return the location of the team's driver station controls: 1, 2, or 3
    */
-  public static OptionalInt getLocation() {
+  public static Option<Integer> getLocation() {
     AllianceStationID allianceStationID = DriverStationJNI.getAllianceStation();
     if (allianceStationID == null) {
       allianceStationID = AllianceStationID.UNKNOWN;

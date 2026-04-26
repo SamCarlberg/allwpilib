@@ -4,12 +4,12 @@
 
 package org.wpilib.snippets.digitalcommunication;
 
-import java.util.Optional;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.hardware.discrete.DigitalOutput;
+import org.wpilib.util.Option;
 
 /**
  * This is a sample program demonstrating how to communicate to a light controller from the robot
@@ -30,9 +30,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     boolean setAlliance = false;
-    Optional<Alliance> alliance = MatchState.getAlliance();
-    if (alliance.isPresent()) {
-      setAlliance = alliance.get() == Alliance.RED;
+
+    if (MatchState.getAlliance() instanceof Option.Value(Alliance alliance)) {
+      setAlliance = alliance == Alliance.RED;
     }
 
     // pull alliance port high if on red alliance, pull low if on blue alliance

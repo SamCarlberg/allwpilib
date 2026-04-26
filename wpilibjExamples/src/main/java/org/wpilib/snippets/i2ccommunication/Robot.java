@@ -4,13 +4,13 @@
 
 package org.wpilib.snippets.i2ccommunication;
 
-import java.util.Optional;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.hardware.bus.I2C;
 import org.wpilib.hardware.bus.I2C.Port;
+import org.wpilib.util.Option;
 
 /**
  * This is a sample program demonstrating how to communicate to a light controller from the robot
@@ -52,11 +52,11 @@ public class Robot extends TimedRobot {
     // alliance, enabled in teleop mode, with 43 seconds left in the match.
     StringBuilder stateMessage = new StringBuilder(6);
 
-    String allianceString = "U";
-    Optional<Alliance> alliance = MatchState.getAlliance();
-    if (alliance.isPresent()) {
-      allianceString = alliance.get() == Alliance.RED ? "R" : "B";
-    }
+    String allianceString =
+        switch (MatchState.getAlliance()) {
+          case Option.Value(Alliance alliance) -> alliance == Alliance.RED ? "R" : "B";
+          case Option.NoValue() -> "U";
+        };
 
     stateMessage
         .append(allianceString)

@@ -72,6 +72,9 @@ dependencies {
     api project(':datalog')
     implementation project(':cameraserver')
     testImplementation(libs.bundles.mockito)
+    testImplementation(provider {
+        project(':wpiutil').sourceSets.test.output
+    })
     devImplementation sourceSets.main.output
 }
 

@@ -4,9 +4,8 @@
 
 package org.wpilib.driverstation;
 
-import java.util.Optional;
-import java.util.OptionalInt;
 import org.wpilib.driverstation.internal.DriverStationBackend;
+import org.wpilib.util.Option;
 
 /** Provides access to match state information from the Driver Station. */
 public final class MatchState {
@@ -40,7 +39,7 @@ public final class MatchState {
    *
    * @return The alliance (red or blue) or an empty optional if the alliance is invalid
    */
-  public static Optional<Alliance> getAlliance() {
+  public static Option<Alliance> getAlliance() {
     return DriverStationBackend.getAlliance();
   }
 
@@ -51,7 +50,7 @@ public final class MatchState {
    *
    * @return the location of the team's driver station controls: 1, 2, or 3
    */
-  public static OptionalInt getLocation() {
+  public static Option<Integer> getLocation() {
     return DriverStationBackend.getLocation();
   }
 
@@ -98,7 +97,7 @@ public final class MatchState {
    *
    * @return the game specific message
    */
-  public static Optional<String> getGameData() {
+  public static Option<String> getGameData() {
     return DriverStationBackend.getGameData();
   }
 }
