@@ -111,7 +111,7 @@ class EpilogueGeneratorTest {
           public static boolean shouldLog(Logged.Importance importance) {
             return importance.compareTo(config.minimumImportance) >= 0;
           }
- 
+
           /**
            * Updates Epilogue. This must be called periodically in order for Epilogue to record
            * new values. Alternatively, {@code bind()} can be used to update at an offset from
