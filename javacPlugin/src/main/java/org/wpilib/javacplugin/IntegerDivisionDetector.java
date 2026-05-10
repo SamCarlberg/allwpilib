@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package org.wpilib.javacplugin;
 
 import com.sun.source.tree.AssignmentTree;
@@ -42,7 +46,6 @@ public class IntegerDivisionDetector implements TaskListener {
 
   @Override
   public void finished(TaskEvent e) {
-
     // We override `finished` instead of `started` because we want to run after the
     // ANALYZE attribution phase has completed and assigned types to elements in the AST
     // Track the visited CUs to avoid re-processing the same CU multiple times when we call
