@@ -8,11 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.wpilib.units.Units.Seconds;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
+import org.wpilib.system.RobotController;
 
 class TriggerTest extends CommandTestBase {
   @Test
@@ -632,6 +635,103 @@ class TriggerTest extends CommandTestBase {
     assertFalse(m_scheduler.isRunning(outerCommand));
 
     // The trigger should have unbound itself during the last run() call.
+  }
+
+  @Test
+  void multiTap() {
+    var currentTimeMicros = new AtomicLong(1000000); // Start at 1s
+    RobotController.setTimeSource(currentTimeMicros::get);
+
+    var signal = new AtomicBoolean(false);
+    var baseTrigger = new Trigger(m_scheduler, signal::get);
+    var multiTapTrigger = baseTrigger.multiTap(3, Seconds.of(1));
+
+    m_scheduler.run();
+    assertFalse(multiTapTrigger.getAsBoolean(), "Should not fire initially");
+
+    // First tap at 1.1s
+    currentTimeMicros.set(1100000);
+    signal.set(true);
+    m_scheduler.run();
+    assertFalse(multiTapTrigger.getAsBoolean(), "Should not fire after 1 tap");
+
+    signal.set(false);
+    m_scheduler.run();
+
+    // Second tap at 1.2s
+    currentTimeMicros.set(1200000);
+    signal.set(true);
+    m_scheduler.run();
+    assertFalse(multiTapTrigger.getAsBoolean(), "Should not fire after 2 taps");
+
+    signal.set(false);
+    m_scheduler.run();
+
+    // Third tap at 1.3s
+    currentTimeMicros.set(1300000);
+    signal.set(true);
+    m_scheduler.run();
+    assertTrue(multiTapTrigger.getAsBoolean(), "Should fire after 3 taps");
+
+    signal.set(false);
+    m_scheduler.run();
+
+    // Fourth tap at 2.0s (First tap at 1.1s should be NOT yet expired, so 1.1s, 1.2s, 1.3s, 2.0s ->
+    // 4 taps)
+    currentTimeMicros.set(2000000);
+    signal.set(true);
+    m_scheduler.run();
+    assertTrue(
+        multiTapTrigger.getAsBoolean(), "Should still fire as there are 4 taps within last 1s");
+
+    signal.set(false);
+    m_scheduler.run();
+
+    // Wait until 2.2s. Taps at 1.1s is expired (exactly 1.1s elapsed).
+    // Remaining: 1.2s, 1.3s, 2.0s -> 3 taps.
+    currentTimeMicros.set(2200000);
+    m_scheduler.run();
+    assertTrue(
+        multiTapTrigger.getAsBoolean(), "Should still fire as there are 3 taps within last 1s");
+
+    // Wait until 2.4s. Taps at 1.2s and 1.3s are definitely expired. Only 2.0s remains.
+    currentTimeMicros.set(2400000);
+    m_scheduler.run();
+    assertFalse(multiTapTrigger.getAsBoolean(), "Should not fire after taps expire");
+  }
+
+  @Test
+  void multiTapZeroDuration() {
+    var trigger = new Trigger(m_scheduler, () -> true);
+    var zeroDuration = trigger.multiTap(1, Seconds.of(0));
+    m_scheduler.run();
+    assertFalse(zeroDuration.getAsBoolean(), "Zero duration multiTap should always be false");
+  }
+
+  @Test
+  void multiTapNegativeDuration() {
+    var trigger = new Trigger(m_scheduler, () -> true);
+    var negativeDuration = trigger.multiTap(1, Seconds.of(-1));
+    m_scheduler.run();
+    assertFalse(
+        negativeDuration.getAsBoolean(), "Negative duration multiTap should always be false");
+  }
+
+  @Test
+  void multiTapZeroTapCount() {
+    var trigger = new Trigger(m_scheduler, () -> true);
+    var zeroTapCount = trigger.multiTap(0, Seconds.of(1));
+    m_scheduler.run();
+    assertTrue(zeroTapCount.getAsBoolean(), "Zero tap count multiTap should always be true");
+  }
+
+  @Test
+  void multiTapNegativeTapCount() {
+    var trigger = new Trigger(m_scheduler, () -> true);
+    var negativeTapCount = trigger.multiTap(-1, Seconds.of(1));
+    m_scheduler.run();
+    assertTrue(
+        negativeTapCount.getAsBoolean(), "Negative tap count multiTap should always be true");
   }
 
   private BooleanSupplier flickering(AtomicBoolean signal) {

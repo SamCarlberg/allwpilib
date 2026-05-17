@@ -7,13 +7,16 @@ package org.wpilib.command3;
 import static org.wpilib.units.Units.Seconds;
 import static org.wpilib.util.ErrorMessages.requireNonNullParam;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import org.wpilib.event.EventLoop;
 import org.wpilib.math.filter.Debouncer;
+import org.wpilib.system.Timer;
 import org.wpilib.units.measure.Time;
 
 /**
@@ -288,6 +291,57 @@ public class Trigger implements BooleanSupplier {
   public Trigger fallingEdge() {
     return new Trigger(
         m_scheduler, m_loop, () -> m_cachedSignal == Signal.LOW && m_previousSignal == Signal.HIGH);
+  }
+
+  /**
+   * Creates a trigger that activates when this one has at least {@code tapCount} rising edges
+   * within the specified duration.
+   *
+   * @param tapCount The number of rising edges to require
+   * @param duration The duration within which the rising edges must occur
+   * @return A trigger that activates on multi-tap
+   */
+  public Trigger multiTap(int tapCount, Time duration) {
+    requireNonNullParam(duration, "duration", "multiTap");
+
+    // Short circuits to avoid unnecessary state tracking and object allocations
+    if (duration.baseUnitMagnitude() <= 0) {
+      // A nonpositive window size can never be met
+      return new Trigger(m_scheduler, m_loop, () -> false);
+    } else if (tapCount <= 0) {
+      // A nonpositive tap count is always met
+      return new Trigger(m_scheduler, m_loop, () -> true);
+    }
+
+    final double durationSeconds = duration.in(Seconds);
+
+    return new Trigger(
+        m_scheduler,
+        m_loop,
+        new BooleanSupplier() {
+          private final Deque<Double> m_timestamps = new ArrayDeque<>();
+          private boolean m_risingEdgeOccurred = false;
+
+          @Override
+          public boolean getAsBoolean() {
+            if (m_cachedSignal == Signal.HIGH && m_previousSignal != Signal.HIGH) {
+              if (!m_risingEdgeOccurred) {
+                m_timestamps.addLast(Timer.getTimestamp());
+                m_risingEdgeOccurred = true;
+              }
+            } else if (m_cachedSignal != Signal.HIGH) {
+              m_risingEdgeOccurred = false;
+            }
+
+            double currentTime = Timer.getTimestamp();
+            while (!m_timestamps.isEmpty()
+                && currentTime - m_timestamps.peekFirst() > durationSeconds + 1e-9) {
+              m_timestamps.removeFirst();
+            }
+
+            return m_timestamps.size() >= tapCount;
+          }
+        });
   }
 
   private void poll() {
