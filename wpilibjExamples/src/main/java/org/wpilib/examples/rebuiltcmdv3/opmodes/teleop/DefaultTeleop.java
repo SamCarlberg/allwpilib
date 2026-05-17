@@ -2,10 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.examples.command3.opmodes.teleop;
+package org.wpilib.examples.rebuiltcmdv3.opmodes.teleop;
 
-import org.wpilib.examples.command3.Robot;
-import org.wpilib.examples.command3.constants.FieldConstants;
+import org.wpilib.examples.rebuiltcmdv3.Robot;
+import org.wpilib.examples.rebuiltcmdv3.constants.FieldConstants;
 import org.wpilib.opmode.OpMode;
 import org.wpilib.opmode.Teleop;
 

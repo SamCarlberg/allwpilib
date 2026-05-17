@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.examples.command3.constants;
+package org.wpilib.examples.rebuiltcmdv3.constants;
 
 import static org.wpilib.units.Units.FeetPerSecond;
 import static org.wpilib.units.Units.RotationsPerSecond;

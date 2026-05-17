@@ -11,16 +11,17 @@
     "commandversion": 2
   },
   {
-    "name": "Commands v3",
+    "name": "Commands v3 - REBUILT Robot",
     "description": "A robot with a drivetrain, intake, and shooter subsystems controlled by the commands v3 framework",
     "tags": [
       "Complete Robot",
       "Commandv3",
       "DataLog",
       "Joystick",
-      "Swerve Drive"
+      "Swerve Drive",
+      "OpMode"
     ],
-    "foldername": "command3",
+    "foldername": "rebuiltcmdv3",
     "gradlebase": "java",
     "robotclass": "Robot",
     "commandversion": 3

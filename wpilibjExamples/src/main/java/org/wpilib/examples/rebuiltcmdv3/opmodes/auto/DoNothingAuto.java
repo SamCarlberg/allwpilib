@@ -2,9 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.examples.command3.opmodes.auto;
+package org.wpilib.examples.rebuiltcmdv3.opmodes.auto;
 
-import org.wpilib.examples.command3.Robot;
+import org.wpilib.examples.rebuiltcmdv3.Robot;
 import org.wpilib.opmode.Autonomous;
 import org.wpilib.opmode.OpMode;
 

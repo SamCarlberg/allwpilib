@@ -2,10 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.wpilib.examples.command3;
+package org.wpilib.examples.rebuiltcmdv3;
 
 import org.wpilib.epilogue.Logged;
-import org.wpilib.examples.command3.constants.DriveConstants;
+import org.wpilib.examples.rebuiltcmdv3.constants.DriveConstants;
 import org.wpilib.math.estimator.SwerveDrivePoseEstimator;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rectangle2d;
