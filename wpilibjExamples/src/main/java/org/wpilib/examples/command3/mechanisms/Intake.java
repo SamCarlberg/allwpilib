@@ -69,6 +69,8 @@ public class Intake extends Mechanism {
           coroutine.fork(roller.intake());
 
           while (true) {
+            // await() will yield internally until the wrist has moved to the desired position,
+            // so we don't need to explicitly yield here
             coroutine.await(wrist.moveToAngle(IntakeConstants.WRIST_AGITATE_UP));
             coroutine.await(wrist.moveToAngle(IntakeConstants.WRIST_AGITATE_DOWN));
           }
