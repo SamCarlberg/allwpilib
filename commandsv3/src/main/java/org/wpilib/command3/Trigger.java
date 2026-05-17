@@ -143,7 +143,8 @@ public class Trigger implements BooleanSupplier {
    * Starts the given command when the condition changes to `true` and cancels it when the condition
    * changes to `false`.
    *
-   * <p>Doesn't re-start the command if it ends while the condition is still `true`.
+   * <p>Unlike {@link #retryWhileTrue(Command)}, this does <strong>not</strong> restart the command
+   * if it ends while the condition is still `true`.
    *
    * @param command the command to start
    * @return this trigger, so calls can be chained
@@ -158,7 +159,8 @@ public class Trigger implements BooleanSupplier {
    * Starts the given command when the condition changes to `false` and cancels it when the
    * condition changes to `true`.
    *
-   * <p>Doesn't re-start the command if it ends while the condition is still `false`.
+   * <p>Unlike {@link #retryWhileFalse(Command)}, this does <strong>not</strong> restart the command
+   * if it ends while the condition is still `false`.
    *
    * @param command the command to start
    * @return this trigger, so calls can be chained
@@ -166,6 +168,40 @@ public class Trigger implements BooleanSupplier {
   public Trigger whileFalse(Command command) {
     requireNonNullParam(command, "command", "whileFalse");
     addBinding(BindingType.RUN_WHILE_LOW, command);
+    return this;
+  }
+
+  /**
+   * Starts the given command when the condition changes to `true` and cancels it when the condition
+   * changes to `false`.
+   *
+   * <p>Unlike {@link #whileTrue(Command)}, the command is restarted if it ends while the condition
+   * is still `true`. If the command stopped because it was interrupted, restarting it will
+   * immediately interrupt the would-be interrupting command (if they have the same priority).
+   *
+   * @param command the command to start
+   * @return this trigger, so calls can be chained
+   */
+  public Trigger retryWhileTrue(Command command) {
+    requireNonNullParam(command, "command", "whileTrueContinuous");
+    addBinding(BindingType.CONTINUOUSLY_SCHEDULE_WHILE_HIGH, command);
+    return this;
+  }
+
+  /**
+   * Starts the given command when the condition changes to `false` and cancels it when the
+   * condition changes to `true`.
+   *
+   * <p>Unlike {@link #whileFalse(Command)}, the command is restarted if it ends while the condition
+   * is still `false`. If the command stopped because it was interrupted, restarting it will
+   * immediately interrupt the would-be interrupting command (if they have the same priority).
+   *
+   * @param command the command to start
+   * @return this trigger, so calls can be chained
+   */
+  public Trigger retryWhileFalse(Command command) {
+    requireNonNullParam(command, "command", "whileFalseContinuous");
+    addBinding(BindingType.CONTINUOUSLY_SCHEDULE_WHILE_LOW, command);
     return this;
   }
 
@@ -294,7 +330,7 @@ public class Trigger implements BooleanSupplier {
   }
 
   /**
-   * Creates a trigger that activates when this one has at least {@code tapCount} rising edges
+   * Creates a trigger that activates when this trigger has at least {@code tapCount} rising edges
    * within the specified duration.
    *
    * @param tapCount The number of rising edges to require
@@ -353,6 +389,13 @@ public class Trigger implements BooleanSupplier {
     m_previousSignal = m_cachedSignal;
     m_cachedSignal = readSignal();
 
+    // Always attempt to schedule bindings based on the current signal
+    if (m_cachedSignal == Signal.HIGH) {
+      scheduleBindings(BindingType.CONTINUOUSLY_SCHEDULE_WHILE_HIGH);
+    } else if (m_cachedSignal == Signal.LOW) {
+      scheduleBindings(BindingType.CONTINUOUSLY_SCHEDULE_WHILE_LOW);
+    }
+
     if (m_cachedSignal == m_previousSignal) {
       // No change in the signal. Nothing to do
       return;
@@ -363,6 +406,7 @@ public class Trigger implements BooleanSupplier {
       scheduleBindings(BindingType.SCHEDULE_ON_RISING_EDGE);
       scheduleBindings(BindingType.RUN_WHILE_HIGH);
       cancelBindings(BindingType.RUN_WHILE_LOW);
+      cancelBindings(BindingType.CONTINUOUSLY_SCHEDULE_WHILE_LOW);
       toggleBindings(BindingType.TOGGLE_ON_RISING_EDGE);
     }
 
@@ -371,6 +415,7 @@ public class Trigger implements BooleanSupplier {
       scheduleBindings(BindingType.SCHEDULE_ON_FALLING_EDGE);
       scheduleBindings(BindingType.RUN_WHILE_LOW);
       cancelBindings(BindingType.RUN_WHILE_HIGH);
+      cancelBindings(BindingType.CONTINUOUSLY_SCHEDULE_WHILE_HIGH);
       toggleBindings(BindingType.TOGGLE_ON_FALLING_EDGE);
     }
   }

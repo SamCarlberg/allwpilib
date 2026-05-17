@@ -734,6 +734,99 @@ class TriggerTest extends CommandTestBase {
         negativeTapCount.getAsBoolean(), "Negative tap count multiTap should always be true");
   }
 
+  @Test
+  void retryWhileTrueLongRunningCanceled() {
+    var signal = new AtomicBoolean(false);
+    var trigger = new Trigger(m_scheduler, signal::get);
+    var command = Command.noRequirements(Coroutine::park).named("Command");
+    trigger.retryWhileTrue(command);
+
+    signal.set(true);
+    m_scheduler.run();
+    assertTrue(m_scheduler.isRunning(command), "Command should be running when signal is true");
+
+    signal.set(false);
+    m_scheduler.run();
+    assertFalse(
+        m_scheduler.isRunning(command), "Command should be canceled when signal goes false");
+  }
+
+  @Test
+  void retryWhileTrueLongRunningRestarted() {
+    var signal = new AtomicBoolean(true);
+    var trigger = new Trigger(m_scheduler, signal::get);
+    var command = Command.noRequirements(Coroutine::park).named("Command");
+    trigger.retryWhileTrue(command);
+
+    m_scheduler.run();
+    assertTrue(m_scheduler.isRunning(command), "Command should be running initially");
+
+    m_scheduler.cancel(command);
+    m_scheduler.run();
+    assertTrue(m_scheduler.isRunning(command), "Command should be restarted in next cycle");
+  }
+
+  @Test
+  void retryWhileTrueOneShotRestarted() {
+    var signal = new AtomicBoolean(true);
+    var trigger = new Trigger(m_scheduler, signal::get);
+    var counter = new AtomicLong(0);
+    var oneshot = Command.noRequirements(_ -> counter.incrementAndGet()).named("One Shot");
+    trigger.retryWhileTrue(oneshot);
+
+    m_scheduler.run();
+    assertEquals(1, counter.get(), "Command should have run once");
+
+    m_scheduler.run();
+    assertEquals(2, counter.get(), "Command should have run twice");
+  }
+
+  @Test
+  void retryWhileFalseLongRunningCanceled() {
+    var signal = new AtomicBoolean(true);
+    var trigger = new Trigger(m_scheduler, signal::get);
+    var command = Command.noRequirements(Coroutine::park).named("Command");
+    trigger.retryWhileFalse(command);
+
+    signal.set(false);
+    m_scheduler.run();
+    assertTrue(m_scheduler.isRunning(command), "Command should be running when signal is false");
+
+    signal.set(true);
+    m_scheduler.run();
+    assertFalse(m_scheduler.isRunning(command), "Command should be canceled when signal goes true");
+  }
+
+  @Test
+  void retryWhileFalseLongRunningRestarted() {
+    var signal = new AtomicBoolean(false);
+    var trigger = new Trigger(m_scheduler, signal::get);
+    var command = Command.noRequirements(Coroutine::park).named("Command");
+    trigger.retryWhileFalse(command);
+
+    m_scheduler.run();
+    assertTrue(m_scheduler.isRunning(command), "Command should be running initially");
+
+    m_scheduler.cancel(command);
+    m_scheduler.run();
+    assertTrue(m_scheduler.isRunning(command), "Command should be restarted in next cycle");
+  }
+
+  @Test
+  void retryWhileFalseOneShotRestarted() {
+    var signal = new AtomicBoolean(false);
+    var trigger = new Trigger(m_scheduler, signal::get);
+    var counter = new AtomicLong(0);
+    var oneshot = Command.noRequirements(_ -> counter.incrementAndGet()).named("One Shot");
+    trigger.retryWhileFalse(oneshot);
+
+    m_scheduler.run();
+    assertEquals(1, counter.get(), "Command should have run once");
+
+    m_scheduler.run();
+    assertEquals(2, counter.get(), "Command should have run twice");
+  }
+
   private BooleanSupplier flickering(AtomicBoolean signal) {
     return () -> {
       boolean val = signal.get();
