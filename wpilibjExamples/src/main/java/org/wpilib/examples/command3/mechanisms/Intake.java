@@ -82,6 +82,9 @@ public class Intake extends Mechanism {
    * @return A command that expels fuel from the intake mechanism
    */
   public Command outtake() {
-    return Command.parallel(wrist.down(), roller.expel()).named("Intake.Outtake");
+    return run(coroutine -> {
+          coroutine.awaitAll(wrist.down(), roller.expel());
+        })
+        .named("Intake.Outtake");
   }
 }
