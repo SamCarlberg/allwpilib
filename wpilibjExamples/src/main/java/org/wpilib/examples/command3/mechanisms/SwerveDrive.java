@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Mechanism;
-import org.wpilib.command3.button.CommandNiDsPS5Controller;
+import org.wpilib.command3.button.CommandGamepad;
 import org.wpilib.epilogue.Logged;
 import org.wpilib.examples.command3.constants.DriveConstants;
 import org.wpilib.examples.command3.stubs.ExampleSmartMotorController;
@@ -101,7 +101,7 @@ public class SwerveDrive extends Mechanism {
    * @param controller The driver controller.
    * @return a command that gives the driver full control of the drive
    */
-  public Command driverControl(CommandNiDsPS5Controller controller) {
+  public Command driverControl(CommandGamepad controller) {
     return driveFieldRelative(
         () -> {
           double x = -controller.getLeftY();
@@ -150,9 +150,7 @@ public class SwerveDrive extends Mechanism {
    * @return The aim-assist command.
    */
   public Command aimAssist(
-      CommandNiDsPS5Controller controller,
-      Supplier<Pose2d> robotPose,
-      Supplier<Pose2d> targetPose) {
+      CommandGamepad controller, Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
     return driveFieldRelative(
         () -> {
           // We use the driver's input to control X and Y speed as normal...

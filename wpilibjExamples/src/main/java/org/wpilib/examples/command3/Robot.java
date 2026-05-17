@@ -10,7 +10,7 @@ import static org.wpilib.units.Units.Meters;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
-import org.wpilib.command3.button.CommandNiDsPS5Controller;
+import org.wpilib.command3.button.CommandGamepad;
 import org.wpilib.epilogue.Epilogue;
 import org.wpilib.epilogue.Logged;
 import org.wpilib.examples.command3.mechanisms.Intake;
@@ -25,7 +25,7 @@ public class Robot extends OpModeRobot {
   public final Shooter shooter = new Shooter();
   public final Intake intake = new Intake();
   public final PoseEstimator poseEstimator = new PoseEstimator();
-  public final CommandNiDsPS5Controller controller = new CommandNiDsPS5Controller(1);
+  public final CommandGamepad controller = new CommandGamepad(1);
 
   public final Trigger inNeutralZone = new Trigger(() -> poseEstimator.inZone(NEUTRAL_ZONE));
 
