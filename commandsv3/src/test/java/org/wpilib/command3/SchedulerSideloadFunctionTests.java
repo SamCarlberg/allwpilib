@@ -60,10 +60,11 @@ class SchedulerSideloadFunctionTests extends CommandTestBase {
                   // the sideload will be removed from the scheduler immediately after being added.
                   // And because sideloads are run _before_ commands are, it would only have been
                   // able to run in the next scheduler run (ie, if the parent command had yielded).
-                  m_scheduler.sideload(sideloadCoroutine -> {
-                    sideloadRan.set(true);
-                    sideloadCoroutine.fork(child);
-                  });
+                  m_scheduler.sideload(
+                      sideloadCoroutine -> {
+                        sideloadRan.set(true);
+                        sideloadCoroutine.fork(child);
+                      });
                 })
             .named("Parent");
 
