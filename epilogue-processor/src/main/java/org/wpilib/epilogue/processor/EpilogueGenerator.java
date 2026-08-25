@@ -60,7 +60,7 @@ public class EpilogueGenerator {
         out.println();
 
         out.println("import org.wpilib.epilogue.*;");
-        out.println("import org.wpilib.hardware.hal.HAL;");
+        out.println("import org.wpilib.util.UsageReporting;");
         out.println();
 
         out.println("public final class Epilogue {");
@@ -69,7 +69,7 @@ public class EpilogueGenerator {
         out.println(
             """
               static {
-                HAL.reportUsage("Epilogue", "");
+                UsageReporting.reportUsage("Epilogue", "");
               }
             """);
 

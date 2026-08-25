@@ -37,11 +37,11 @@ class EpilogueGeneratorTest {
         import static org.wpilib.units.Units.Seconds;
 
         import org.wpilib.epilogue.*;
-        import org.wpilib.hardware.hal.HAL;
+        import org.wpilib.util.UsageReporting;
 
         public final class Epilogue {
           static {
-            HAL.reportUsage("Epilogue", "");
+            UsageReporting.reportUsage("Epilogue", "");
           }
 
           private static final EpilogueConfiguration config = new EpilogueConfiguration();
@@ -91,11 +91,11 @@ class EpilogueGeneratorTest {
         import static org.wpilib.units.Units.Seconds;
 
         import org.wpilib.epilogue.*;
-        import org.wpilib.hardware.hal.HAL;
+        import org.wpilib.util.UsageReporting;
 
         public final class Epilogue {
           static {
-            HAL.reportUsage("Epilogue", "");
+            UsageReporting.reportUsage("Epilogue", "");
           }
 
           private static final EpilogueConfiguration config = new EpilogueConfiguration();
@@ -151,11 +151,11 @@ class EpilogueGeneratorTest {
         import static org.wpilib.units.Units.Seconds;
 
         import org.wpilib.epilogue.*;
-        import org.wpilib.hardware.hal.HAL;
+        import org.wpilib.util.UsageReporting;
 
         public final class Epilogue {
           static {
-            HAL.reportUsage("Epilogue", "");
+            UsageReporting.reportUsage("Epilogue", "");
           }
 
           private static final EpilogueConfiguration config = new EpilogueConfiguration();
@@ -238,11 +238,11 @@ class EpilogueGeneratorTest {
         import static org.wpilib.units.Units.Seconds;
 
         import org.wpilib.epilogue.*;
-        import org.wpilib.hardware.hal.HAL;
+        import org.wpilib.util.UsageReporting;
 
         public final class Epilogue {
           static {
-            HAL.reportUsage("Epilogue", "");
+            UsageReporting.reportUsage("Epilogue", "");
           }
 
           private static final EpilogueConfiguration config = new EpilogueConfiguration();
@@ -391,11 +391,11 @@ class EpilogueGeneratorTest {
         import static org.wpilib.units.Units.Seconds;
 
         import org.wpilib.epilogue.*;
-        import org.wpilib.hardware.hal.HAL;
+        import org.wpilib.util.UsageReporting;
 
         public final class Epilogue {
           static {
-            HAL.reportUsage("Epilogue", "");
+            UsageReporting.reportUsage("Epilogue", "");
           }
 
           private static final EpilogueConfiguration config = new EpilogueConfiguration();
