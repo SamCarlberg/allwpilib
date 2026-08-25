@@ -8,10 +8,14 @@
  */
 open module wpilib.core {
   requires transitive wpilib.math;
+  requires transitive wpilib.tunable;
+  requires transitive wpilib.telemetry;
   requires transitive wpilib.units;
   requires transitive wpilib.util;
-  requires wpilib.hal;
-  requires wpilib.ntcore;
+  requires transitive wpilib.hal;
+  requires transitive wpilib.ntcore;
+  requires io.avaje.json;
+  requires io.avaje.jsonb;
 
   exports org.wpilib.event;
   exports org.wpilib.sysid;

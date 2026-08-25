@@ -43,6 +43,8 @@ open module wpilib {
   requires transitive wpilib.hal;
   requires transitive wpilib.math;
   requires transitive wpilib.ntcore;
+  requires transitive wpilib.telemetry;
+  requires transitive wpilib.tunable;
   requires transitive wpilib.units;
   requires transitive wpilib.util;
 }

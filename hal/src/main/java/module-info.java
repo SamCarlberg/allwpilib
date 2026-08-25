@@ -7,7 +7,7 @@
  * robot programs don't need to use this directly and should use the {@code wpilib} module instead.
  */
 open module wpilib.hal {
-  requires wpilib.util;
+  requires transitive wpilib.util;
 
   exports org.wpilib.hardware.hal;
   exports org.wpilib.hardware.hal.can;

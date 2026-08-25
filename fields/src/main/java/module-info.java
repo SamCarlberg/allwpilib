@@ -4,9 +4,9 @@
 
 /** Defines APIs for structured game field definitions and their JSON serialization support. */
 module wpilib.gamefields {
-  requires io.avaje.json;
-  requires io.avaje.jsonb;
-  requires wpilib.math;
+  requires transitive io.avaje.json;
+  requires transitive io.avaje.jsonb;
+  requires transitive wpilib.math;
 
   exports org.wpilib.fields;
 

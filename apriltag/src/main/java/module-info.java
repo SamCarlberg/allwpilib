@@ -7,9 +7,9 @@
  * locations.
  */
 open module wpilib.apriltag {
-  requires org.opencv; // not transitive; users can import the opencv module explicitly
-  requires wpilib.math;
-  requires wpilib.util;
+  requires transitive org.opencv;
+  requires transitive wpilib.math;
+  requires transitive wpilib.util;
 
   exports org.wpilib.vision.apriltag;
   exports org.wpilib.vision.apriltag.jni;

@@ -7,8 +7,8 @@
  * configuring those cameras.
  */
 open module wpilib.cscore {
-  requires org.opencv;
-  requires wpilib.util;
+  requires transitive org.opencv;
+  requires transitive wpilib.util;
 
   exports org.wpilib.vision.camera;
   exports org.wpilib.vision.camera.raw;

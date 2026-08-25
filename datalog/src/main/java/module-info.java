@@ -3,10 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 
 /** Defines APIs for writing and reading WPILib data logs. */
-@SuppressWarnings("requires-transitive-automatic")
 open module wpilib.datalog {
   requires transitive us.hebi.quickbuf.runtime;
-  requires wpilib.util;
+  requires transitive wpilib.util;
 
   exports org.wpilib.datalog;
 }

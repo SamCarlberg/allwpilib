@@ -55,7 +55,9 @@ wpilib_java_library(
     javacopts = patch_module(
         "wpilib.command3",
         ["commandsv3/src/generated/main/java"],
-    ),
+    ) + [
+        "-Xlint:-module"
+    ],
     maven_artifact_name = "commandsv3-java",
     maven_group_id = "org.wpilib",
     plugins = ["//javacPlugin:plugin"],

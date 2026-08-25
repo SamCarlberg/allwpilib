@@ -4,10 +4,10 @@
 
 /** WPILib third-party device drivers. */
 module wpilib.drivers {
-  requires wpilib.core;
+  requires transitive wpilib.core;
+  requires transitive wpilib.math;
+  requires transitive wpilib.units;
   requires wpilib.hal;
-  requires wpilib.math;
-  requires wpilib.units;
   requires wpilib.util;
 
   exports org.wpilib.drivers.motor;

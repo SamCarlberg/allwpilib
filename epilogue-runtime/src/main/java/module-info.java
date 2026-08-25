@@ -9,10 +9,10 @@
  * generating the {@code org.wpilib.epilogue.generated.Epilogue} entrypoint.
  */
 open module wpilib.epilogue {
-  requires wpilib.ntcore;
-  requires wpilib.units;
-  requires wpilib.util;
+  requires transitive wpilib.telemetry;
+  requires transitive wpilib.units;
 
   exports org.wpilib.epilogue;
   exports org.wpilib.epilogue.logging;
+  exports org.wpilib.epilogue.logging.errors;
 }

@@ -4,7 +4,7 @@
 
 /** Defines the WPILib javac plugin module for compile-time annotation-based checks. */
 module wpilib.javac {
-  requires jdk.compiler;
+  requires transitive jdk.compiler;
   requires wpilib.annotation;
 
   exports org.wpilib.javacplugin;

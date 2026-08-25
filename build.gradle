@@ -201,9 +201,9 @@ subprojects {
             // ignore modules requiring automatic library modules
             "-Xlint:-requires-automatic",
             "-Xlint:-requires-transitive-automatic",
-            "-Xlint:-exports",
             // Java modules warn about exposing classes without an explicitly declared constructor
-            "-Xlint:-missing-explicit-ctor",
+            "-Xlint:-exports", // workaround for #9350
+            "-Xlint:-missing-explicit-ctor", // workaround for #9349
             // Java modules warn about module names with trailing digits
             "-Xlint:-module",
             "-Xlint:-classfile"
