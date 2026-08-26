@@ -170,9 +170,8 @@ def build_tests(example_test_folders, snippet_test_folders):
             name = folder + "-test",
             srcs = native.glob(["src/test/java/org/wpilib/examples/" + folder + "/**/*.java"]) + native.glob(["**/module-info.java"]),
             javacopts = [
-                # bazel may make the junit dependencies in either the correct modules, or treat them as unnamed modules
-                # We add reads for both to ensure they're picked up
-                "--add-reads=wpilib.examples=org.junit.jupiter.api,org.junit.jupiter.api.parallel,org.junit.jupiter.params,ALL-UNNAMED",
+                # bazel places the JUnit libraries in the unnamed module
+                "--add-reads=wpilib.examples=ALL-UNNAMED",
             ] + patch_module(
                 "wpilib.examples",
                 ["wpilibjExamples/src/test/java"],
@@ -194,6 +193,7 @@ def build_tests(example_test_folders, snippet_test_folders):
                 "//wpiutil:wpiutil-java",
                 "//epilogue-runtime:epilogue-java",
                 "//romiVendordep:romiVendordep-java",
+                "//telemetry:telemetry-java",
                 "//xrpVendordep:xrpVendordep-java",
                 "//wpiunits:wpiunits-java",
             ],
@@ -205,9 +205,8 @@ def build_tests(example_test_folders, snippet_test_folders):
             name = folder + "-test",
             srcs = native.glob(["src/test/java/org/wpilib/snippets/" + folder + "/**/*.java"]) + native.glob(["**/module-info.java"]),
             javacopts = [
-                # bazel may make the junit dependencies in either the correct modules, or treat them as unnamed modules
-                # We add reads for both to ensure they're picked up
-                "--add-reads=wpilib.examples=org.junit.jupiter.api,org.junit.jupiter.api.parallel,org.junit.jupiter.params,ALL-UNNAMED",
+                # bazel places the JUnit libraries in the unnamed module
+                "--add-reads=wpilib.examples=ALL-UNNAMED",
             ] + patch_module(
                 "wpilib.examples",
                 ["wpilibjExamples/src/test/java"],
