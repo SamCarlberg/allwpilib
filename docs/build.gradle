@@ -259,9 +259,14 @@ tasks.register('generateJavaDocs', Javadoc) {
     dependsOn stageJavaDocModules
     // Track library dependencies so javadoc can link against them
     def javaDocModulePath = files()
-    javaDocProjects.each {
-        javaDocModulePath += it.sourceSets.main.compileClasspath
+
+    doFirst {
+        def modulePathFiles = javaDocProjects.collectMany {
+            it.sourceSets.main.compileClasspath.files
+        }
+        options.modulePath = modulePathFiles
     }
+
     classpath = files()
     options.links("https://docs.oracle.com/en/java/javase/25/docs/api/")
     // workaround for opencv site blocking javadoc tool. If the link is changed,
