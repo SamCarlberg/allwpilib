@@ -1388,8 +1388,9 @@ public final class Scheduler implements ProtobufSerializable {
   @NoDiscard
   @SuppressWarnings("PMD.CompareObjectsWithEquals")
   public int runId(Command command) {
-    if (m_runningCommands.containsKey(command)) {
-      return m_runningCommands.get(command).id();
+    var runningState = m_runningCommands.get(command);
+    if (runningState != null) {
+      return runningState.id();
     }
 
     // Check scheduled commands
